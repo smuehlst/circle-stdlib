@@ -1,0 +1,3 @@
+[submodule "libs\\circle"]
+	path = libs\\circle
+	url = https://github.com/rsta2/circle
