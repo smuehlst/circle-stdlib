@@ -1,14 +1,23 @@
 #!/bin/bash
 
+set -e
+
 function usage() {
-    echo "usage: build.bash [ <option> ... ]" >&2
+    echo "usage: build.bash [ <option> ... ]"
+    echo "Build Circle with newlib standard C library."
+    echo
+    echo "Options:"
+    echo "  -c, --clean                    clean build results and exit"
+    echo "  -d, --debug                    build with debug information, without optimizer"
+    echo "  -r <number>, --raspberrypi <number>"
+    echo "                                 Circle Raspberry Pi model number (1, 2, 3, default: 1)"
 }
 
 # From the bash FAQ: How to use pathnames relative to the script
 cd "${BASH_SOURCE%/*}" || exit 1
 TOPDIR="$PWD"
 
-TEMP=$(getopt -o cdr: --long clean,debug,no-circle-build,ino-newlib-build,raspberrypi:,script-debug \
+TEMP=$(getopt -o cdhr: --long clean,debug,help,no-circle-build,no-newlib-build,raspberrypi:,script-debug \
      -n 'build.bash' -- "$@")
 
 if [ $? != 0 ] ; then echo usage; exit 1 ; fi
@@ -30,9 +39,9 @@ while true ; do
     case "$1" in
 	-c|--clean) CLEAN=1 ; shift;;
 	-d|--debug) DEBUG=1 ; shift;;
-	--no-circle-build) CIRCLE_BUILD=0 ; shift;;
-	--no-circle-build) CIRCLE_BUILD=0 ; shift;;
-	--no-newlib-build) NEWLIB_BUILD=0 ; shift;;
+	-h|--help) usage ; exit 0;;
+	# --no-circle-build) CIRCLE_BUILD=0 ; shift;;
+	# --no-newlib-build) NEWLIB_BUILD=0 ; shift;;
 	-r|--raspberrypi) RASPBERRYPI="$2" ; shift 2;;
 	--script-debug) set -x ; shift;;
 	--) shift ; break ;;
@@ -44,9 +53,27 @@ echo "RASPBERRYPI=$RASPBERRYPI"
 echo "CIRCLE_BUILD=$CIRCLE_BUILD"
 echo "NEWLIB_BUILD=$NEWLIB_BUILD"
 echo "RASPBERRYPI=$RASPBERRYPI"
+echo "NEWLIB_INSTALL_DIR=$NEWLIB_INSTALL_DIR"
+echo "NEWLIB_BUILD_DIR=$NEWLIB_BUILD_DIR"
+echo "CLEAN=$CLEAN"
+echo "DEBUG=$DEBUG"
 
 echo "Remaining arguments:"
 for arg do echo '--> '"\`$arg'" ; done
+
+if [ $CLEAN -eq 1 ]
+then
+    echo "Cleaning ..."
+    (
+	cd libs/circle && ./makeall clean
+    )
+    (
+	cd "$NEWLIB_BUILD_DIR" && make clean
+    )
+    rm -rf "$NEWLIB_BUILD_DIR"/*
+    rm -rf "$NEWLIB_INSTALL_DIR"/*
+    exit 0
+fi
 
 case "$RASPBERRYPI" in
     1|2|3) ;;
@@ -105,11 +132,11 @@ export CFLAGS_FOR_TARGET
 )
 
 (
-    cd libs/circle
-    ./makeall -j
+    cd libs/circle && ./makeall -j
 )
 
 (
-    cd "$NEWLIB_BUILD_DIR"
-    make -j
+    cd "$NEWLIB_BUILD_DIR" && make -j && make install
 )
+
+exit 0
