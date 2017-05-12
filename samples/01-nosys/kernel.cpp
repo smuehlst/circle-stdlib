@@ -109,7 +109,7 @@ TShutdownMode CKernel::Run (void)
 
 	if (nElement)
 	{
-		m_Logger.Write (FromKernel, LogNotice, "Found nElement %d at distance %u", nKey,
+		m_Logger.Write (FromKernel, LogNotice, "Found Element %d at distance %u", nKey,
 				static_cast<unsigned int>(nElement - nSortedArray));
 	}
 	else
