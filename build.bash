@@ -9,15 +9,18 @@ function usage() {
     echo "Options:"
     echo "  -c, --clean                    clean build results and exit"
     echo "  -d, --debug                    build with debug information, without optimizer"
+    echo "  -h, --help                     show usage message"
     echo "  -r <number>, --raspberrypi <number>"
     echo "                                 Circle Raspberry Pi model number (1, 2, 3, default: 1)"
+    echo "  -s <path>, --stddefpath <path>"
+    echo "                                 path where stddef.h header is located"
 }
 
 # From the bash FAQ: How to use pathnames relative to the script
 cd "${BASH_SOURCE%/*}" || exit 1
 TOPDIR="$PWD"
 
-TEMP=$(getopt -o cdhr: --long clean,debug,help,no-circle-build,no-newlib-build,raspberrypi:,script-debug \
+TEMP=$(getopt -o cdhr:s: --long clean,debug,help,no-circle-build,no-newlib-build,raspberrypi:,script-debug,stddefpath: \
      -n 'build.bash' -- "$@")
 
 if [ $? != 0 ] ; then echo usage; exit 1 ; fi
@@ -25,12 +28,15 @@ if [ $? != 0 ] ; then echo usage; exit 1 ; fi
 # Note the quotes around `$TEMP': they are essential!
 eval set -- "$TEMP"
 
+: ${CC:=arm-none-eabi-gcc}
+
 CLEAN=0
 DEBUG=0
 RASPBERRYPI=1
 CIRCLE_BUILD=1
 NEWLIB_BUILD=1
 CLEAN=0
+STDDEF_INCPATH=""
 
 NEWLIB_INSTALL_DIR="$TOPDIR/install"
 NEWLIB_BUILD_DIR="$TOPDIR/build/circle-newlib"
@@ -44,6 +50,7 @@ while true ; do
 	# --no-newlib-build) NEWLIB_BUILD=0 ; shift;;
 	-r|--raspberrypi) RASPBERRYPI="$2" ; shift 2;;
 	--script-debug) set -x ; shift;;
+	-s|--stddefpath) STDDEF_INCPATH="$2" ; shift 2;;
 	--) shift ; break ;;
 	*) echo "Internal error!" ; exit 1;;
     esac
@@ -75,6 +82,19 @@ then
     exit 0
 fi
 
+if [ "$STDDEF_INCPATH" = "" ]
+then
+    # TODO this is probably very GCC-specific
+    STDDEF_INCPATH=$(echo | "$CC" -v -x c -E - 2>&1 | grep "^.*include$" | head -1 | sed -e "s/ //")
+fi
+
+if [ ! -f "$STDDEF_INCPATH/stddef.h" ]
+then
+    echo "Error: Unable to determine include path for stddef.h, exiting" >&2
+    echo "STDDEF_INCPATH is \"$STDDEF_INCPATH\"" >&2
+    exit 1
+fi
+
 case "$RASPBERRYPI" in
     1|2|3) ;;
     *) echo "Unknown Raspberry Pi target" >&2; exit 1;;
@@ -95,7 +115,8 @@ fi
 
 # Create Circle's Config.mk file
 (
-    echo "RASPPI=$RASPBERRYPI"
+    echo "RASPPI = $RASPBERRYPI"
+    echo "STDDEF_INCPATH = \"$STDDEF_INCPATH\""
     if [ $DEBUG -eq 1 ]
     then
 	echo "OPTIMIZE = -O0 -g"
