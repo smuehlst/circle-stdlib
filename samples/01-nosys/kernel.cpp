@@ -86,25 +86,27 @@ TShutdownMode CKernel::Run (void)
 	m_Logger.Write (FromKernel, LogNotice, "");
 
 	m_Logger.Write (FromKernel, LogNotice, "Call printf() (expect -1)");
-	int const printfResult = printf("Hello world\n");
+	int const printfResult = printf ("Hello world\n");
 	m_Logger.Write (FromKernel, LogNotice, "printf result %d", printfResult);
 
 	m_Logger.Write (FromKernel, LogNotice, "Call sin()");
-	double const f = sin(1);
+	double const f = sin (1);
 
 	m_Logger.Write (FromKernel, LogNotice, "sin(1) %f", f);
 
 	// Search element in sorted array
 	int const nSortedArray[] = { -10, -1, 0, 1, 2, 3, 4, 5, 6 };
 
-	auto const nCmpIntFn = [](void const *a, void const *b)
-							{
-								return *static_cast<int const *>(a) - *static_cast<int const *>(b);
-							};
+	auto const nCmpIntFn =
+		[](void const *a, void const *b)
+		{
+			return *static_cast<int const *>(a) - *static_cast<int const *>(b);
+		};
 	int const nKey = 1;
 	auto const nElement =
 		static_cast<int *>(
-			bsearch(&nKey, nSortedArray, sizeof(nSortedArray) / sizeof(nSortedArray[0]), sizeof(nSortedArray[0]),
+			bsearch (&nKey, nSortedArray,
+					sizeof(nSortedArray) / sizeof(nSortedArray[0]), sizeof(nSortedArray[0]),
 					nCmpIntFn));
 
 	if (nElement)
@@ -117,14 +119,14 @@ TShutdownMode CKernel::Run (void)
 		m_Logger.Write (FromKernel, LogNotice, "Element %d not found", nKey);
 	}
 
-	auto const nRetVal = setjmp(m_JumpBuf);
+	auto const nRetVal = setjmp (m_JumpBuf);
 	if (nRetVal)
 	{
 		m_Logger.Write (FromKernel, LogNotice, "Value %d returned from subroutine by setjmp", nRetVal);
 	}
 	else
 	{
-		DoLongJmp();
+		DoLongJmp ();
 	}
 
 	// Sort unsorted array with qsort
