@@ -85,7 +85,7 @@ fi
 if [ "$STDDEF_INCPATH" = "" ]
 then
     # TODO this is probably very GCC-specific
-    STDDEF_INCPATH=$(echo | "$CC" -v -x c -E - 2>&1 | grep "^.*include$" | head -1 | sed -e "s/ //")
+    STDDEF_INCPATH=$(echo | "$CC" -v -x c -E - 2>&1 | grep "^ /.*include$" | head -1 | sed -e "s/ //")
 fi
 
 if [ ! -f "$STDDEF_INCPATH/stddef.h" ]
