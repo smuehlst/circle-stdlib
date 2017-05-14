@@ -148,7 +148,7 @@ export CFLAGS_FOR_TARGET
 
 (
     cd $NEWLIB_BUILD_DIR
-    "$TOPDIR/libs/circle-newlib/configure" --target arm-none-circleraspi0 --disable-multilib \
+    "$TOPDIR/libs/circle-newlib/configure" --target arm-none-circle --disable-multilib \
         --prefix "$NEWLIB_INSTALL_DIR"
 )
 
