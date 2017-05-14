@@ -1,7 +1,7 @@
-[submodule "libs\\circle"]
-	path = libs\\circle
+[submodule "libs/circle"]
+	path = libs/circle
 	url = https://github.com/rsta2/circle
-[submodule "libs\\circle-newlib"]
-	path = libs\\circle-newlib
+[submodule "libs/circle-newlib"]
+	path = libs/circle-newlib
 	url = https://github.com/smuehlst/circle-newlib
 	branch = circle-newlib
