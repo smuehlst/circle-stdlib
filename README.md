@@ -5,7 +5,9 @@
 The goal of this project is to build C and C++ standard libraries for use with the
 Raspberry Pi bare metal environment [Circle](https://github.com/rsta2/circle).
 
-[Newlib](https://sourceware.org/newlib/) is used as the standard C library.
+[Newlib](https://sourceware.org/newlib/) is used as the standard C library. The fork
+[circle-newlib](https://github.com/smuehlst/circle-newlib) contains the changes for
+building Newlib in combination with Circle.
 
 ## Getting Started
 
@@ -25,6 +27,23 @@ cd circle-stdlib
 ./build.bash
 ```
 
+The `build.bash` script has the following options:
+
+```
+$ ./build.bash -h
+usage: build.bash [ <option> ... ]
+Build Circle with newlib standard C library.
+
+Options:
+  -c, --clean                    clean build results and exit
+  -d, --debug                    build with debug information, without optimizer
+  -h, --help                     show usage message
+  -r <number>, --raspberrypi <number>
+                                 Circle Raspberry Pi model number (1, 2, 3, default: 1)
+  -s <path>, --stddefpath <path>
+                                 path where stddef.h header is located
+```
+
 ### Building a Sample Program
 
 ```
@@ -37,7 +56,7 @@ make
 As a first step Newlib is built without any system calls being implemented. This means that
 all features that do not depend on system calls should work (e.g. math functions,
 `setjmp`/`longjmp`, `bsearch`, `qsort`), but everything that depends on "system calls" like
-`open`, `read` etc. does not work and return errors (e.g. stdio functions).
+`open`, `read` etc. does not work and returns errors (e.g. stdio functions).
 
 ## License
 
