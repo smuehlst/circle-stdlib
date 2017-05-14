@@ -3,7 +3,7 @@
 #
 
 CIRCLEHOME = ../../libs/circle
-NEWLIBDIR = ../../install/arm-none-circleraspi0
+NEWLIBDIR = ../../install/arm-none-circle
 
 OBJS	= main.o kernel.o
 
