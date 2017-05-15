@@ -37,11 +37,12 @@ Build Circle with newlib standard C library.
 Options:
   -c, --clean                    clean build results and exit
   -d, --debug                    build with debug information, without optimizer
-  -h, --help                     show usage message
+  -h, --help                     show this usage message
   -r <number>, --raspberrypi <number>
                                  Circle Raspberry Pi model number (1, 2, 3, default: 1)
   -s <path>, --stddefpath <path>
-                                 path where stddef.h header is located
+                                 path where stddef.h header is located (only necessary
+				 if script cannot determine it automatically)
 ```
 
 ### Building a Sample Program
@@ -55,13 +56,13 @@ make
 
 As a first step Newlib is built without any system calls being implemented. This means that
 all features that do not depend on system calls should work (e.g. math functions,
-`setjmp`/`longjmp`, `bsearch`, `qsort`), but everything that depends on "system calls" like
+`setjmp`/`longjmp`, `bsearch`, `qsort`), but everything that depends on system calls like
 `open`, `read` etc. does not work and returns errors (e.g. stdio functions).
 
 ## License
 
 This project is licensed under the GNU GENERAL PUBLIC LICENSE
-Version 3 - see the [LICENSE.md](LICENSE.md) file for details
+Version 3 - see the [LICENSE](LICENSE) file for details
 
 ## Acknowledgements
 

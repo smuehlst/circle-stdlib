@@ -13,7 +13,8 @@ function usage() {
     echo "  -r <number>, --raspberrypi <number>"
     echo "                                 Circle Raspberry Pi model number (1, 2, 3, default: 1)"
     echo "  -s <path>, --stddefpath <path>"
-    echo "                                 path where stddef.h header is located"
+    echo "                                 path where stddef.h header is located (only necessary"
+    echo "                                 if  script cannot determine it automatically)"
 }
 
 # From the bash FAQ: How to use pathnames relative to the script
