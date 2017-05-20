@@ -41,6 +41,7 @@ STDDEF_INCPATH=""
 
 NEWLIB_INSTALL_DIR="$TOPDIR/install"
 NEWLIB_BUILD_DIR="$TOPDIR/build/circle-newlib"
+CIRCLEHOME="$TOPDIR/libs/circle"
 
 while true ; do
     case "$1" in
@@ -96,6 +97,8 @@ then
     exit 1
 fi
 
+echo "STDDEF_INCPATH=$STDDEF_INCPATH"
+
 case "$RASPBERRYPI" in
     1|2|3) ;;
     *) echo "Unknown Raspberry Pi target" >&2; exit 1;;
@@ -130,7 +133,9 @@ ARCH=${ARCH#ARCH = }
 
 GCC_PREFIX=arm-none-eabi
 export \
+    CPPFLAGS_FOR_TARGET="-I\"$CIRCLEHOME/include\"" \
     CC_FOR_TARGET=${GCC_PREFIX}-gcc \
+    CXX_FOR_TARGET=${GCC_PREFIX}-g++ \
     GCC_FOR_TARGET=${GCC_PREFIX}-gcc \
     AR_FOR_TARGET=${GCC_PREFIX}-gcc-ar \
     AS_FOR_TARGET=${GCC_PREFIX}-gcc-as \
