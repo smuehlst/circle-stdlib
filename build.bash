@@ -133,7 +133,7 @@ ARCH=${ARCH#ARCH = }
 
 GCC_PREFIX=arm-none-eabi
 export \
-    CPPFLAGS_FOR_TARGET="-I\"$CIRCLEHOME/include\"" \
+    CPPFLAGS_FOR_TARGET="-I\"$CIRCLEHOME/include\" -I\"$TOPDIR/include\"" \
     CC_FOR_TARGET=${GCC_PREFIX}-gcc \
     CXX_FOR_TARGET=${GCC_PREFIX}-g++ \
     GCC_FOR_TARGET=${GCC_PREFIX}-gcc \
