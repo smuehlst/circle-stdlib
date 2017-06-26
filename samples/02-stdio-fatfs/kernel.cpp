@@ -26,6 +26,8 @@
 #include <math.h>
 #include <stdlib.h>
 
+#include <circle_glue.h>
+
 namespace
 {
 	char const FromKernel[] = "kernel";
@@ -110,29 +112,39 @@ TShutdownMode CKernel::Run (void)
 		m_Logger.Write (FromKernel, LogPanic, "Cannot mount partition: %s", partition);
 	}
 
-	// Create file and write to it
-	char const filename[] = "sdcard.txt";
-	unsigned hFile = m_FileSystem.FileCreate (filename);
-	if (hFile == 0)
-	{
-		m_Logger.Write (FromKernel, LogPanic, "Cannot create file: %s", filename);
-	}
+	m_Logger.Write (FromKernel, LogNotice, "stdio test...");
 
-	for (unsigned nLine = 1; nLine <= 5; nLine++)
-	{
-		CString Msg;
-		Msg.Format ("Hello File! (Line %u)\n", nLine);
+	// Initialize newlib stdio with a reference to Circle's file system
+	CGlueStdioInit(m_FileSystem);
 
-		if (m_FileSystem.FileWrite (hFile, (const char *) Msg, Msg.GetLength ()) != Msg.GetLength ())
+	char const stdio_filename[] = "stdio.txt";
+	FILE *fp = fopen(stdio_filename, "w");
+
+	if (fp != nullptr)
+	{
+		fprintf(fp, "Opened file with (FILE *) %p\n", fp);
+		fclose(fp);
+
+		fp = fopen(stdio_filename, "r");
+		if (fp != nullptr)
 		{
-			m_Logger.Write (FromKernel, LogError, "Write error");
-			break;
+			char buf[200];
+			char *p;
+
+			while ((p = fgets(buf, sizeof(buf), fp)) != nullptr)
+			{
+				m_Logger.Write (FromKernel, LogNotice, "Read from file: '%s'", p);
+			}
+			fclose(fp);
+		}
+		else
+		{
+			m_Logger.Write (FromKernel, LogPanic, "Cannot open file for reading with fopen()");
 		}
 	}
-
-	if (!m_FileSystem.FileClose (hFile))
+	else
 	{
-		m_Logger.Write (FromKernel, LogPanic, "Cannot close file");
+		m_Logger.Write (FromKernel, LogPanic, "Cannot open file for writing with fopen()");
 	}
 
 	return ShutdownHalt;
