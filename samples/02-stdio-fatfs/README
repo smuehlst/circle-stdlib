@@ -1,5 +1,3 @@
 README
 
-This program demonstrates the use of some standard C library functions in a Circle application.
-
-stdio is not yet implemented, so printf() is expected to return -1.
+This program demonstrates the use of stdio functions with Circle.
