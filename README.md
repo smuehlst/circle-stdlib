@@ -54,10 +54,14 @@ make
 
 ## Current State
 
-As a first step Newlib is built without any system calls being implemented. This means that
-all features that do not depend on system calls should work (e.g. math functions,
-`setjmp`/`longjmp`, `bsearch`, `qsort`), but everything that depends on system calls like
-`open`, `read` etc. does not work and returns errors (e.g. stdio functions).
+v2.0: This release implements Newlib's open(), close(), read() and write()
+system calls bases on Circle's I/O functions. This enables stdio functionality.
+A small [test program](samples/02-stdio-fatfs) demonstrates the use of
+stdio functions with Circle.
+
+Previous releases:
+
+* V1.0: Initial build of Newlib with Circle, without any systems calls being implemented.
 
 ## License
 
