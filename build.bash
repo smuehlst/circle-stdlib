@@ -77,7 +77,10 @@ then
 	cd libs/circle && ./makeall clean
     )
     (
-	cd "$NEWLIB_BUILD_DIR" && make clean
+	cd libs/circle/addon/SDCard && make clean
+    )
+    (
+	cd "$NEWLIB_BUILD_DIR" && make -i clean
     )
     rm -rf "$NEWLIB_BUILD_DIR"/*
     rm -rf "$NEWLIB_INSTALL_DIR"/*
@@ -160,6 +163,11 @@ export CFLAGS_FOR_TARGET
 
 (
     cd libs/circle && ./makeall -j
+)
+
+(
+    # The sample 02-stdio-fatfs needs the SDCard library
+    cd libs/circle/addon/SDCard && make
 )
 
 (
