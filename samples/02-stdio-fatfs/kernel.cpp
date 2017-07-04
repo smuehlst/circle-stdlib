@@ -147,5 +147,7 @@ TShutdownMode CKernel::Run (void)
 		m_Logger.Write (FromKernel, LogPanic, "Cannot open file for writing with fopen()");
 	}
 
+	m_FileSystem.UnMount ();
+
 	return ShutdownHalt;
 }
