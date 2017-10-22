@@ -32,8 +32,7 @@ namespace
 }
 
 CKernel::CKernel (void)
-:	m_Memory (TRUE),
-	m_Screen (m_Options.GetWidth (), m_Options.GetHeight ()),
+:	m_Screen (m_Options.GetWidth (), m_Options.GetHeight ()),
 	m_Logger (m_Options.GetLogLevel ())
 {
 	m_ActLED.Blink (5);	// show we are alive

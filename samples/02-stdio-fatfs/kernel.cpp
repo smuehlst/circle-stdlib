@@ -34,8 +34,7 @@ namespace
 }
 
 CKernel::CKernel (void)
-:	m_Memory (TRUE),
-	m_Screen (m_Options.GetWidth (), m_Options.GetHeight ()),
+:	m_Screen (m_Options.GetWidth (), m_Options.GetHeight ()),
 	m_Timer (&m_Interrupt),
 	m_Logger (m_Options.GetLogLevel ()),
 	m_EMMC (&m_Interrupt, &m_Timer, &m_ActLED)

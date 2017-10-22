@@ -74,7 +74,7 @@ if [ $CLEAN -eq 1 ]
 then
     echo "Cleaning ..."
     (
-	cd libs/circle && ./makeall clean
+	cd libs/circle && ./makeall --nosample clean
     )
     (
 	cd libs/circle/addon/SDCard && make clean
@@ -123,6 +123,7 @@ fi
 # Create Circle's Config.mk file
 (
     echo "RASPPI = $RASPBERRYPI"
+    echo "STDLIB_SUPPORT = 1"
     echo "STDDEF_INCPATH = \"$STDDEF_INCPATH\""
     if [ $DEBUG -eq 1 ]
     then
@@ -162,7 +163,7 @@ export CFLAGS_FOR_TARGET
 )
 
 (
-    cd libs/circle && ./makeall -j
+    cd libs/circle && ./makeall --nosample -j
 )
 
 (
