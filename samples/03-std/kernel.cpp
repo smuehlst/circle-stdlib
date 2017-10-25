@@ -110,14 +110,12 @@ TShutdownMode CKernel::Run(void) {
 				partition);
 	}
 
-	m_Logger.Write(FromKernel, LogNotice, "stdio test...");
-
 	// Initialize newlib stdio with a reference to Circle's file system
 	CGlueStdioInit(m_FileSystem);
 
 	m_Logger.Write(FromKernel, LogNotice, "C++ Standard Library Test");
 
-	foo();
+	cxx_test();
 
 	m_Logger.Write(FromKernel, LogNotice, "C++ Standard Library Test finished");
 
@@ -139,7 +137,7 @@ void barf(void) {
 }
 
 void cxx_test(void) {
-	std::vector<std::string> v = { "vector entry 1", "vector entry 2" };
+	std::vector<std::string> const v = { "vector entry 1", "vector entry 2" };
 
 	std::ofstream ofs("test.txt", std::ofstream::out);
 	try {
