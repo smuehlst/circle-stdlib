@@ -147,7 +147,8 @@ void cxx_test(void) {
 		std::string s(e.what());
 		ofs << s.c_str() << std::endl;
 	}
-	for_each(v.begin(), v.end(), [&](std::string const &s){ ofs << s.c_str() << std::endl;});
+	for_each(v.begin(), v.end(),
+			[&](std::string const &s) {ofs << s.c_str() << std::endl;});
 	ofs.close();
 }
 
