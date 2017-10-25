@@ -10,6 +10,8 @@ function usage() {
     echo "  -c, --clean                    clean build results and exit"
     echo "  -d, --debug                    build with debug information, without optimizer"
     echo "  -h, --help                     show usage message"
+    echo "  -n, --no-cpp                   do not support C++ standard library"
+    echo "  -p <string>, --prefix <string> prefix of the toolchain commands (default: arm-none-eabi-)"
     echo "  -r <number>, --raspberrypi <number>"
     echo "                                 Circle Raspberry Pi model number (1, 2, 3, default: 1)"
     echo "  -s <path>, --stddefpath <path>"
@@ -21,7 +23,7 @@ function usage() {
 cd "${BASH_SOURCE%/*}" || exit 1
 TOPDIR="$PWD"
 
-TEMP=$(getopt -o cdhr:s: --long clean,debug,help,no-circle-build,no-newlib-build,raspberrypi:,script-debug,stddefpath: \
+TEMP=$(getopt -o cdhnp:r:s: --long clean,debug,help,no-circle-build,no-cpp,no-newlib-build,prefix:,raspberrypi:,script-debug,stddefpath: \
      -n 'build.bash' -- "$@")
 
 if [ $? != 0 ] ; then echo usage; exit 1 ; fi
@@ -29,15 +31,15 @@ if [ $? != 0 ] ; then echo usage; exit 1 ; fi
 # Note the quotes around `$TEMP': they are essential!
 eval set -- "$TEMP"
 
-: ${CC:=arm-none-eabi-gcc}
-
 CLEAN=0
 DEBUG=0
 RASPBERRYPI=1
 CIRCLE_BUILD=1
 NEWLIB_BUILD=1
 CLEAN=0
+TOOLPREFIX=arm-none-eabi-
 STDDEF_INCPATH=""
+STDLIB_SUPPORT=2
 
 NEWLIB_INSTALL_DIR="$TOPDIR/install"
 NEWLIB_BUILD_DIR="$TOPDIR/build/circle-newlib"
@@ -49,7 +51,9 @@ while true ; do
 	-d|--debug) DEBUG=1 ; shift;;
 	-h|--help) usage ; exit 0;;
 	# --no-circle-build) CIRCLE_BUILD=0 ; shift;;
+	-n|--no-cpp) STDLIB_SUPPORT=1 ; shift;;
 	# --no-newlib-build) NEWLIB_BUILD=0 ; shift;;
+	-p|--prefix) TOOLPREFIX="$2" ; shift 2;;
 	-r|--raspberrypi) RASPBERRYPI="$2" ; shift 2;;
 	--script-debug) set -x ; shift;;
 	-s|--stddefpath) STDDEF_INCPATH="$2" ; shift 2;;
@@ -59,9 +63,11 @@ while true ; do
 done
 
 echo "RASPBERRYPI=$RASPBERRYPI"
+echo "TOOLPREFIX=$TOOLPREFIX"
 echo "CIRCLE_BUILD=$CIRCLE_BUILD"
 echo "NEWLIB_BUILD=$NEWLIB_BUILD"
 echo "RASPBERRYPI=$RASPBERRYPI"
+echo "STDLIB_SUPPORT=$STDLIB_SUPPORT"
 echo "NEWLIB_INSTALL_DIR=$NEWLIB_INSTALL_DIR"
 echo "NEWLIB_BUILD_DIR=$NEWLIB_BUILD_DIR"
 echo "CLEAN=$CLEAN"
@@ -85,6 +91,15 @@ then
     rm -rf "$NEWLIB_BUILD_DIR"/*
     rm -rf "$NEWLIB_INSTALL_DIR"/*
     exit 0
+fi
+
+: ${CC:="$TOOLPREFIX"gcc}
+
+if [ ! -x "`which $CC 2> /dev/null`" ]
+then
+    echo "Error: Invalid toolchain prefix, exiting" >&2
+    echo "TOOLPREFIX is \"$TOOLPREFIX\"" >&2
+    exit 1
 fi
 
 if [ "$STDDEF_INCPATH" = "" ]
@@ -123,7 +138,8 @@ fi
 # Create Circle's Config.mk file
 (
     echo "RASPPI = $RASPBERRYPI"
-    echo "STDLIB_SUPPORT = 1"
+    echo "PREFIX = $TOOLPREFIX"
+    echo "STDLIB_SUPPORT = $STDLIB_SUPPORT"
     echo "STDDEF_INCPATH = \"$STDDEF_INCPATH\""
     if [ $DEBUG -eq 1 ]
     then
@@ -135,18 +151,18 @@ fi
 ARCH=$(make -n -p -f libs/circle/Rules.mk CIRCLEHOME=libs/circle | grep ^ARCH)
 ARCH=${ARCH#ARCH = }
 
-GCC_PREFIX=arm-none-eabi
+GCC_PREFIX=$TOOLPREFIX
 export \
     CPPFLAGS_FOR_TARGET="-I\"$CIRCLEHOME/include\" -I\"$TOPDIR/include\"" \
-    CC_FOR_TARGET=${GCC_PREFIX}-gcc \
-    CXX_FOR_TARGET=${GCC_PREFIX}-g++ \
-    GCC_FOR_TARGET=${GCC_PREFIX}-gcc \
-    AR_FOR_TARGET=${GCC_PREFIX}-gcc-ar \
-    AS_FOR_TARGET=${GCC_PREFIX}-gcc-as \
-    LD_FOR_TARGET=${GCC_PREFIX}-gcc-ld \
-    RANLIB_FOR_TARGET=${GCC_PREFIX}-gcc-ranlib \
-    OBJCOPY_FOR_TARGET=${GCC_PREFIX}-gcc-objcopy \
-    OBJDUMP_FOR_TARGET=${GCC_PREFIX}-gcc-objdump
+    CC_FOR_TARGET=${GCC_PREFIX}gcc \
+    CXX_FOR_TARGET=${GCC_PREFIX}g++ \
+    GCC_FOR_TARGET=${GCC_PREFIX}gcc \
+    AR_FOR_TARGET=${GCC_PREFIX}gcc-ar \
+    AS_FOR_TARGET=${GCC_PREFIX}gcc-as \
+    LD_FOR_TARGET=${GCC_PREFIX}gcc-ld \
+    RANLIB_FOR_TARGET=${GCC_PREFIX}gcc-ranlib \
+    OBJCOPY_FOR_TARGET=${GCC_PREFIX}gcc-objcopy \
+    OBJDUMP_FOR_TARGET=${GCC_PREFIX}gcc-objdump
 
 if [ $DEBUG -eq 1 ]
 then
