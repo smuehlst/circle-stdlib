@@ -39,7 +39,7 @@ NEWLIB_BUILD=1
 CLEAN=0
 TOOLPREFIX=arm-none-eabi-
 STDDEF_INCPATH=""
-STDLIB_SUPPORT=2
+STDLIB_SUPPORT=3
 
 NEWLIB_INSTALL_DIR="$TOPDIR/install"
 NEWLIB_BUILD_DIR="$TOPDIR/build/circle-newlib"
@@ -51,7 +51,7 @@ while true ; do
 	-d|--debug) DEBUG=1 ; shift;;
 	-h|--help) usage ; exit 0;;
 	# --no-circle-build) CIRCLE_BUILD=0 ; shift;;
-	-n|--no-cpp) STDLIB_SUPPORT=1 ; shift;;
+	-n|--no-cpp) STDLIB_SUPPORT=2 ; shift;;
 	# --no-newlib-build) NEWLIB_BUILD=0 ; shift;;
 	-p|--prefix) TOOLPREFIX="$2" ; shift 2;;
 	-r|--raspberrypi) RASPBERRYPI="$2" ; shift 2;;
