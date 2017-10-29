@@ -29,6 +29,7 @@
 #include <circle_glue.h>
 
 #include <string>
+#include <iostream>
 #include <fstream>
 #include <algorithm>
 #include <vector>
@@ -42,59 +43,79 @@ void cxx_test(void);
 
 }
 
-CKernel::CKernel(void) :
-		m_Screen(m_Options.GetWidth(), m_Options.GetHeight()), m_Timer(
-				&m_Interrupt), m_Logger(m_Options.GetLogLevel()), m_EMMC(
-				&m_Interrupt, &m_Timer, &m_ActLED) {
-	m_ActLED.Blink(5);	// show we are alive
+CKernel::CKernel (void)
+:	m_Screen (m_Options.GetWidth (), m_Options.GetHeight ()),
+	m_Timer (&m_Interrupt),
+	m_Logger (m_Options.GetLogLevel ()),
+	m_DWHCI (&m_Interrupt, &m_Timer),
+	m_EMMC (&m_Interrupt, &m_Timer, &m_ActLED),
+	m_Console (&m_Serial)
+{
+	m_ActLED.Blink (5);	// show we are alive
 }
 
-CKernel::~CKernel(void) {
+CKernel::~CKernel (void)
+{
 }
 
-boolean CKernel::Initialize(void) {
+boolean CKernel::Initialize (void)
+{
 	boolean bOK = TRUE;
 
-	if (bOK) {
-		bOK = m_Screen.Initialize();
+	if (bOK)
+	{
+		bOK = m_Interrupt.Initialize ();
 	}
 
-	if (bOK) {
-		bOK = m_Serial.Initialize(115200);
+	if (bOK)
+	{
+		bOK = m_Screen.Initialize ();
 	}
-
-	if (bOK) {
-		CDevice *pTarget = m_DeviceNameService.GetDevice(
-				m_Options.GetLogDevice(), FALSE);
-		if (pTarget == 0) {
+	
+	if (bOK)
+	{
+		bOK = m_Serial.Initialize (115200);
+	}
+	
+	if (bOK)
+	{
+		CDevice *pTarget = m_DeviceNameService.GetDevice (m_Options.GetLogDevice (), FALSE);
+		if (pTarget == 0)
+		{
 			pTarget = &m_Screen;
 		}
 
-		bOK = m_Logger.Initialize(pTarget);
+		bOK = m_Logger.Initialize (pTarget);
 	}
 
-	if (bOK) {
-		bOK = m_Interrupt.Initialize();
+	if (bOK)
+	{
+		bOK = m_Timer.Initialize ();
 	}
 
-	if (bOK) {
-		bOK = m_Timer.Initialize();
+	if (bOK)
+	{
+		bOK = m_EMMC.Initialize ();
 	}
 
-	if (bOK) {
-		bOK = m_EMMC.Initialize();
+	if (bOK)
+	{
+		bOK = m_DWHCI.Initialize ();
+	}
+
+	if (bOK)
+	{
+		bOK = m_Console.Initialize ();
 	}
 
 	return bOK;
 }
 
-TShutdownMode CKernel::Run(void) {
-	m_Logger.Write(FromKernel, LogNotice,
-			"Compile time: " __DATE__ " " __TIME__);
+TShutdownMode CKernel::Run (void)
+{
+	m_Logger.Write (FromKernel, LogNotice, "Compile time: " __DATE__ " " __TIME__);
 
-	m_Logger.Write(FromKernel, LogNotice, "");
-	m_Logger.Write(FromKernel, LogNotice, "C++ Standard Library Demo");
-	m_Logger.Write(FromKernel, LogNotice, "");
+	m_Logger.Write (FromKernel, LogNotice, "C++ Standard Library Demo");
 
 	char const partition[] = "emmc1-1";
 
@@ -110,10 +131,8 @@ TShutdownMode CKernel::Run(void) {
 				partition);
 	}
 
-	// Initialize newlib stdio with a reference to Circle's file system
-	CGlueStdioInit(m_FileSystem);
-
-	m_Logger.Write(FromKernel, LogNotice, "C++ Standard Library Test");
+	// Initialize newlib stdio with a reference to Circle's file system and to the console
+	CGlueStdioInit(m_FileSystem, m_Console);
 
 	cxx_test();
 
@@ -133,22 +152,26 @@ struct ooops: std::exception {
 };
 
 void barf(void) {
+	std::cerr << "Throwing exception..." << std::endl;
 	throw ooops();
 }
 
 void cxx_test(void) {
 	std::vector<std::string> const v = { "vector entry 1", "vector entry 2" };
 
+	std::cout << "Opening file via std::ofstream..." << std::endl;
 	std::ofstream ofs("test.txt", std::ofstream::out);
 	try {
 		barf();
 	} catch (std::exception& e) {
+		std::cerr << "Caught exception..." << std::endl;
 		ofs << "lorem ipsum" << std::endl;
 		std::string s(e.what());
 		ofs << s.c_str() << std::endl;
 	}
+	std::cout << "Use <algorithm>..." << std::endl;
 	for_each(v.begin(), v.end(),
-			[&](std::string const &s) {ofs << s.c_str() << std::endl;});
+			[&](std::string const &s) { ofs << s.c_str() << std::endl; });
 	ofs.close();
 }
 

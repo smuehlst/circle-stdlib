@@ -80,9 +80,7 @@ TShutdownMode CKernel::Run (void)
 {
 	m_Logger.Write (FromKernel, LogNotice, "Compile time: " __DATE__ " " __TIME__);
 
-	m_Logger.Write (FromKernel, LogNotice, "");
 	m_Logger.Write (FromKernel, LogNotice, "C Standard Library Demo");
-	m_Logger.Write (FromKernel, LogNotice, "");
 
 	m_Logger.Write (FromKernel, LogNotice, "Call printf() (expect -1)");
 	int const printfResult = printf ("Hello world\n");
@@ -137,6 +135,8 @@ TShutdownMode CKernel::Run (void)
 	{
 		m_Logger.Write (FromKernel, LogNotice, "\t%d", nArray[i]);
 	}
+
+	m_Logger.Write (FromKernel, LogNotice, "C Standard Library Demo finished");
 
 	return ShutdownHalt;
 }

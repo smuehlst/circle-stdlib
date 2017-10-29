@@ -37,7 +37,9 @@ CKernel::CKernel (void)
 :	m_Screen (m_Options.GetWidth (), m_Options.GetHeight ()),
 	m_Timer (&m_Interrupt),
 	m_Logger (m_Options.GetLogLevel ()),
-	m_EMMC (&m_Interrupt, &m_Timer, &m_ActLED)
+	m_DWHCI (&m_Interrupt, &m_Timer),
+	m_EMMC (&m_Interrupt, &m_Timer, &m_ActLED),
+	m_Console (&m_Serial)
 {
 	m_ActLED.Blink (5);	// show we are alive
 }
@@ -49,6 +51,11 @@ CKernel::~CKernel (void)
 boolean CKernel::Initialize (void)
 {
 	boolean bOK = TRUE;
+
+	if (bOK)
+	{
+		bOK = m_Interrupt.Initialize ();
+	}
 
 	if (bOK)
 	{
@@ -70,11 +77,6 @@ boolean CKernel::Initialize (void)
 
 		bOK = m_Logger.Initialize (pTarget);
 	}
-	
-	if (bOK)
-	{
-		bOK = m_Interrupt.Initialize ();
-	}
 
 	if (bOK)
 	{
@@ -86,6 +88,16 @@ boolean CKernel::Initialize (void)
 		bOK = m_EMMC.Initialize ();
 	}
 
+	if (bOK)
+	{
+		bOK = m_DWHCI.Initialize ();
+	}
+
+	if (bOK)
+	{
+		bOK = m_Console.Initialize ();
+	}
+
 	return bOK;
 }
 
@@ -93,9 +105,7 @@ TShutdownMode CKernel::Run (void)
 {
 	m_Logger.Write (FromKernel, LogNotice, "Compile time: " __DATE__ " " __TIME__);
 
-	m_Logger.Write (FromKernel, LogNotice, "");
 	m_Logger.Write (FromKernel, LogNotice, "C Standard Library stdio Demo");
-	m_Logger.Write (FromKernel, LogNotice, "");
 
 	char const partition[] = "emmc1-1";
 
@@ -113,8 +123,8 @@ TShutdownMode CKernel::Run (void)
 
 	m_Logger.Write (FromKernel, LogNotice, "stdio test...");
 
-	// Initialize newlib stdio with a reference to Circle's file system
-	CGlueStdioInit(m_FileSystem);
+	// Initialize newlib stdio with a reference to Circle's file system and to the console
+	CGlueStdioInit(m_FileSystem, m_Console);
 
 	char const stdio_filename[] = "stdio.txt";
 	FILE *fp = fopen(stdio_filename, "w");
@@ -147,6 +157,8 @@ TShutdownMode CKernel::Run (void)
 	}
 
 	m_FileSystem.UnMount ();
+
+	m_Logger.Write (FromKernel, LogNotice, "C Standard Library Demo finished");
 
 	return ShutdownHalt;
 }

@@ -2,9 +2,9 @@
 #define _circle_glue_h
 
 class CFATFileSystem;
-class CScreenDevice;
+class CConsole;
 
-void CGlueStdioInit(CFATFileSystem& rFATFileSystem);
+void CGlueStdioInit (CFATFileSystem& rFATFileSystem, CConsole& rConsole);
 
 class CGlueIO
 {
@@ -37,6 +37,9 @@ public:
 
     /**
      * Close file
+     *
+     * Returns: != 0	Success
+	 *	    0			Failure
      */
     virtual unsigned Close(void) = 0;
 };
@@ -44,8 +47,8 @@ public:
 class CGlueIoFatFs : public CGlueIO
 {
 public:
-	CGlueIoFatFs(CFATFileSystem& fatFileSystem, unsigned fileHandle) :
-		mFat(fatFileSystem), mFileHandle(fileHandle)
+	CGlueIoFatFs (CFATFileSystem& fatFileSystem, unsigned fileHandle) :
+		mFat (fatFileSystem), mFileHandle (fileHandle)
 		{}
 
 	unsigned Read (void *pBuffer, unsigned nCount)
@@ -66,6 +69,38 @@ public:
 private:
 	CFATFileSystem &mFat;
 	unsigned mFileHandle;
+};
+
+class CGlueConsole : public CGlueIO
+{
+public:
+	enum TConsoleMode {
+		ConsoleModeRead,
+		ConsoleModeWrite
+	};
+
+	CGlueConsole (CConsole& rConsole, TConsoleMode mode) :
+		mConsole (rConsole), mMode (mode)
+		{}
+
+	unsigned Read (void *pBuffer, unsigned nCount)
+	{
+		return mMode == ConsoleModeRead ? mConsole.Read (pBuffer, nCount) : 0;
+	}
+
+	unsigned Write (const void *pBuffer, unsigned nCount)
+	{
+		return mMode == ConsoleModeWrite ? mConsole.Write (pBuffer, nCount) : 0;
+	}
+
+	unsigned Close(void)
+	{
+		// TODO: Cannot close console file handle currently
+		return 0;
+	}
+private:
+	CConsole &mConsole;
+	TConsoleMode const mMode;
 };
 
 #endif

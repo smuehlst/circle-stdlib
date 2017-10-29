@@ -29,8 +29,10 @@
 #include <circle/interrupt.h>
 #include <circle/timer.h>
 #include <circle/logger.h>
+#include <circle/usb/dwhcidevice.h>
 #include <SDCard/emmc.h>
 #include <circle/fs/fat/fatfs.h>
+#include <circle/input/console.h>
 #include <circle/types.h>
 
 enum TShutdownMode
@@ -55,15 +57,18 @@ private:
 	CActLED				m_ActLED;
 	CKernelOptions		m_Options;
 	CDeviceNameService	m_DeviceNameService;
-	CScreenDevice		m_Screen;
-	CSerialDevice		m_Serial;
 	CExceptionHandler	m_ExceptionHandler;
 	CInterruptSystem	m_Interrupt;
+	CScreenDevice		m_Screen;
+	CSerialDevice		m_Serial;
+
 	CTimer				m_Timer;
 	CLogger				m_Logger;
+	CDWHCIDevice		m_DWHCI;
 
 	CEMMCDevice			m_EMMC;
 	CFATFileSystem		m_FileSystem;
+	CConsole			m_Console;
 };
 
 #endif
