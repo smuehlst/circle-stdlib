@@ -22,10 +22,6 @@
 #include <circle/debug.h>
 #include <assert.h>
 
-#include <stdio.h>
-#include <math.h>
-#include <stdlib.h>
-
 #include <circle_glue.h>
 
 #include <string>
@@ -173,6 +169,12 @@ void cxx_test(void) {
 	std::cout << "Use <algorithm>..." << std::endl;
 	for_each(v.begin(), v.end(),
 			[&](std::string const &s) { ofs << s.c_str() << std::endl; });
+
+	std::cout << "Type some characters and hit <RETURN>" << std::endl;
+	std::string line;
+	std::getline (std::cin, line);
+	std::cout << "Read '" << line << "' from std::cin..." << std::endl;
+
 	ofs.close();
 }
 
