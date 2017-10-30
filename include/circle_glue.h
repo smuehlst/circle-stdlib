@@ -1,8 +1,8 @@
 #ifndef _circle_glue_h
 #define _circle_glue_h
 
-class CFATFileSystem;
-class CConsole;
+#include <circle/fs/fat/fatfs.h>
+#include <circle/input/console.h>
 
 void CGlueStdioInit (CFATFileSystem& rFATFileSystem, CConsole& rConsole);
 
@@ -85,7 +85,15 @@ public:
 
 	unsigned Read (void *pBuffer, unsigned nCount)
 	{
-		return mMode == ConsoleModeRead ? mConsole.Read (pBuffer, nCount) : 0;
+		int nResult = 0;
+
+		if (mMode == ConsoleModeRead) {
+			while ((nResult = mConsole.Read (pBuffer, nCount)) == 0) {
+				// TODO: Give up CPU (yield)
+			}
+		}
+
+		return static_cast<unsigned>(nResult);
 	}
 
 	unsigned Write (const void *pBuffer, unsigned nCount)
