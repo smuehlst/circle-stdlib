@@ -11,6 +11,7 @@ function usage() {
     echo "  -d, --debug                    build with debug information, without optimizer"
     echo "  -h, --help                     show usage message"
     echo "  -n, --no-cpp                   do not support C++ standard library"
+    echo "  --no-parallel-build            don't do parallel build"
     echo "  -p <string>, --prefix <string> prefix of the toolchain commands (default: arm-none-eabi-)"
     echo "  -r <number>, --raspberrypi <number>"
     echo "                                 Circle Raspberry Pi model number (1, 2, 3, default: 1)"
@@ -23,7 +24,7 @@ function usage() {
 cd "${BASH_SOURCE%/*}" || exit 1
 TOPDIR="$PWD"
 
-TEMP=$(getopt -o cdhnp:r:s: --long clean,debug,help,no-circle-build,no-cpp,no-newlib-build,prefix:,raspberrypi:,script-debug,stddefpath: \
+TEMP=$(getopt -o cdhnp:r:s: --long clean,debug,help,no-circle-build,no-cpp,no-parallel-build,prefix:,raspberrypi:,script-debug,stddefpath: \
      -n 'build.bash' -- "$@")
 
 if [ $? != 0 ] ; then echo usage; exit 1 ; fi
@@ -40,6 +41,7 @@ CLEAN=0
 TOOLPREFIX=arm-none-eabi-
 STDDEF_INCPATH=""
 STDLIB_SUPPORT=3
+PARALLEL="-j"
 
 NEWLIB_INSTALL_DIR="$TOPDIR/install"
 NEWLIB_BUILD_DIR="$TOPDIR/build/circle-newlib"
@@ -50,9 +52,8 @@ while true ; do
 	-c|--clean) CLEAN=1 ; shift;;
 	-d|--debug) DEBUG=1 ; shift;;
 	-h|--help) usage ; exit 0;;
-	# --no-circle-build) CIRCLE_BUILD=0 ; shift;;
 	-n|--no-cpp) STDLIB_SUPPORT=2 ; shift;;
-	# --no-newlib-build) NEWLIB_BUILD=0 ; shift;;
+	--no-parallel-build) PARALLEL= ; shift;;
 	-p|--prefix) TOOLPREFIX="$2" ; shift 2;;
 	-r|--raspberrypi) RASPBERRYPI="$2" ; shift 2;;
 	--script-debug) set -x ; shift;;
@@ -80,10 +81,10 @@ if [ $CLEAN -eq 1 ]
 then
     echo "Cleaning ..."
     (
-	cd libs/circle && ./makeall --nosample clean
+	cd libs/circle && bash -x ./makeall --nosample PREFIX=$TOOLPREFIX clean
     )
     (
-	cd libs/circle/addon/SDCard && make clean
+	cd libs/circle/addon/SDCard && make PREFIX=$TOOLPREFIX clean
     )
     (
 	cd "$NEWLIB_BUILD_DIR" && make -i clean
@@ -179,7 +180,7 @@ export CFLAGS_FOR_TARGET
 )
 
 (
-    cd libs/circle && ./makeall --nosample -j
+    cd libs/circle && ./makeall --nosample $PARALLEL
 )
 
 (
@@ -188,7 +189,7 @@ export CFLAGS_FOR_TARGET
 )
 
 (
-    cd "$NEWLIB_BUILD_DIR" && make -j && make install
+    cd "$NEWLIB_BUILD_DIR" && make $PARALLEL && make install
 )
 
 exit 0
