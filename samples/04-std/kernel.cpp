@@ -27,6 +27,7 @@
 #include <algorithm>
 #include <vector>
 #include <exception>
+#include <memory>
 
 namespace {
 
@@ -171,6 +172,36 @@ void cxx_test(void) {
 	std::string line;
 	std::getline (std::cin, line);
 	std::cout << "Read '" << line << "' from std::cin..." << std::endl;
+
+	// Test out-of-memory condition
+	try
+	{
+	        struct a {
+	                ~a() { std::cout << "~a::a() called" << std::endl; }
+	        } a;
+#if 0
+	        // TODO: This test sends the program into an endless loop in the second new
+	        std::vector<std::unique_ptr<int>> ptrs;
+	        while (true)
+                {
+                        // provoke out-of-memory error, destructors of "a" and of the vector must be called
+                        std::cout << "Allocating large array of ints" << std::endl;
+                        ptrs.emplace_back (new int[100000000U]);
+                        std::cout << "Allocated pointer 0x" << std::hex << ptrs.back ().get () << std::endl;
+                }
+#endif
+                while (true)
+                {
+                        // provoke out-of-memory error, destructor of "a" must be called
+                        std::cout << "Allocating large array of ints" << std::endl;
+                        int * const p = new int[100000000U];
+                        std::cout << "Allocated pointer 0x" << std::hex << p << std::endl;
+                }
+	}
+	catch (std::bad_alloc &ba)
+	{
+                std::cerr << "bad_alloc caught: " << ba.what() << std::endl;
+	}
 
 	ofs.close();
 }

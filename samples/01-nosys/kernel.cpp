@@ -125,12 +125,12 @@ TShutdownMode CKernel::Run (void)
 
 	// Sort unsorted array with qsort
 	int nArray[] = { 77, 33, 1, -20, 1000 };
-	size_t const nArraySize = sizeof(nArray) / sizeof(nArray[0]);
-	qsort(nArray, nArraySize, sizeof(nArray[0]), nCmpIntFn);
+	constexpr size_t nArraySize = sizeof(nArray) / sizeof(nArray[0]);
+	qsort(nArray, nArraySize, sizeof (nArray[0]), nCmpIntFn);
 	m_Logger.Write (FromKernel, LogNotice, "Array sorted with qsort():");
-	for (unsigned i = 0; i < nArraySize; i += 1)
+	for (auto const &i: nArray)
 	{
-		m_Logger.Write (FromKernel, LogNotice, "\t%d", nArray[i]);
+		m_Logger.Write (FromKernel, LogNotice, "\t%d", i);
 	}
 
 	m_Logger.Write (FromKernel, LogNotice, "C Standard Library Demo finished");
