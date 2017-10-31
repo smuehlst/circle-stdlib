@@ -3,45 +3,47 @@
 
 #include <circle/fs/fat/fatfs.h>
 #include <circle/input/console.h>
+#include <circle/sched/scheduler.h>
 
 void CGlueStdioInit (CFATFileSystem& rFATFileSystem, CConsole& rConsole);
 
 class CGlueIO
 {
 public:
+        static constexpr unsigned GeneralFailure = ~0U;
 
-    virtual ~CGlueIO () {}
+        virtual ~CGlueIO () {}
 
-    /**
-     * Read from file sequentially
-     *
-     * Params:  hFile	File handle
-     *	    pBuffer	Buffer to copy data to
-     *	    ulCount	Number of bytes to read
-     * Returns: != 0	Number of bytes read
-     *	    0		End of file
-     *	    0xFFFFFFFF	General failure
-     */
-    virtual unsigned Read (void *pBuffer, unsigned nCount) = 0;
+        /**
+         * Read from file sequentially
+         *
+         * Params:  hFile	File handle
+         *	    pBuffer	Buffer to copy data to
+         *	    ulCount	Number of bytes to read
+         * Returns: != 0	Number of bytes read
+         *	    0		End of file
+         *	    0xFFFFFFFF	General failure
+         */
+        virtual unsigned Read (void *pBuffer, unsigned nCount) = 0;
 
-    /**
-     * Write to file sequentially
-     *
-     * Params:  hFile	File handle
-     *	    pBuffer	Buffer to copy data from
-     *	    nCount	Number of bytes to write
-     * Returns: != 0	Number of bytes written
-     *	    0xFFFFFFFF	General failure
-     */
-    virtual unsigned Write (const void *pBuffer, unsigned nCount) = 0;
+        /**
+         * Write to file sequentially
+         *
+         * Params:  hFile	File handle
+         *	    pBuffer	Buffer to copy data from
+         *	    nCount	Number of bytes to write
+         * Returns: != 0	Number of bytes written
+         *	    0xFFFFFFFF	General failure
+         */
+        virtual unsigned Write (const void *pBuffer, unsigned nCount) = 0;
 
-    /**
-     * Close file
-     *
-     * Returns: != 0	Success
-	 *	    0			Failure
-     */
-    virtual unsigned Close(void) = 0;
+        /**
+         * Close file
+         *
+         * Returns: != 0	Success
+         *      0		Failure
+         */
+        virtual unsigned Close(void) = 0;
 };
 
 class CGlueIoFatFs : public CGlueIO
@@ -74,7 +76,8 @@ private:
 class CGlueConsole : public CGlueIO
 {
 public:
-	enum TConsoleMode {
+	enum TConsoleMode
+	{
 		ConsoleModeRead,
 		ConsoleModeWrite
 	};
@@ -87,18 +90,27 @@ public:
 	{
 		int nResult = 0;
 
-		if (mMode == ConsoleModeRead) {
-			while ((nResult = mConsole.Read (pBuffer, nCount)) == 0) {
-				// TODO: Give up CPU (yield)
+		if (mMode == ConsoleModeRead)
+                {
+                        bool const schedulerActive = CScheduler::IsActive ();
+                        CScheduler * const scheduler = schedulerActive ? CScheduler::Get () : nullptr;
+			while ((nResult = mConsole.Read (pBuffer, nCount)) == 0)
+                        {
+                                if (schedulerActive)
+                                {
+                                        scheduler->Yield ();
+                                }
 			}
 		}
 
-		return static_cast<unsigned>(nResult);
+		return nResult < 0 ? GeneralFailure : static_cast<unsigned>(nResult);
 	}
 
 	unsigned Write (const void *pBuffer, unsigned nCount)
 	{
-		return mMode == ConsoleModeWrite ? mConsole.Write (pBuffer, nCount) : 0;
+	        int const nResult = mMode == ConsoleModeWrite ? mConsole.Write (pBuffer, nCount) : -1;
+
+	        return nResult < 0 ? GeneralFailure : static_cast<unsigned>(nResult);
 	}
 
 	unsigned Close(void)
@@ -106,6 +118,7 @@ public:
 		// TODO: Cannot close console file handle currently
 		return 0;
 	}
+
 private:
 	CConsole &mConsole;
 	TConsoleMode const mMode;
