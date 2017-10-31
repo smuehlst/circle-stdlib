@@ -2,4 +2,4 @@ README
 
 This program demonstrates the use of some standard C library functions in a Circle application.
 
-stdio is not yet implemented, so printf() is expected to return -1.
+stdio is not initialized with CGlueStdioInit(), so printf() is expected to return -1.

@@ -1,9 +1,6 @@
 //
 // kernel.cpp
 //
-// Circle - A C++ bare metal environment for Raspberry Pi
-// Copyright (C) 2014  R. Stange <rsta2@o2online.de>
-// 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
@@ -117,25 +114,25 @@ TShutdownMode CKernel::Run (void)
 	char const partition[] = "emmc1-1";
 
 	// Mount file system
-	CDevice * const pPartition = m_DeviceNameService.GetDevice(partition, TRUE);
+	CDevice * const pPartition = m_DeviceNameService.GetDevice (partition, TRUE);
 	if (pPartition == 0) {
-		m_Logger.Write(FromKernel, LogPanic, "Partition not found: %s",
+		m_Logger.Write (FromKernel, LogPanic, "Partition not found: %s",
 				partition);
 	}
 
-	if (!m_FileSystem.Mount(pPartition)) {
-		m_Logger.Write(FromKernel, LogPanic, "Cannot mount partition: %s",
+	if (!m_FileSystem.Mount (pPartition)) {
+		m_Logger.Write (FromKernel, LogPanic, "Cannot mount partition: %s",
 				partition);
 	}
 
 	// Initialize newlib stdio with a reference to Circle's file system and to the console
-	CGlueStdioInit(m_FileSystem, m_Console);
+	CGlueStdioInit (m_FileSystem, m_Console);
 
 	cxx_test();
 
-	m_Logger.Write(FromKernel, LogNotice, "C++ Standard Library Test finished");
+	m_Logger.Write (FromKernel, LogNotice, "C++ Standard Library Test finished");
 
-	m_FileSystem.UnMount();
+	m_FileSystem.UnMount ();
 
 	return ShutdownHalt;
 }
