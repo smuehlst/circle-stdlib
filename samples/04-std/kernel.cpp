@@ -39,12 +39,11 @@ void cxx_test(void);
 
 CKernel::CKernel (void)
 :	m_Screen (m_Options.GetWidth (), m_Options.GetHeight ()),
-	m_Serial (&m_Interrupt, TRUE),
 	m_Timer (&m_Interrupt),
 	m_Logger (m_Options.GetLogLevel ()),
 	m_DWHCI (&m_Interrupt, &m_Timer),
 	m_EMMC (&m_Interrupt, &m_Timer, &m_ActLED),
-	m_Console (&m_Serial)
+	m_Console (&m_Screen)
 {
 	m_ActLED.Blink (5);	// show we are alive
 }
