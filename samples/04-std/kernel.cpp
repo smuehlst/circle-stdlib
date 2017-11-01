@@ -186,7 +186,7 @@ void cxx_test(void) {
                         // provoke out-of-memory error, destructors of "a" and of the vector must be called
                         std::cout << "Allocating large array of ints" << std::endl;
                         ptrs.emplace_back (new int[100000000U]);
-                        std::cout << "Allocated pointer 0x" << std::hex << ptrs.back ().get () << std::endl;
+                        std::cout << "Allocated pointer " << std::hex << ptrs.back ().get () << std::endl;
                 }
 #endif
                 while (true)
@@ -194,7 +194,7 @@ void cxx_test(void) {
                         // provoke out-of-memory error, destructor of "a" must be called
                         std::cout << "Allocating large array of ints" << std::endl;
                         int * const p = new int[100000000U];
-                        std::cout << "Allocated pointer 0x" << std::hex << p << std::endl;
+                        std::cout << "Allocated pointer " << std::hex << p << std::endl;
                 }
 	}
 	catch (std::bad_alloc &ba)
