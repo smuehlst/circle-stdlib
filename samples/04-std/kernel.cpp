@@ -150,6 +150,23 @@ void barf(void) {
 	throw ooops();
 }
 
+struct a {
+        static unsigned long counter;
+        a() { counter += 1; }
+        ~a()
+        {
+                assert(counter > 0);
+                counter -= 1;
+                if (counter == 0)
+                {
+                        std::cout << "all 'struct a' instances cleaned up..." << std::endl;
+                }
+        }
+        int filler[5];
+};
+
+unsigned long a::counter = 0;
+
 void cxx_test(void) {
 	std::vector<std::string> const v = { "vector entry 1", "vector entry 2" };
 
@@ -175,26 +192,15 @@ void cxx_test(void) {
 	// Test out-of-memory condition
 	try
 	{
-	        struct a {
-	                ~a() { std::cout << "~a::a() called" << std::endl; }
-	        } a;
-#if 0
-	        // TODO: This test sends the program into an endless loop in the second new
-	        std::vector<std::unique_ptr<int>> ptrs;
+	        std::cout << "size of a: " << sizeof (a) << std::endl;
+
+	        std::vector<std::unique_ptr<a>> ptrs;
 	        while (true)
                 {
                         // provoke out-of-memory error, destructors of "a" and of the vector must be called
-                        std::cout << "Allocating large array of ints" << std::endl;
-                        ptrs.emplace_back (new int[100000000U]);
+                        std::cout << "Allocating large array of 'a' instances" << std::endl;
+                        ptrs.emplace_back (new a[10000000U]);
                         std::cout << "Allocated pointer " << std::hex << ptrs.back ().get () << std::endl;
-                }
-#endif
-                while (true)
-                {
-                        // provoke out-of-memory error, destructor of "a" must be called
-                        std::cout << "Allocating large array of ints" << std::endl;
-                        int * const p = new int[100000000U];
-                        std::cout << "Allocated pointer " << std::hex << p << std::endl;
                 }
 	}
 	catch (std::bad_alloc &ba)
