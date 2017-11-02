@@ -2,7 +2,7 @@
 
 ## Overview
 
-The goal of this project is to provide C and C++ standard library supprt for the
+The goal of this project is to provide C and C++ standard library support for the
 Raspberry Pi bare metal environment [Circle](https://github.com/rsta2/circle).
 
 [Newlib](https://sourceware.org/newlib/) is used as the standard C library. The fork
