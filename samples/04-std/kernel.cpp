@@ -194,7 +194,7 @@ void cxx_test(void) {
 	{
 	        std::cout << "size of a: " << sizeof (a) << std::endl;
 
-	        std::vector<std::unique_ptr<a>> ptrs;
+	        std::vector<std::unique_ptr<a[]>> ptrs;
 	        while (true)
                 {
                         // provoke out-of-memory error, destructors of "a" and of the vector must be called
