@@ -1,5 +1,5 @@
 //
-// main.c
+// main.cpp
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -28,15 +28,17 @@ int main (void)
 		return EXIT_HALT;
 	}
 	
-	TShutdownMode ShutdownMode = Kernel.Run ();
+	CStdlibApp::TShutdownMode ShutdownMode = Kernel.Run ();
+
+	Kernel.Cleanup ();
 
 	switch (ShutdownMode)
 	{
-	case ShutdownReboot:
+	case CStdlibApp::ShutdownReboot:
 		reboot ();
 		return EXIT_REBOOT;
 
-	case ShutdownHalt:
+	case CStdlibApp::ShutdownHalt:
 	default:
 		halt ();
 		return EXIT_HALT;

@@ -17,43 +17,18 @@
 #ifndef _kernel_h
 #define _kernel_h
 
-#include <circle/actled.h>
-#include <circle/koptions.h>
-#include <circle/devicenameservice.h>
-#include <circle/screen.h>
-#include <circle/serial.h>
-#include <circle/logger.h>
-#include <circle/types.h>
-#include <circle/exceptionhandler.h>
+#include <circle_stdlib_app.h>
 #include <setjmp.h>
 
-enum TShutdownMode
-{
-	ShutdownNone,
-	ShutdownHalt,
-	ShutdownReboot
-};
-
-class CKernel
+class CKernel : public CStdlibApp
 {
 public:
 	CKernel (void);
-	~CKernel (void);
-
-	boolean Initialize (void);
 
 	TShutdownMode Run (void);
 
 private:
-	// do not change this order
-	CActLED				m_ActLED;
-	CKernelOptions		m_Options;
-	CDeviceNameService	m_DeviceNameService;
-	CExceptionHandler       m_ExceptionHandler;
-	CScreenDevice		m_Screen;
-	CSerialDevice		m_Serial;
-	CLogger				m_Logger;
-	jmp_buf				m_JumpBuf;
+	jmp_buf m_JumpBuf;
 
 	void DoLongJmp (void);
 };

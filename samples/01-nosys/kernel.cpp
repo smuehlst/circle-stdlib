@@ -15,83 +15,40 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 #include "kernel.h"
-#include <circle/string.h>
-#include <circle/debug.h>
-#include <assert.h>
 
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
 #include <errno.h>
 
-namespace
-{
-	char const FromKernel[] = "kernel";
-}
-
 CKernel::CKernel (void)
-:	m_Screen (m_Options.GetWidth (), m_Options.GetHeight ()),
-	m_Logger (m_Options.GetLogLevel ())
+:	CStdlibApp (AppTypeScreen)
 {
-	m_ActLED.Blink (5);	// show we are alive
-}
-
-CKernel::~CKernel (void)
-{
-}
-
-boolean CKernel::Initialize (void)
-{
-	boolean bOK = TRUE;
-
-	if (bOK)
-	{
-		bOK = m_Screen.Initialize ();
-	}
-	
-	if (bOK)
-	{
-		bOK = m_Serial.Initialize (115200);
-	}
-	
-	if (bOK)
-	{
-		CDevice *pTarget = m_DeviceNameService.GetDevice (m_Options.GetLogDevice (), FALSE);
-		if (pTarget == 0)
-		{
-			pTarget = &m_Screen;
-		}
-
-		bOK = m_Logger.Initialize (pTarget);
-	}
-	
-	return bOK;
+	mActLED.Blink (5);	// show we are alive
 }
 
 void CKernel::DoLongJmp (void)
 {
-	m_Logger.Write (FromKernel, LogNotice, "Doing longmp...");
+	mpLogger->Write (FromKernel, LogNotice, "Doing longmp...");
 	longjmp(m_JumpBuf, 42);
 }
 
-TShutdownMode CKernel::Run (void)
+CStdlibApp::TShutdownMode CKernel::Run (void)
 {
-	m_Logger.Write (FromKernel, LogNotice, "Compile time: " __DATE__ " " __TIME__);
+	mpLogger->Write (FromKernel, LogNotice, "C Standard Library Demo");
 
-	m_Logger.Write (FromKernel, LogNotice, "C Standard Library Demo");
-
-	m_Logger.Write (FromKernel, LogNotice, "Call printf () (expect -1)");
+	mpLogger->Write (FromKernel, LogNotice, "Call printf () (expect result -1)");
 	int const printfResult = printf ("Hello world\n");
-	m_Logger.Write (FromKernel, LogNotice, "printf result %d", printfResult);
+	mpLogger->Write (FromKernel, LogNotice, "printf result %d", printfResult);
 
-	m_Logger.Write (FromKernel, LogNotice, "Call sin (1)");
+	mpLogger->Write (FromKernel, LogNotice, "Call sin (1)");
 	double const f = sin (1);
-	m_Logger.Write (FromKernel, LogNotice, "sin (1) %f", f);
+	mpLogger->Write (FromKernel, LogNotice, "sin (1) %f", f);
 
-	m_Logger.Write (FromKernel, LogNotice, "Call acos (22), expect NaN with errno EDOM=%d", EDOM);
+	mpLogger->Write (FromKernel, LogNotice, "Call acos (22), expect NaN with errno EDOM=%d", EDOM);
 	double const g = acos (22);
 	assert (isnan(g));
-        m_Logger.Write (FromKernel, LogNotice, "acos (22): isnan () is true, errno=%d", errno);
+	mpLogger->Write (FromKernel, LogNotice, "acos (22): isnan () is true, errno=%d", errno);
 
 	// Search element in sorted array
 	int const nSortedArray[] = { -10, -1, 0, 1, 2, 3, 4, 5, 6 };
@@ -110,18 +67,18 @@ TShutdownMode CKernel::Run (void)
 
 	if (nElement)
 	{
-		m_Logger.Write (FromKernel, LogNotice, "Found Element %d at distance %u", nKey,
+		mpLogger->Write (FromKernel, LogNotice, "Found Element %d at distance %u", nKey,
 				static_cast<unsigned int>(nElement - nSortedArray));
 	}
 	else
 	{
-		m_Logger.Write (FromKernel, LogNotice, "Element %d not found", nKey);
+		mpLogger->Write (FromKernel, LogNotice, "Element %d not found", nKey);
 	}
 
 	auto const nRetVal = setjmp (m_JumpBuf);
 	if (nRetVal)
 	{
-		m_Logger.Write (FromKernel, LogNotice, "Value %d returned from subroutine by setjmp", nRetVal);
+		mpLogger->Write (FromKernel, LogNotice, "Value %d returned from subroutine by setjmp", nRetVal);
 	}
 	else
 	{
@@ -132,13 +89,13 @@ TShutdownMode CKernel::Run (void)
 	int nArray[] = { 77, 33, 1, -20, 1000 };
 	constexpr size_t nArraySize = sizeof(nArray) / sizeof(nArray[0]);
 	qsort(nArray, nArraySize, sizeof (nArray[0]), nCmpIntFn);
-	m_Logger.Write (FromKernel, LogNotice, "Array sorted with qsort():");
+	mpLogger->Write (FromKernel, LogNotice, "Array sorted with qsort():");
 	for (auto const &i: nArray)
 	{
-		m_Logger.Write (FromKernel, LogNotice, "\t%d", i);
+		mpLogger->Write (FromKernel, LogNotice, "\t%d", i);
 	}
 
-	m_Logger.Write (FromKernel, LogNotice, "C Standard Library Demo finished");
+	mpLogger->Write (FromKernel, LogNotice, "C Standard Library Demo finished");
 
 	return ShutdownHalt;
 }

@@ -15,11 +15,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 #include "kernel.h"
-#include <circle/string.h>
-#include <circle/debug.h>
-#include <assert.h>
-
-#include <circle_glue.h>
 
 #include <string>
 #include <iostream>
@@ -28,111 +23,27 @@
 #include <vector>
 #include <exception>
 #include <memory>
+#include <cassert>
 
 namespace {
-
-char const FromKernel[] = "kernel";
 
 void cxx_test(void);
 
 }
 
 CKernel::CKernel (void)
-:	m_Screen (m_Options.GetWidth (), m_Options.GetHeight ()),
-	m_Timer (&m_Interrupt),
-	m_Logger (m_Options.GetLogLevel ()),
-	m_DWHCI (&m_Interrupt, &m_Timer),
-	m_EMMC (&m_Interrupt, &m_Timer, &m_ActLED),
-	m_Console (&m_Screen)
+:	CStdlibApp (AppTypeStdio)
 {
-	m_ActLED.Blink (5);	// show we are alive
+	mActLED.Blink (5);	// show we are alive
 }
 
-CKernel::~CKernel (void)
+CStdlibApp::TShutdownMode CKernel::Run (void)
 {
-}
-
-boolean CKernel::Initialize (void)
-{
-	boolean bOK = TRUE;
-
-	if (bOK)
-	{
-		bOK = m_Interrupt.Initialize ();
-	}
-
-	if (bOK)
-	{
-		bOK = m_Screen.Initialize ();
-	}
-	
-	if (bOK)
-	{
-		bOK = m_Serial.Initialize (115200);
-	}
-	
-	if (bOK)
-	{
-		CDevice *pTarget = m_DeviceNameService.GetDevice (m_Options.GetLogDevice (), FALSE);
-		if (pTarget == 0)
-		{
-			pTarget = &m_Screen;
-		}
-
-		bOK = m_Logger.Initialize (pTarget);
-	}
-
-	if (bOK)
-	{
-		bOK = m_Timer.Initialize ();
-	}
-
-	if (bOK)
-	{
-		bOK = m_EMMC.Initialize ();
-	}
-
-	if (bOK)
-	{
-		bOK = m_DWHCI.Initialize ();
-	}
-
-	if (bOK)
-	{
-		bOK = m_Console.Initialize ();
-	}
-
-	return bOK;
-}
-
-TShutdownMode CKernel::Run (void)
-{
-	m_Logger.Write (FromKernel, LogNotice, "Compile time: " __DATE__ " " __TIME__);
-
-	m_Logger.Write (FromKernel, LogNotice, "C++ Standard Library Demo");
-
-	char const partition[] = "emmc1-1";
-
-	// Mount file system
-	CDevice * const pPartition = m_DeviceNameService.GetDevice (partition, TRUE);
-	if (pPartition == 0) {
-		m_Logger.Write (FromKernel, LogPanic, "Partition not found: %s",
-				partition);
-	}
-
-	if (!m_FileSystem.Mount (pPartition)) {
-		m_Logger.Write (FromKernel, LogPanic, "Cannot mount partition: %s",
-				partition);
-	}
-
-	// Initialize newlib stdio with a reference to Circle's file system and to the console
-	CGlueStdioInit (m_FileSystem, m_Console);
+	mpLogger->Write (FromKernel, LogNotice, "C++ Standard Library Demo");
 
 	cxx_test();
 
-	m_Logger.Write (FromKernel, LogNotice, "C++ Standard Library Test finished");
-
-	m_FileSystem.UnMount ();
+	mpLogger->Write (FromKernel, LogNotice, "C++ Standard Library Test finished");
 
 	return ShutdownHalt;
 }
