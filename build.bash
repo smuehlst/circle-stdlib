@@ -15,6 +15,7 @@ function usage() {
     echo "  -p <string>, --prefix <string> prefix of the toolchain commands (default: arm-none-eabi-)"
     echo "  -r <number>, --raspberrypi <number>"
     echo "                                 Circle Raspberry Pi model number (1, 2, 3, default: 1)"
+    echo "  --softfp                       use float ABI setting \"softfp\" instead of \"hard\""
     echo "  -s <path>, --stddefpath <path>"
     echo "                                 path where stddef.h header is located (only necessary"
     echo "                                 if  script cannot determine it automatically)"
@@ -24,7 +25,7 @@ function usage() {
 cd "${BASH_SOURCE%/*}" || exit 1
 TOPDIR="$PWD"
 
-TEMP=$(getopt -o cdhnp:r:s: --long clean,debug,help,no-circle-build,no-cpp,no-parallel-build,prefix:,raspberrypi:,script-debug,stddefpath: \
+TEMP=$(getopt -o cdhnp:r:s: --long clean,debug,help,no-circle-build,no-cpp,no-parallel-build,prefix:,raspberrypi:,script-debug,softfp,stddefpath: \
      -n 'build.bash' -- "$@")
 
 if [ $? != 0 ] ; then echo usage; exit 1 ; fi
@@ -42,6 +43,7 @@ TOOLPREFIX=arm-none-eabi-
 STDDEF_INCPATH=""
 STDLIB_SUPPORT=3
 PARALLEL="-j"
+FLOAT_ABI=hard
 
 NEWLIB_INSTALL_DIR="$TOPDIR/install"
 NEWLIB_BUILD_DIR="$TOPDIR/build/circle-newlib"
@@ -57,6 +59,7 @@ while true ; do
 	-p|--prefix) TOOLPREFIX="$2" ; shift 2;;
 	-r|--raspberrypi) RASPBERRYPI="$2" ; shift 2;;
 	--script-debug) set -x ; shift;;
+	--softfp) FLOAT_ABI=softfp ; shift;;
 	-s|--stddefpath) STDDEF_INCPATH="$2" ; shift 2;;
 	--) shift ; break ;;
 	*) echo "Internal error!" ; exit 1;;
@@ -66,6 +69,7 @@ done
 echo "RASPBERRYPI=$RASPBERRYPI"
 echo "TOOLPREFIX=$TOOLPREFIX"
 echo "CIRCLE_BUILD=$CIRCLE_BUILD"
+echo "FLOAT_ABI=$FLOAT_ABI"
 echo "NEWLIB_BUILD=$NEWLIB_BUILD"
 echo "RASPBERRYPI=$RASPBERRYPI"
 echo "STDLIB_SUPPORT=$STDLIB_SUPPORT"
@@ -140,6 +144,7 @@ fi
 (
     echo "RASPPI = $RASPBERRYPI"
     echo "PREFIX = $TOOLPREFIX"
+    echo "FLOAT_ABI = $FLOAT_ABI"
     echo "STDLIB_SUPPORT = $STDLIB_SUPPORT"
     echo "STDDEF_INCPATH = \"$STDDEF_INCPATH\""
     if [ $DEBUG -eq 1 ]
@@ -149,8 +154,8 @@ fi
 ) > libs/circle/Config.mk
 
 # Retrieve the resulting compiler flags from Cicle's top-level Makefile rules
-ARCH=$(make -n -p -f libs/circle/Rules.mk CIRCLEHOME=libs/circle | grep ^ARCH)
-ARCH=${ARCH#ARCH = }
+ARCH=$(make -n -p -f libs/circle/Rules.mk CIRCLEHOME=libs/circle | grep ^ARCH | \
+    sed -e "s/\$(FLOAT_ABI)/$FLOAT_ABI/" -e 's/ARCH = //')
 
 GCC_PREFIX=$TOOLPREFIX
 export \

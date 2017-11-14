@@ -39,10 +39,11 @@ Options:
   -d, --debug                    build with debug information, without optimizer
   -h, --help                     show usage message
   -n, --no-cpp                   do not support C++ standard library
-  --no-parallel-build            don't build in parallel
+  --no-parallel-build            don't do parallel build
   -p <string>, --prefix <string> prefix of the toolchain commands (default: arm-none-eabi-)
   -r <number>, --raspberrypi <number>
                                  Circle Raspberry Pi model number (1, 2, 3, default: 1)
+  --softfp                       use float ABI setting "softfp" instead of "hard"
   -s <path>, --stddefpath <path>
                                  path where stddef.h header is located (only necessary
                                  if  script cannot determine it automatically)
@@ -58,8 +59,7 @@ make
 ## Current State
 
 v3.0:
-* Implemented stdin/stdout/stderr based on Circle's [CConsole](libs/circle/lib/input/console.cpp)
-class.
+* Implemented stdin/stdout/stderr based on Circle's CConsole class.
 * A build of circle-stdlib with ARM gcc toolchains that include Newlib out-of-the-box now provides
 support for C and C++ standard libraries. This is due to the fact that the Newlib provided by the toolchain
 is replaced by circle-stdlib's Newlib build, and the toolchain's standard C++ library works with the
