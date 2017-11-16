@@ -85,8 +85,11 @@ TShutdownMode CKernel::Run (void)
 
 	m_Logger.Write (FromKernel, LogNotice, "Call sin()");
 	double const f = sin (1);
-
 	m_Logger.Write (FromKernel, LogNotice, "sin(1) %f", f);
+
+	m_Logger.Write (FromKernel, LogNotice, "Call acos()");
+	double const g = acos (22);
+	m_Logger.Write (FromKernel, LogNotice, "acos(22) %f", f);
 
 	// Search element in sorted array
 	int const nSortedArray[] = { -10, -1, 0, 1, 2, 3, 4, 5, 6 };
