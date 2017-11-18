@@ -62,7 +62,7 @@ make
 
 v3.0:
 
-* Synced with Circle Step 33.
+* Synced with [Circle Step 33](https://github.com/rsta2/circle/releases/tag/Step33).
 * Implemented stdin/stdout/stderr based on Circle's CConsole class.
 * A build of circle-stdlib with ARM gcc toolchains that include Newlib out-of-the-box now provides
 support for C and C++ standard libraries. This is due to the fact that the Newlib provided by the toolchain
