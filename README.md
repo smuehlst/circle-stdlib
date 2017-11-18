@@ -15,8 +15,8 @@ building Newlib in combination with Circle.
 
 * Linux or Windows 10 Subsystem for Linux (WSL).
 * gcc ARM toolchain on the path. Successfully tested with:
-** `gcc version 6.3.1 20170215 (release) [ARM/embedded-6-branch revision 245512] (GNU Tools for ARM Embedded Processors 6-2017-q1-update)` (gcc-arm-none-eabi-6-2017-q1-update-linux.tar.bz2 from https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads)
-** `gcc version 7.1.1 20170510 (Linaro GCC 7.1-2017.05)` (gcc-linaro-7.1.1-2017.05-x86_64_arm-eabi.tar.xz from https://releases.linaro.org/components/toolchain/binaries/7.1-2017.05/arm-linux-gnueabihf) 
+  * `gcc version 6.3.1 20170215 (release) [ARM/embedded-6-branch revision 245512] (GNU Tools for ARM Embedded Processors 6-2017-q1-update)` (gcc-arm-none-eabi-6-2017-q1-update-linux.tar.bz2 from https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads)
+  * `gcc version 7.1.1 20170510 (Linaro GCC 7.1-2017.05)` (gcc-linaro-7.1.1-2017.05-x86_64_arm-eabi.tar.xz from https://releases.linaro.org/components/toolchain/binaries/7.1-2017.05/arm-linux-gnueabihf) 
 
 ### Building the Libraries
 
