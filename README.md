@@ -14,7 +14,9 @@ building Newlib in combination with Circle.
 ### Prerequisites
 
 * Linux or Windows 10 Subsystem for Linux (WSL).
-* gcc ARM toolchain on the path.
+* gcc ARM toolchain on the path. Successfully tested with:
+** `gcc version 6.3.1 20170215 (release) [ARM/embedded-6-branch revision 245512] (GNU Tools for ARM Embedded Processors 6-2017-q1-update)` (gcc-arm-none-eabi-6-2017-q1-update-linux.tar.bz2 from https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads)
+** `gcc version 7.1.1 20170510 (Linaro GCC 7.1-2017.05)` (gcc-linaro-7.1.1-2017.05-x86_64_arm-eabi.tar.xz from https://releases.linaro.org/components/toolchain/binaries/7.1-2017.05/arm-linux-gnueabihf) 
 
 ### Building the Libraries
 
@@ -59,6 +61,8 @@ make
 ## Current State
 
 v3.0:
+
+* Synced with Circle Step 33.
 * Implemented stdin/stdout/stderr based on Circle's CConsole class.
 * A build of circle-stdlib with ARM gcc toolchains that include Newlib out-of-the-box now provides
 support for C and C++ standard libraries. This is due to the fact that the Newlib provided by the toolchain
