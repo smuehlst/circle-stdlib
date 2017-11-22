@@ -80,18 +80,18 @@ TShutdownMode CKernel::Run (void)
 
 	m_Logger.Write (FromKernel, LogNotice, "C Standard Library Demo");
 
-	m_Logger.Write (FromKernel, LogNotice, "Call printf() (expect -1)");
+	m_Logger.Write (FromKernel, LogNotice, "Call printf () (expect -1)");
 	int const printfResult = printf ("Hello world\n");
 	m_Logger.Write (FromKernel, LogNotice, "printf result %d", printfResult);
 
-	m_Logger.Write (FromKernel, LogNotice, "Call sin(1)");
+	m_Logger.Write (FromKernel, LogNotice, "Call sin (1)");
 	double const f = sin (1);
-	m_Logger.Write (FromKernel, LogNotice, "sinc(1) %f", f);
+	m_Logger.Write (FromKernel, LogNotice, "sin (1) %f", f);
 
-	m_Logger.Write (FromKernel, LogNotice, "Call acosc(22), expect NaN with errno EDOM=%d", EDOM);
+	m_Logger.Write (FromKernel, LogNotice, "Call acos (22), expect NaN with errno EDOM=%d", EDOM);
 	double const g = acos (22);
 	assert (isnan(g));
-        m_Logger.Write (FromKernel, LogNotice, "acos(22): isnan () is true, errno=%d", errno);
+        m_Logger.Write (FromKernel, LogNotice, "acos (22): isnan () is true, errno=%d", errno);
 
 	// Search element in sorted array
 	int const nSortedArray[] = { -10, -1, 0, 1, 2, 3, 4, 5, 6 };
