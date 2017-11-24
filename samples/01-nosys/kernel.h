@@ -24,6 +24,7 @@
 #include <circle/serial.h>
 #include <circle/logger.h>
 #include <circle/types.h>
+#include <circle/exceptionhandler.h>
 #include <setjmp.h>
 
 enum TShutdownMode
@@ -48,6 +49,7 @@ private:
 	CActLED				m_ActLED;
 	CKernelOptions		m_Options;
 	CDeviceNameService	m_DeviceNameService;
+	CExceptionHandler       m_ExceptionHandler;
 	CScreenDevice		m_Screen;
 	CSerialDevice		m_Serial;
 	CLogger				m_Logger;
