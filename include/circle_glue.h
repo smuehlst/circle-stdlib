@@ -5,7 +5,23 @@
 #include <circle/input/console.h>
 #include <circle/sched/scheduler.h>
 
+/**
+ * Initialize stdio for file system and console I/O (stdin/stdout/stderr).
+ * Must only be called once.
+ */
 void CGlueStdioInit (CFATFileSystem& rFATFileSystem, CConsole& rConsole);
+
+/**
+ * Initialize stdio only for file system I/O.
+ * Must only be called once.
+ */
+void CGlueStdioInit (CFATFileSystem& rFATFileSystem);
+
+/**
+ * Initialize stdio only for console I/O  (stdin/stdout/stderr).
+ * Must only be called once.
+ */
+void CGlueStdioInit (CConsole& rConsole);
 
 class CGlueIO
 {
