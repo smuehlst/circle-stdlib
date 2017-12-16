@@ -21,16 +21,16 @@
 #include <stdlib.h>
 
 CKernel::CKernel (void)
-:	CStdlibApp (AppTypeStdio)
+:	CStdlibAppStdio ("03-stdio-fatfs")
 {
 	mActLED.Blink (5);	// show we are alive
 }
 
 CStdlibApp::TShutdownMode CKernel::Run (void)
 {
-	mpLogger->Write (FromKernel, LogNotice, "C Standard Library stdio Demo");
+	mLogger.Write (GetKernelName (), LogNotice, "C Standard Library stdio Demo");
 
-	mpLogger->Write (FromKernel, LogNotice, "stdio test...");
+	mLogger.Write (GetKernelName (), LogNotice, "stdio test...");
 
 	char const stdio_filename[] = "stdio.txt";
 	FILE *fp = fopen(stdio_filename, "w");
@@ -54,15 +54,15 @@ CStdlibApp::TShutdownMode CKernel::Run (void)
 		}
 		else
 		{
-			mpLogger->Write (FromKernel, LogPanic, "Cannot open file for reading with fopen()");
+			mLogger.Write (GetKernelName (), LogPanic, "Cannot open file for reading with fopen()");
 		}
 	}
 	else
 	{
-		mpLogger->Write (FromKernel, LogPanic, "Cannot open file for writing with fopen()");
+		mLogger.Write (GetKernelName (), LogPanic, "Cannot open file for writing with fopen()");
 	}
 
-	mpLogger->Write (FromKernel, LogNotice, "C Standard Library Demo finished");
+	mLogger.Write (GetKernelName (), LogNotice, "C Standard Library Demo finished");
 
 	return ShutdownHalt;
 }

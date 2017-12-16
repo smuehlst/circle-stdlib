@@ -19,7 +19,7 @@
 
 #include <circle_stdlib_app.h>
 
-class CKernel : public CStdlibApp
+class CKernel : public CStdlibAppStdio
 {
 public:
 	CKernel (void);

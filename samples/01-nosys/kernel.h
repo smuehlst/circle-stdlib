@@ -20,7 +20,7 @@
 #include <circle_stdlib_app.h>
 #include <setjmp.h>
 
-class CKernel : public CStdlibApp
+class CKernel : public CStdlibAppScreen
 {
 public:
 	CKernel (void);

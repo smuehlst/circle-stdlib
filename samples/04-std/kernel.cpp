@@ -32,18 +32,18 @@ void cxx_test(void);
 }
 
 CKernel::CKernel (void)
-:	CStdlibApp (AppTypeStdio)
+:	CStdlibAppStdio ("04-std")
 {
 	mActLED.Blink (5);	// show we are alive
 }
 
 CStdlibApp::TShutdownMode CKernel::Run (void)
 {
-	mpLogger->Write (FromKernel, LogNotice, "C++ Standard Library Demo");
+	mLogger.Write (GetKernelName (), LogNotice, "C++ Standard Library Demo");
 
 	cxx_test();
 
-	mpLogger->Write (FromKernel, LogNotice, "C++ Standard Library Test finished");
+	mLogger.Write (GetKernelName (), LogNotice, "C++ Standard Library Test finished");
 
 	return ShutdownHalt;
 }

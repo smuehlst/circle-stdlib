@@ -23,180 +23,211 @@
 class CStdlibApp
 {
 public:
-	enum TAppType
-	{
-		AppTypeGPIO,
-		AppTypeScreen,
-		AppTypeStdio,
-		AppTypeNetwork
-	};
+        enum TShutdownMode
+        {
+                ShutdownNone,
+                ShutdownHalt,
+                ShutdownReboot
+        };
 
-	enum TShutdownMode
-	{
-		ShutdownNone,
-		ShutdownHalt,
-		ShutdownReboot
-	};
+        CStdlibApp (const char *kernel) :
+                FromKernel (kernel)
+        {
+        }
 
-	CStdlibApp (TAppType type) :
-		mAppType (type), mpPartitionName ("emmc1-1"),
-		mpScreen (0), mpSerial (0), mpTimer (0), mpLogger (0),
-		mpDWHCI (0), mpEMMC (0), mpFileSystem (0), mpConsole (0),
-		mpScheduler (0), mpNet (0),
-		FromKernel ("kernel")
-	{
-		if (mAppType >= AppTypeScreen)
-		{
-			mpScreen = new CScreenDevice (mOptions.GetWidth (), mOptions.GetHeight ());
-			mpSerial = new CSerialDevice;
-			mpTimer = new CTimer (&mInterrupt);
-			mpLogger = new CLogger (mOptions.GetLogLevel (), mpTimer);
-		}
+        virtual bool Initialize (void)
+        {
+                return mInterrupt.Initialize ();
+        }
 
-		if (mAppType >= AppTypeStdio)
-		{
-			mpDWHCI = new CDWHCIDevice (&mInterrupt, mpTimer);
-			mpEMMC = new CEMMCDevice (&mInterrupt, mpTimer, &mActLED);
-			mpFileSystem = new CFATFileSystem;
-			mpConsole = new CConsole (mpScreen);
-		}
+        virtual void
+        Cleanup (void)
+        {
+        }
 
-		if (mAppType >= AppTypeNetwork)
-		{
-			mpScheduler = new CScheduler;
-			mpNet = new CNetSubSystem;
-		}
-	}
+        virtual TShutdownMode Run (void) = 0;
 
-	virtual bool Initialize (void)
-	{
-		if (!mInterrupt.Initialize ())
-		{
-			return false;
-		}
-
-		if (mAppType >= AppTypeScreen)
-		{
-			if (!mpScreen->Initialize ())
-			{
-				return false;
-			}
-
-			if (!mpSerial->Initialize (115200))
-			{
-				return false;
-			}
-
-			CDevice *pTarget =
-				mDeviceNameService.GetDevice (mOptions.GetLogDevice (), FALSE);
-			if (pTarget == 0)
-			{
-				pTarget = mpScreen;
-			}
-
-			if (!mpLogger->Initialize (pTarget))
-			{
-				return false;
-			}
-		}
-
-		if (mAppType >= AppTypeStdio)
-		{
-			if (!mpTimer->Initialize ())
-			{
-				return false;
-			}
-
-			if (!mpEMMC->Initialize ())
-			{
-				return false;
-			}
-
-			CDevice * const pPartition =
-				mDeviceNameService.GetDevice (mpPartitionName, TRUE);
-			if (pPartition == 0)
-			{
-				mpLogger->Write (FromKernel, LogError,
-					       "Partition not found: %s", mpPartitionName);
-
-				return false;
-			}
-
-			if (!mpFileSystem->Mount (pPartition))
-			{
-				mpLogger->Write (FromKernel, LogError,
-						 "Cannot mount partition: %s", mpPartitionName);
-
-				return false;
-			}
-
-			if (!mpDWHCI->Initialize ())
-			{
-				return false;
-			}
-
-			if (!mpConsole->Initialize ())
-			{
-				return false;
-			}
-
-			// Initialize newlib stdio with a reference to Circle's file system and console
-			CGlueStdioInit (*mpFileSystem, *mpConsole);
-		}
-
-		if (mAppType >= AppTypeNetwork)
-		{
-			if (!mpNet->Initialize ())
-			{
-				return false;
-			}
-		}
-
-		if (mAppType >= AppTypeScreen)
-		{
-			mpLogger->Write (FromKernel, LogNotice, "Compile time: " __DATE__ " " __TIME__);
-		}
-
-		return true;
-	}
-
-	virtual TShutdownMode Run (void) = 0;
-
-	virtual void Cleanup (void)
-	{
-		if (mAppType >= AppTypeStdio)
-		{
-			mpFileSystem->UnMount ();
-		}
-	}
-
-private:
-	TAppType const mAppType;
-
-	char const *mpPartitionName;
+        const char *GetKernelName(void) const
+        {
+                return  FromKernel;
+        }
 
 protected:
-	// Defaults
-	CActLED		   mActLED;
-	CKernelOptions	   mOptions;
-	CDeviceNameService mDeviceNameService;
-	CNullDevice	   mNullDevice;
-	CExceptionHandler  mExceptionHandler;
-	CInterruptSystem   mInterrupt;
+        CActLED            mActLED;
+        CKernelOptions     mOptions;
+        CDeviceNameService mDeviceNameService;
+        CNullDevice        mNullDevice;
+        CExceptionHandler  mExceptionHandler;
+        CInterruptSystem   mInterrupt;
 
-	// Options
-	CScreenDevice	*mpScreen;
-	CSerialDevice	*mpSerial;
-	CTimer		*mpTimer;
-	CLogger		*mpLogger;
-	CDWHCIDevice	*mpDWHCI;
-	CEMMCDevice	*mpEMMC;
-	CFATFileSystem	*mpFileSystem;
-	CConsole	*mpConsole;
-	CScheduler	*mpScheduler;
-	CNetSubSystem	*mpNet;
+private:
+        char const *FromKernel;
 
-	char const *FromKernel;
 };
 
+class CStdlibAppScreen : public CStdlibApp
+{
+public:
+        CStdlibAppScreen(const char *kernel)
+                : CStdlibApp (kernel),
+                  mScreen (mOptions.GetWidth (), mOptions.GetHeight ()),
+                  mTimer (&mInterrupt),
+                  mLogger (mOptions.GetLogLevel (), &mTimer)
+        {
+        }
+
+        virtual bool Initialize (void)
+        {
+                if (!CStdlibApp::Initialize ())
+                {
+                        return false;
+                }
+
+                if (!mScreen.Initialize ())
+                {
+                        return false;
+                }
+
+                if (!mSerial.Initialize (115200))
+                {
+                        return false;
+                }
+
+                CDevice *pTarget =
+                        mDeviceNameService.GetDevice (mOptions.GetLogDevice (), false);
+                if (pTarget == 0)
+                {
+                        pTarget = &mScreen;
+                }
+
+                if (!mLogger.Initialize (pTarget))
+                {
+                        return false;
+                }
+
+                if (!mTimer.Initialize ())
+                {
+                        return false;
+                }
+
+                return true;
+        }
+
+protected:
+        CScreenDevice   mScreen;
+        CSerialDevice   mSerial;
+        CTimer          mTimer;
+        CLogger         mLogger;
+};
+
+class CStdlibAppStdio: public CStdlibAppScreen
+{
+private:
+        char const *mpPartitionName;
+
+public:
+        // TÒDO transform to constexpr
+        // constexpr char static DefaultPartition[] = "emmc1-1";
+#define CSTDLIBAPP_DEFAULT_PARTITION "emmc1-1"
+
+        CStdlibAppStdio (const char *kernel,
+                         const char *pPartitionName = CSTDLIBAPP_DEFAULT_PARTITION)
+                : CStdlibAppScreen (kernel),
+                  mpPartitionName (pPartitionName),
+                  mDWHCI (&mInterrupt, &mTimer),
+                  mEMMC (&mInterrupt, &mTimer, &mActLED),
+                  mConsole (&mScreen)
+        {
+        }
+
+        virtual bool Initialize (void)
+        {
+                if (!CStdlibAppScreen::Initialize ())
+                {
+                        return false;
+                }
+
+                if (!mEMMC.Initialize ())
+                {
+                        return false;
+                }
+
+                CDevice * const pPartition =
+                        mDeviceNameService.GetDevice (mpPartitionName, true);
+                if (pPartition == 0)
+                {
+                        mLogger.Write (GetKernelName (), LogError,
+                                       "Partition not found: %s", mpPartitionName);
+
+                        return false;
+                }
+
+                if (!mFileSystem.Mount (pPartition))
+                {
+                        mLogger.Write (GetKernelName (), LogError,
+                                         "Cannot mount partition: %s", mpPartitionName);
+
+                        return false;
+                }
+
+                if (!mDWHCI.Initialize ())
+                {
+                        return false;
+                }
+
+                if (!mConsole.Initialize ())
+                {
+                        return false;
+                }
+
+                // Initialize newlib stdio with a reference to Circle's file system and console
+                CGlueStdioInit (mFileSystem, mConsole);
+
+                mLogger.Write (GetKernelName (), LogNotice, "Compile time: " __DATE__ " " __TIME__);
+
+                return true;
+        }
+
+        virtual void Cleanup (void)
+        {
+                mFileSystem.UnMount ();
+
+                CStdlibAppScreen::Cleanup ();
+        }
+
+protected:
+        CDWHCIDevice    mDWHCI;
+        CEMMCDevice     mEMMC;
+        CFATFileSystem  mFileSystem;
+        CConsole        mConsole;
+};
+
+class CStdlibAppNetwork: public CStdlibAppStdio
+{
+public:
+        CStdlibAppNetwork (const char *kernel,
+                         const char *pPartitionName = CSTDLIBAPP_DEFAULT_PARTITION)
+                : CStdlibAppStdio(kernel, pPartitionName)
+        {
+        }
+
+        virtual bool Initialize (void)
+        {
+                if (!CStdlibAppStdio::Initialize ())
+                {
+                        return false;
+                }
+
+                if (!mNet.Initialize ())
+                {
+                        return false;
+                }
+
+                return true;
+        }
+
+protected:
+        CScheduler      mScheduler;
+        CNetSubSystem   mNet;
+};
 #endif

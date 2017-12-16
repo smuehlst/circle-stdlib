@@ -21,16 +21,16 @@
 #include <stdlib.h>
 
 CKernel::CKernel (void)
-:	CStdlibApp (AppTypeStdio)
+:	CStdlibAppStdio ("02-stdio-hello")
 {
 	mActLED.Blink (5);	// show we are alive
 }
 
 CStdlibApp::TShutdownMode CKernel::Run (void)
 {
-	mpLogger->Write (FromKernel, LogNotice, "C Standard Library stdin/stdout/stderr Demo");
+	mLogger.Write (GetKernelName (), LogNotice, "C Standard Library stdin/stdout/stderr Demo");
 
-	mpLogger->Write (FromKernel, LogNotice, "stdio test...");
+	mLogger.Write (GetKernelName (), LogNotice, "stdio test...");
 
 	printf("Hello world!\n");
 	fprintf(stderr, "Hello world on stderr!\n");
@@ -47,7 +47,7 @@ CStdlibApp::TShutdownMode CKernel::Run (void)
 		perror("fgets returned NULL");
 	}
 
-	mpLogger->Write (FromKernel, LogNotice, "C Standard Library Demo finished");
+	mLogger.Write (GetKernelName (), LogNotice, "C Standard Library Demo finished");
 
 	return ShutdownHalt;
 }
