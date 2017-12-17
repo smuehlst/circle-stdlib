@@ -1,3 +1,12 @@
+/**
+ * Convenience classes that package different levels
+ * of functionality of Circle applications.
+ *
+ * Derive the kernel class of the application from one of
+ * the CStdlibApp* classes and implement at least the
+ * Run () method. Extend the Initalize () and Cleanup ()
+ * methods if necessary.
+ */
 #ifndef _circle_stdlib_app_h
 #define _circle_stdlib_app_h
 
@@ -20,6 +29,9 @@
 
 #include <circle_glue.h>
 
+/**
+ * Basic Circle Stdlib application that supports GPIO access.
+ */
 class CStdlibApp
 {
 public:
@@ -32,6 +44,10 @@ public:
 
         CStdlibApp (const char *kernel) :
                 FromKernel (kernel)
+        {
+        }
+
+        virtual ~CStdlibApp (void)
         {
         }
 
@@ -49,7 +65,7 @@ public:
 
         const char *GetKernelName(void) const
         {
-                return  FromKernel;
+                return FromKernel;
         }
 
 protected:
@@ -65,6 +81,10 @@ private:
 
 };
 
+/**
+ * Stdlib application that adds screen support
+ * to the basic CStdlibApp features.
+ */
 class CStdlibAppScreen : public CStdlibApp
 {
 public:
@@ -120,6 +140,10 @@ protected:
         CLogger         mLogger;
 };
 
+/**
+ * Stdlib application that adds stdio support
+ * to the CStdlibAppScreen functionality.
+ */
 class CStdlibAppStdio: public CStdlibAppScreen
 {
 private:
@@ -202,6 +226,10 @@ protected:
         CConsole        mConsole;
 };
 
+/**
+ * Stdlib application that adds network functionality
+ * to the CStdlibAppStdio features.
+ */
 class CStdlibAppNetwork: public CStdlibAppStdio
 {
 public:
