@@ -56,8 +56,7 @@ public:
                 return mInterrupt.Initialize ();
         }
 
-        virtual void
-        Cleanup (void)
+        virtual void Cleanup (void)
         {
         }
 
@@ -78,7 +77,6 @@ protected:
 
 private:
         char const *FromKernel;
-
 };
 
 /**
@@ -125,12 +123,7 @@ public:
                         return false;
                 }
 
-                if (!mTimer.Initialize ())
-                {
-                        return false;
-                }
-
-                return true;
+                return mTimer.Initialize ();
         }
 
 protected:
@@ -246,12 +239,7 @@ public:
                         return false;
                 }
 
-                if (!mNet.Initialize ())
-                {
-                        return false;
-                }
-
-                return true;
+                return mNet.Initialize ();
         }
 
 protected:
