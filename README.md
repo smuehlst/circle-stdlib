@@ -60,6 +60,14 @@ make
 
 ## Current State
 
+v4.0:
+
+* Synced with [Circle Step 34](https://github.com/rsta2/circle/releases/tag/Step34).
+* Added CStdlibApp, CStdlibAppScreen, CStdlibAppStdio and CStdlibAppNetwork for
+easier application creation (thanks to Rene Stange).
+
+Previous releases:
+
 v3.0:
 
 * Synced with [Circle Step 33](https://github.com/rsta2/circle/releases/tag/Step33).
@@ -68,8 +76,6 @@ v3.0:
 support for C and C++ standard libraries. This is due to the fact that the Newlib provided by the toolchain
 is replaced by circle-stdlib's Newlib build, and the toolchain's standard C++ library works with the
 replaced Newlib.
-
-Previous releases:
 
 * v2.0: This release implements Newlib's open(), close(), read() and write()
 system calls bases on Circle's I/O functions. This enables stdio functionality.
