@@ -19,13 +19,14 @@ function usage() {
     echo "  -s <path>, --stddefpath <path>"
     echo "                                 path where stddef.h header is located (only necessary"
     echo "                                 if  script cannot determine it automatically)"
+    echo "  --opt-tls                      build with mbed TLS support"
 }
 
 # From the bash FAQ: How to use pathnames relative to the script
 cd "${BASH_SOURCE%/*}" || exit 1
 TOPDIR="$PWD"
 
-TEMP=$(getopt -o cdhnp:r:s: --long clean,debug,help,no-circle-build,no-cpp,no-parallel-build,prefix:,raspberrypi:,script-debug,softfp,stddefpath: \
+TEMP=$(getopt -o cdhnp:r:s: --long clean,debug,help,no-circle-build,no-cpp,no-parallel-build,opt-tls,prefix:,raspberrypi:,script-debug,softfp,stddefpath: \
      -n 'build.bash' -- "$@")
 
 if [ $? != 0 ] ; then echo usage; exit 1 ; fi
@@ -44,6 +45,7 @@ STDDEF_INCPATH=""
 STDLIB_SUPPORT=3
 PARALLEL="-j"
 FLOAT_ABI=hard
+OPTTLS=0
 
 NEWLIB_INSTALL_DIR="$TOPDIR/install"
 NEWLIB_BUILD_DIR="$TOPDIR/build/circle-newlib"
@@ -56,6 +58,7 @@ while true ; do
 	-h|--help) usage ; exit 0;;
 	-n|--no-cpp) STDLIB_SUPPORT=2 ; shift;;
 	--no-parallel-build) PARALLEL= ; shift;;
+	--opt-tls) OPTTLS=1 ; shift;;
 	-p|--prefix) TOOLPREFIX="$2" ; shift 2;;
 	-r|--raspberrypi) RASPBERRYPI="$2" ; shift 2;;
 	--script-debug) set -x ; shift;;
@@ -95,6 +98,12 @@ then
     )
     rm -rf "$NEWLIB_BUILD_DIR"/*
     rm -rf "$NEWLIB_INSTALL_DIR"/*
+    (
+	cd libs/mbedtls/library && make clean
+    )
+    (
+	cd src/circle-mbedtls && make clean
+    )
     exit 0
 fi
 
@@ -138,6 +147,15 @@ if [ ! -f "libs/circle-newlib/README.md" ]
 then
     echo "newlib sub-module not found" >&2
     exit 1
+fi
+
+if [ $OPTTLS -eq 1 ]
+then
+    if [ ! -f "libs/mbedtls/README.md" ]
+    then
+        echo "mbedtls sub-module not found" >&2
+        exit 1
+    fi
 fi
 
 # Create Circle's Config.mk file
@@ -196,5 +214,19 @@ export CFLAGS_FOR_TARGET
 (
     cd "$NEWLIB_BUILD_DIR" && make $PARALLEL && make install
 )
+
+if [ $OPTTLS -eq 1 ]
+then
+   (
+      export CC=${TOOLPREFIX}gcc
+      INCLUDE="-I../../../include"
+      DEFINE="-DMBEDTLS_CONFIG_FILE='<circle-mbedtls/config-circle-mbedtls.h>'"
+      export CFLAGS="$ARCH -fsigned-char -ffreestanding -O2 -g $INCLUDE $DEFINE"
+      cd libs/mbedtls/library && make $PARALLEL
+   )
+   (
+      cd src/circle-mbedtls && make $PARALLEL
+   )
+fi
 
 exit 0
