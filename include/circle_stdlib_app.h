@@ -227,8 +227,13 @@ class CStdlibAppNetwork: public CStdlibAppStdio
 {
 public:
         CStdlibAppNetwork (const char *kernel,
-                         const char *pPartitionName = CSTDLIBAPP_DEFAULT_PARTITION)
-                : CStdlibAppStdio(kernel, pPartitionName)
+                   const char *pPartitionName = CSTDLIBAPP_DEFAULT_PARTITION,
+                   const u8 *pIPAddress      = 0,       // use DHCP if pIPAddress == 0
+                   const u8 *pNetMask        = 0,
+                   const u8 *pDefaultGateway = 0,
+                   const u8 *pDNSServer      = 0)
+          : CStdlibAppStdio(kernel, pPartitionName),
+            mNet(pIPAddress, pNetMask, pDefaultGateway, pDNSServer)
         {
         }
 
