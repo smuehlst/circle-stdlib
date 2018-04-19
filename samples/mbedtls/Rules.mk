@@ -20,10 +20,10 @@ INCLUDE += \
 CFLAGS += -DMBEDTLS_CONFIG_FILE='<circle-mbedtls/config-circle-mbedtls.h>'
 
 LIBS += \
+	$(CIRCLE_STDLIB_DIR)/src/circle-mbedtls/libcircle-mbedtls.a \
 	$(MBEDTLS_DIR)/library/libmbedtls.a \
   	$(MBEDTLS_DIR)/library/libmbedx509.a \
   	$(MBEDTLS_DIR)/library/libmbedcrypto.a \
-  	$(CIRCLE_STDLIB_DIR)/src/circle-mbedtls/libcircle-mbedtls.a \
   	$(NEWLIBDIR)/lib/libm.a \
 	$(NEWLIBDIR)/lib/libc.a \
 	$(NEWLIBDIR)/lib/libcirclenewlib.a \
