@@ -21,6 +21,7 @@
 
 #include <circle/net/netsubsystem.h>
 #include <circle/net/socket.h>
+#include <circle/net/ipaddress.h>
 #include <circle/usb/netdevice.h>
 #include <circle/ptrarray.h>
 #include <circle/types.h>
@@ -34,6 +35,7 @@ public:
 	CAdaptedSocket (CNetSubSystem *pNetSubSystem, CSocket *pSocket);
 	~CAdaptedSocket (void);
 
+	int Connect (CIPAddress &rForeignIP, u16 nForeignPort);
 	int Connect (const char *pHost, const char *pPort);
 
 	int Bind (const char *pPort);
@@ -44,6 +46,8 @@ public:
 	int Send (const void *pBuffer, unsigned nLength);
 
 	void SetOptionBlocking (boolean bBlock);
+
+	const u8 *GetForeignIP (void) const;
 
 	int GetHandle (void) const;
 	static CAdaptedSocket *Get (int nHandle);

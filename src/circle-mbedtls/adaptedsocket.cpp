@@ -64,6 +64,17 @@ CAdaptedSocket::~CAdaptedSocket (void)
 	m_pSocket = 0;
 }
 
+int CAdaptedSocket::Connect (CIPAddress &rForeignIP, u16 nForeignPort)
+{
+	assert (m_pSocket != 0);
+	if (m_pSocket->Connect (rForeignIP, nForeignPort) < 0)
+	{
+		return MBEDTLS_ERR_NET_CONNECT_FAILED;
+	}
+
+	return 0;
+}
+
 int CAdaptedSocket::Connect (const char *pHost, const char *pPort)
 {
 	assert (pHost != 0);
@@ -85,13 +96,7 @@ int CAdaptedSocket::Connect (const char *pHost, const char *pPort)
 		return MBEDTLS_ERR_NET_UNKNOWN_HOST;
 	}
 
-	assert (m_pSocket != 0);
-	if (m_pSocket->Connect (IPAddress, static_cast<u16> (ulPort)) < 0)
-	{
-		return MBEDTLS_ERR_NET_CONNECT_FAILED;
-	}
-
-	return 0;
+	return Connect (IPAddress, static_cast<u16> (ulPort));
 }
 
 int CAdaptedSocket::Bind (const char *pPort)
@@ -255,6 +260,16 @@ int CAdaptedSocket::Send (const void *pBuffer, unsigned nLength)
 void CAdaptedSocket::SetOptionBlocking (boolean bBlock)
 {
 	m_bBlock = bBlock;
+}
+
+const u8 *CAdaptedSocket::GetForeignIP (void) const
+{
+	if (m_pSocket == 0)
+	{
+		return 0;
+	}
+
+	return m_pSocket->GetForeignIP ();
 }
 
 int CAdaptedSocket::GetHandle (void) const
