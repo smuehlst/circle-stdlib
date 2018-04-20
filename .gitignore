@@ -6,3 +6,4 @@
 *.o
 .settings
 .cproject
+Config.mk
