@@ -17,8 +17,9 @@
 #include "kernel.h"
 
 #include <stdio.h>
-#include <math.h>
-#include <stdlib.h>
+#include <string.h>
+#include <dirent.h>
+#include <errno.h>
 
 CKernel::CKernel (void)
 :	CStdlibAppStdio ("03-stdio-fatfs")
@@ -48,7 +49,12 @@ CStdlibApp::TShutdownMode CKernel::Run (void)
 
 			while ((p = fgets(buf, sizeof(buf), fp)) != nullptr)
 			{
-				printf ("Read from file: '%s'", p);
+			        size_t const len = strlen(buf);
+			        if (len > 0 && buf[len - 1] == '\n')
+			        {
+			                buf[len - 1] = 0;
+			        }
+				printf ("Read from file: '%s'\n", p);
 			}
 			fclose(fp);
 		}
@@ -60,6 +66,36 @@ CStdlibApp::TShutdownMode CKernel::Run (void)
 	else
 	{
 		mLogger.Write (GetKernelName (), LogPanic, "Cannot open file for writing with fopen()");
+	}
+
+	// We have only a single directory with Circle
+	DIR * const dirp = opendir(".");
+
+	if (dirp != nullptr)
+	{
+	        printf("Listing \".\" directory:\n");
+	        while (true)
+	        {
+                        errno = 0;
+                        struct dirent const * const dp = readdir (dirp);
+                        if (dp != nullptr)
+                        {
+                                printf("\t%s\n", dp->d_name);
+                        }
+                        else
+                        {
+                                if (errno != 0 && errno != ENOENT)
+                                {
+                                        fprintf(stderr, "readdir failed with errno %d\n", errno);
+                                }
+                                printf("Closing directory...\n");
+                                if (closedir(dirp) != 0)
+                                {
+                                        fprintf(stderr, "closedir failed with errno %d\n", errno);
+                                }
+                                break;
+                        }
+	        }
 	}
 
 	mLogger.Write (GetKernelName (), LogNotice, "C Standard Library Demo finished");
