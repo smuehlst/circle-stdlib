@@ -42,7 +42,6 @@ Options:
   -d, --debug                    build with debug information, without optimizer
   -h, --help                     show usage message
   -n, --no-cpp                   do not support C++ standard library
-  --no-parallel-build            don't do parallel build
   -p <string>, --prefix <string> prefix of the toolchain commands (default: arm-none-eabi-)
   -r <number>, --raspberrypi <number>
                                  Circle Raspberry Pi model number (1, 2, 3, default: 1)
