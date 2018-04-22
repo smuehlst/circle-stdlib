@@ -4,6 +4,7 @@
 *.map
 *.elf
 *.o
+*.a
 .settings
 .cproject
 Config.mk
