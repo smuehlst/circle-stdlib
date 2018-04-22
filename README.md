@@ -26,14 +26,15 @@ the script `build.bash` to build the libraries:
 ```
 git clone --recursive https://github.com/smuehlst/circle-stdlib.git
 cd circle-stdlib
-./build.bash
+./configure
+make
 ```
 
-The `build.bash` script has the following options:
+The `configure` script has the following options:
 
 ```
-$ ./build.bash -h
-usage: build.bash [ <option> ... ]
+$ ./configure -h
+usage: configure [ <option> ... ]
 Build Circle with newlib standard C library.
 
 Options:
@@ -58,17 +59,24 @@ cd samples/01-nosys
 make
 ```
 
-## Current State
+## Current Release
 
-v4.0:
+v5.0
+
+* Synced with [Circle Step 35](https://github.com/rsta2/circle/releases/tag/Step35).
+* Added support for <dirent.h> functions.
+* mbed TLS support TODO
+* Added configure script and Makefile to replace build.bash
+
+## Previous releases
+
+### v4.0
 
 * Synced with [Circle Step 34](https://github.com/rsta2/circle/releases/tag/Step34).
 * Added CStdlibApp, CStdlibAppScreen, CStdlibAppStdio and CStdlibAppNetwork for
 easier application creation (thanks to Rene Stange).
 
-Previous releases:
-
-v3.0:
+### v3.0
 
 * Synced with [Circle Step 33](https://github.com/rsta2/circle/releases/tag/Step33).
 * Implemented stdin/stdout/stderr based on Circle's CConsole class.
@@ -77,12 +85,16 @@ support for C and C++ standard libraries. This is due to the fact that the Newli
 is replaced by circle-stdlib's Newlib build, and the toolchain's standard C++ library works with the
 replaced Newlib.
 
-* v2.0: This release implements Newlib's open(), close(), read() and write()
+### v2.0
+
+This release implements Newlib's open(), close(), read() and write()
 system calls bases on Circle's I/O functions. This enables stdio functionality.
 A small [test program](samples/03-stdio-fatfs) demonstrates the use of
 stdio file system functions with Circle.
 
-* V1.0: Initial build of Newlib with Circle, without any systems calls being implemented.
+### V1.0
+
+Initial build of Newlib with Circle, without any systems calls being implemented.
 
 ## License
 
@@ -93,3 +105,4 @@ Version 3 - see the [LICENSE](LICENSE) file for details
 
 * Rene Stange for [Circle](https://github.com/rsta2/circle).
 * The Newlib team for [Newlib](https://sourceware.org/newlib/).
+* The mbed TLS team for [mbet TLS](https://tls.mbed.org/).
