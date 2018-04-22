@@ -40,6 +40,17 @@ public:
 	/// \note Can be called multiple times
 	int AddCertificate (const u8 *pBuffer, size_t nLength);
 
+	/// \brief Add certificate from file in PEM or DER format
+	/// \note Has to be called before Setup()
+	/// \note Can be called multiple times
+	int AddCertificateFile (const char *pFilename);
+
+	/// \brief Add certificate(s) from path in PEM or DER format
+	/// \return Number of added certificates (< 0 for error)
+	/// \note Has to be called before Setup()
+	/// \note Scans for files with the extension ".pem", ".crt" or ".der"
+	int AddCertificatePath (const char *pPath);
+
 	/// \brief Setup SSL/TLS configuration prior to Connect()
 	/// \param pServername The hostname of the server to be connected
 	/// \param pPersonalizationString Optional string for seeding the random bit generator

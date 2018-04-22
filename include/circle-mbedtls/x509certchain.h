@@ -45,8 +45,16 @@ public:
 	/// \brief Add certificate in PEM or DER format to chain
 	int AddCertificate (const u8 *pBuffer, size_t nLength)
 	{
-		return  mbedtls_x509_crt_parse (&m_Chain, pBuffer, nLength);
+		return mbedtls_x509_crt_parse (&m_Chain, pBuffer, nLength);
 	}
+
+	/// \brief Add certificate from file in PEM or DER format to chain
+	int AddCertificateFile (const char *pFilename);
+
+	/// \brief Add certificate(s) from path in PEM or DER format to chain
+	/// \note Scans for files with the extension ".pem", ".crt" or ".der"
+	/// \return Number of added certificates (< 0 for error)
+	int AddCertificatePath (const char *pPath);
 
 private:
 	mbedtls_x509_crt m_Chain;

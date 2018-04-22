@@ -29,11 +29,6 @@
 #define SERVER_NAME	"elinux.org"
 #define SERVER_PORT	"443"
 #define SERVER_PAGE	"/Main_Page"
-#define CERTIFICATE	letsencrypt_authority_x3_crt
-
-#ifdef CERTIFICATE
-	#include "certs.h"
-#endif
 
 using namespace CircleMbedTLS;
 
@@ -65,17 +60,13 @@ int CKernel::GetDocument (void)
 {
 	CSSLSimpleClientSocket Socket (&mNet, IPPROTO_TCP);
 
-	int nResult;
-
-#ifdef CERTIFICATE
-	nResult = Socket.AddCertificate ((const u8 *) CERTIFICATE, sizeof CERTIFICATE);
-	if (nResult != 0)
+	int nResult = Socket.AddCertificatePath ("/");
+	if (nResult <= 0)
 	{
-		printf ("Invalid certificate (%d)\n", nResult);
+		printf ("Invalid or no certificate (%d)\n", nResult);
 
-		return nResult;
+		return nResult == 0 ? -1 : nResult;
 	}
-#endif
 
 	nResult = Socket.Setup (SERVER_NAME);
 	if (nResult != 0)

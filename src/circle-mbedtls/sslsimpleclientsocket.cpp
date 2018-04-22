@@ -46,6 +46,32 @@ int CSSLSimpleClientSocket::AddCertificate (const u8 *pBuffer, size_t nLength)
 	return 0;
 }
 
+int CSSLSimpleClientSocket::AddCertificateFile (const char *pFilename)
+{
+	int nResult = m_CertChain.AddCertificateFile (pFilename);
+	if (nResult != 0)
+	{
+		return nResult;
+	}
+
+	m_bCertAdded = TRUE;
+
+	return 0;
+}
+
+int CSSLSimpleClientSocket::AddCertificatePath (const char *pPath)
+{
+	int nResult = m_CertChain.AddCertificatePath (pPath);
+	if (nResult <= 0)
+	{
+		return nResult;
+	}
+
+	m_bCertAdded = TRUE;
+
+	return nResult;
+}
+
 int CSSLSimpleClientSocket::Setup (const char *pServername, const char *pPersonalizationString)
 {
 	int nResult = m_CTR_DRBG.Seed (pPersonalizationString);
