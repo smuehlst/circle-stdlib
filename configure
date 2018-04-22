@@ -3,15 +3,14 @@
 set -e
 
 function usage() {
-    echo "usage: build.bash [ <option> ... ]"
-    echo "Build Circle with newlib standard C library."
+    echo "usage: configure [ <option> ... ]"
+    echo "Configure Circle with newlib standard C library."
     echo
     echo "Options:"
     echo "  -c, --clean                    clean build results and exit"
     echo "  -d, --debug                    build with debug information, without optimizer"
     echo "  -h, --help                     show usage message"
     echo "  -n, --no-cpp                   do not support C++ standard library"
-    echo "  --no-parallel-build            don't do parallel build"
     echo "  -p <string>, --prefix <string> prefix of the toolchain commands (default: arm-none-eabi-)"
     echo "  -r <number>, --raspberrypi <number>"
     echo "                                 Circle Raspberry Pi model number (1, 2, 3, default: 1)"
@@ -26,7 +25,7 @@ function usage() {
 cd "${BASH_SOURCE%/*}" || exit 1
 TOPDIR="$PWD"
 
-TEMP=$(getopt -o cdhnp:r:s: --long clean,debug,help,no-circle-build,no-cpp,no-parallel-build,opt-tls,prefix:,raspberrypi:,script-debug,softfp,stddefpath: \
+TEMP=$(getopt -o cdhnp:r:s: --long clean,debug,help,no-circle-build,no-cpp,opt-tls,prefix:,raspberrypi:,script-debug,softfp,stddefpath: \
      -n 'build.bash' -- "$@")
 
 if [ $? != 0 ] ; then echo usage; exit 1 ; fi
@@ -43,7 +42,6 @@ CLEAN=0
 TOOLPREFIX=arm-none-eabi-
 STDDEF_INCPATH=""
 STDLIB_SUPPORT=3
-PARALLEL="-j"
 FLOAT_ABI=hard
 OPTTLS=0
 
@@ -57,7 +55,6 @@ while true ; do
 	-d|--debug) DEBUG=1 ; shift;;
 	-h|--help) usage ; exit 0;;
 	-n|--no-cpp) STDLIB_SUPPORT=2 ; shift;;
-	--no-parallel-build) PARALLEL= ; shift;;
 	--opt-tls) OPTTLS=1 ; shift;;
 	-p|--prefix) TOOLPREFIX="$2" ; shift 2;;
 	-r|--raspberrypi) RASPBERRYPI="$2" ; shift 2;;
