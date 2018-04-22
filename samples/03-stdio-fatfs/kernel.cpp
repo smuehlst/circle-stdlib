@@ -69,15 +69,15 @@ CStdlibApp::TShutdownMode CKernel::Run (void)
 	}
 
 	// We have only a single directory with Circle
-	DIR * const dirp = opendir(".");
+	DIR * const dir = opendir(".");
 
-	if (dirp != nullptr)
+	if (dir != nullptr)
 	{
-	        printf("Listing \".\" directory:\n");
+	        printf("Listing \".\" directory with readdir:\n");
 	        while (true)
 	        {
                         errno = 0;
-                        struct dirent const * const dp = readdir (dirp);
+                        struct dirent const * const dp = readdir (dir);
                         if (dp != nullptr)
                         {
                                 printf("\t%s\n", dp->d_name);
@@ -88,14 +88,38 @@ CStdlibApp::TShutdownMode CKernel::Run (void)
                                 {
                                         fprintf(stderr, "readdir failed with errno %d\n", errno);
                                 }
-                                printf("Closing directory...\n");
-                                if (closedir(dirp) != 0)
-                                {
-                                        fprintf(stderr, "closedir failed with errno %d\n", errno);
-                                }
+
                                 break;
                         }
 	        }
+
+                printf("Rewinding directory...\n");
+                rewinddir (dir);
+
+                printf("Listing \".\" directory with readdir_r:\n");
+                while (true)
+                {
+                        struct dirent de;
+                        struct dirent *dep;
+                        int error = readdir_r (dir, &de, &dep);
+                        if (error != 0)
+                        {
+                                fprintf(stderr, "readdir_r failed with error number %d\n", error);
+                        }
+                        if (dep != nullptr)
+                        {
+                                printf("\t%s\n", dep->d_name);
+                        }
+                        else
+                        {
+                                break;
+                        }
+                }
+                printf("Closing directory...\n");
+                if (closedir (dir) != 0)
+                {
+                        fprintf(stderr, "closedir failed with errno %d\n", errno);
+                }
 	}
 
 	mLogger.Write (GetKernelName (), LogNotice, "C Standard Library Demo finished");
