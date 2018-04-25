@@ -2,7 +2,7 @@
 
 include Config.mk
 
-all: circle newlib mbedtls
+all: circle newlib
 
 circle:
 	cd libs/circle && ./makeall --nosample
@@ -22,15 +22,6 @@ newlib:
 	$(MAKE) -C $(NEWLIB_BUILD_DIR) && \
 	$(MAKE) -C $(NEWLIB_BUILD_DIR) install
 
-MBEDTLS_INCLUDE = -I../../../include
-MBED_DEFINE = -DMBEDTLS_CONFIG_FILE='<circle-mbedtls/config-circle-mbedtls.h>'
-
-mbedtls:
-	CC=$(CC) \
-	CFLAGS="$(ARCH) -fsigned-char -ffreestanding -O2 -g $(MBEDTLS_INCLUDE) $(MBED_DEFINE)" \
-	$(MAKE) -C libs/mbedtls/library && \
-	$(MAKE) -C src/circle-mbedtls
-	
 clean:
 	cd libs/circle && ./makeall --nosample PREFIX=$(TOOLPREFIX) clean
 	$(MAKE) -C libs/circle/addon/SDCard PREFIX=$(TOOLPREFIX) clean

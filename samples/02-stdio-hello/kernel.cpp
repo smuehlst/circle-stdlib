@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
+#include <time.h>
 
 CKernel::CKernel (void)
 :	CStdlibAppStdio ("02-stdio-hello")
@@ -46,6 +47,25 @@ CStdlibApp::TShutdownMode CKernel::Run (void)
 	{
 		perror("fgets returned NULL");
 	}
+
+	char outstr[200];
+        time_t const t = time (nullptr);
+        struct tm * const tmp = localtime (&t);
+
+        if (tmp == nullptr)
+        {
+                perror("localtime");
+        }
+        else if (strftime(outstr, sizeof(outstr), "%D %T", tmp) == 0)
+        {
+                fprintf(stderr, "strftime returned 0");
+        }
+        else
+        {
+                // Do not expect a valid current time as the Raspberry Pi
+                // clock has not been set.
+                printf("The current date/time is \"%s\"\n", outstr);
+        }
 
 	mLogger.Write (GetKernelName (), LogNotice, "C Standard Library Demo finished");
 
