@@ -19,8 +19,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-#ifndef _circle_net_http_h
-#define _circle_net_http_h
+#ifndef _circle_mbedtls_http_h
+#define _circle_mbedtls_http_h
+
+namespace CircleMbedTLS {
 
 #define HTTP_PORT		80
 #define HTTPS_PORT		443
@@ -59,5 +61,7 @@ enum THTTPStatus
 	HTTPContentBufferTooSmall = 553,
 	HTTPInternalClientError	  = 554
 };
+
+}
 
 #endif
