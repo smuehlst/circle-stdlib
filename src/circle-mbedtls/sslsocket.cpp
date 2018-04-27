@@ -78,8 +78,7 @@ int CSSLSocket::Connect (CIPAddress &rForeignIP, u16 nForeignPort)
 		return nResult;
 	}
 
-	mbedtls_ssl_set_bio (&m_Context, m_pSocket, SendCallback, ReceiveCallback,
-			     ReceiveTimeoutCallback);
+	mbedtls_ssl_set_bio (&m_Context, m_pSocket, SendCallback, ReceiveCallback, 0);
 
 	while ((nResult = mbedtls_ssl_handshake (&m_Context)) != 0)
 	{
