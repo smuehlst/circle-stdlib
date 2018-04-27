@@ -10,7 +10,7 @@ MBEDTLS_DIR ?= $(CIRCLE_STDLIB_DIR)/libs/mbedtls
 NEWLIBDIR   ?= $(CIRCLE_STDLIB_DIR)/install/arm-none-circle
 CIRCLEHOME  ?= $(CIRCLE_STDLIB_DIR)/libs/circle
 
-OBJS	= httpclient.o \
+OBJS	= httpclient.o mqttclient.o mqttreceivepacket.o mqttsendpacket.o \
 	  sslsocket.o sslsimpleclientsocket.o adaptedsocket.o net_sockets.o \
 	  x509certchain.o entropymodule.o
 
