@@ -20,6 +20,7 @@
 #define _circle_mbedtls_sslconfig_h
 
 #include <mbedtls/ssl.h>
+#include <circle-mbedtls/x509certprofile.h>
 #include <circle-mbedtls/x509certchain.h>
 #include <circle-mbedtls/ctr_drbg.h>
 
@@ -54,6 +55,11 @@ public:
 	void SetAuthMode (int nAuthMode)
 	{
 		mbedtls_ssl_conf_authmode (&m_Config, nAuthMode);
+	}
+
+	void SetCertProfile (const CX509CertificateProfile *pProfile)
+	{
+		mbedtls_ssl_conf_cert_profile (&m_Config, pProfile->Get ());
 	}
 
 	void SetCA_Chain (CX509CertificateChain *pCA_Chain)

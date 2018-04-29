@@ -72,7 +72,8 @@ int CSSLSimpleClientSocket::AddCertificatePath (const char *pPath)
 	return nResult;
 }
 
-int CSSLSimpleClientSocket::Setup (const char *pServername, const char *pPersonalizationString)
+int CSSLSimpleClientSocket::Setup (const char *pServername, const char *pPersonalizationString,
+				   unsigned nRSAMinimumKeySize)
 {
 	int nResult = m_CTR_DRBG.Seed (pPersonalizationString);
 	if (nResult != 0)
@@ -90,6 +91,10 @@ int CSSLSimpleClientSocket::Setup (const char *pServername, const char *pPersona
 	if (m_bCertAdded)
 	{
 		m_SSLConfig.SetAuthMode (MBEDTLS_SSL_VERIFY_REQUIRED);
+
+		m_CertProfile.SetRSAMinimumKeySize (nRSAMinimumKeySize);
+		m_SSLConfig.SetCertProfile (&m_CertProfile);
+
 		m_SSLConfig.SetCA_Chain (&m_CertChain);
 	}
 	else

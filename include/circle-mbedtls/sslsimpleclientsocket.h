@@ -23,6 +23,7 @@
 #include <circle-mbedtls/entropycontext.h>
 #include <circle-mbedtls/ctr_drbg.h>
 #include <circle-mbedtls/sslconfig.h>
+#include <circle-mbedtls/x509certprofile.h>
 #include <circle-mbedtls/x509certchain.h>
 #include <circle/net/netsubsystem.h>
 #include <circle/types.h>
@@ -54,7 +55,9 @@ public:
 	/// \brief Setup SSL/TLS configuration prior to Connect()
 	/// \param pServername The hostname of the server to be connected
 	/// \param pPersonalizationString Optional string for seeding the random bit generator
-	int Setup (const char *pServername, const char *pPersonalizationString = 0);
+	/// \param nRSAMinimumKeySize Minimum size of verified RSA keys in bits
+	int Setup (const char *pServername, const char *pPersonalizationString = 0,
+		   unsigned nRSAMinimumKeySize = 1024);
 
 private:
 	static void DebugCallback (void *pContext, int nLevel,
@@ -63,6 +66,7 @@ private:
 private:
 	CEntropyContext		m_Entropy;
 	CCTR_DRBG		m_CTR_DRBG;
+	CX509CertificateProfile	m_CertProfile;
 	CX509CertificateChain	m_CertChain;
 	CSSLConfig		m_SSLConfig;
 
