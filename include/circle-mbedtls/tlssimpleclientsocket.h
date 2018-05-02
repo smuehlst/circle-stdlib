@@ -1,5 +1,5 @@
 //
-// sslsimpleclientsocket.h
+// tlssimpleclientsocket.h
 //
 // Copyright (C) 2018  R. Stange <rsta2@o2online.de>
 //
@@ -16,13 +16,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-#ifndef _circle_mbedtls_sslsimpleclientsocket_h
-#define _circle_mbedtls_sslsimpleclientsocket_h
+#ifndef _circle_mbedtls_tlssimpleclientsocket_h
+#define _circle_mbedtls_tlssimpleclientsocket_h
 
-#include <circle-mbedtls/sslsocket.h>
+#include <circle-mbedtls/tlssocket.h>
 #include <circle-mbedtls/entropycontext.h>
 #include <circle-mbedtls/ctr_drbg.h>
-#include <circle-mbedtls/sslconfig.h>
+#include <circle-mbedtls/tlsconfig.h>
 #include <circle-mbedtls/x509certprofile.h>
 #include <circle-mbedtls/x509certchain.h>
 #include <circle/net/netsubsystem.h>
@@ -30,11 +30,11 @@
 
 namespace CircleMbedTLS {
 
-class CSSLSimpleClientSocket : public CSSLSocket	/// Easy to use socket for SSL/TLS clients
+class CTLSSimpleClientSocket : public CTLSSocket	/// Easy to use socket for SSL/TLS clients
 {
 public:
-	CSSLSimpleClientSocket (CNetSubSystem *pNetSubSystem, int nProtocol);
-	~CSSLSimpleClientSocket (void);
+	CTLSSimpleClientSocket (CNetSubSystem *pNetSubSystem, int nProtocol);
+	~CTLSSimpleClientSocket (void);
 
 	/// \brief Add certificate in PEM or DER format
 	/// \note Has to be called before Setup()
@@ -68,7 +68,7 @@ private:
 	CCTR_DRBG		m_CTR_DRBG;
 	CX509CertificateProfile	m_CertProfile;
 	CX509CertificateChain	m_CertChain;
-	CSSLConfig		m_SSLConfig;
+	CTLSConfig		m_TLSConfig;
 
 	boolean m_bCertAdded;
 };

@@ -1,5 +1,5 @@
 //
-// sslsocket.h
+// tlssocket.h
 //
 // Copyright (C) 2018  R. Stange <rsta2@o2online.de>
 //
@@ -16,11 +16,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-#ifndef _circle_mbedtls_sslsocket_h
-#define _circle_mbedtls_sslsocket_h
+#ifndef _circle_mbedtls_tlssocket_h
+#define _circle_mbedtls_tlssocket_h
 
 #include <mbedtls/ssl.h>
-#include <circle-mbedtls/sslconfig.h>
+#include <circle-mbedtls/tlsconfig.h>
 #include <circle-mbedtls/adaptedsocket.h>
 #include <circle/net/netsocket.h>
 #include <circle/net/netsubsystem.h>
@@ -32,14 +32,14 @@ namespace CircleMbedTLS {
 
 // TODO: support server and UDP sockets
 
-class CSSLSocket : public CNetSocket	/// SSL/TLS socket
+class CTLSSocket : public CNetSocket	/// SSL/TLS socket
 {
 public:
-	CSSLSocket (CNetSubSystem *pNetSubSystem, int nProtocol);
-	~CSSLSocket (void);
+	CTLSSocket (CNetSubSystem *pNetSubSystem, int nProtocol);
+	~CTLSSocket (void);
 
 	/// \brief Setup SSL/TLS configuration prior to Connect()
-	int Setup (const CSSLConfig &rConfig);
+	int Setup (const CTLSConfig &rConfig);
 
 	/// \brief Setup hostname of server prior to Connect()
 	int SetHostname (const char *pHostname);

@@ -18,7 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 #include <circle-mbedtls/mqttclient.h>
-#include <circle-mbedtls/sslsimpleclientsocket.h>
+#include <circle-mbedtls/tlssimpleclientsocket.h>
 #include <circle/net/socket.h>
 #include <circle/net/dnsclient.h>
 #include <circle/net/ipaddress.h>
@@ -130,8 +130,8 @@ void CMQTTClient::Connect (boolean bUseSSL,
 	}
 	else
 	{
-		CSSLSimpleClientSocket *pSSLSocket =
-			new CSSLSimpleClientSocket (m_pNetSubSystem, IPPROTO_TCP);
+		CTLSSimpleClientSocket *pSSLSocket =
+			new CTLSSimpleClientSocket (m_pNetSubSystem, IPPROTO_TCP);
 		assert (pSSLSocket != 0);
 
 		m_pSocket = pSSLSocket;

@@ -11,7 +11,7 @@ NEWLIBDIR   ?= $(CIRCLE_STDLIB_DIR)/install/arm-none-circle
 CIRCLEHOME  ?= $(CIRCLE_STDLIB_DIR)/libs/circle
 
 OBJS	= httpclient.o mqttclient.o mqttreceivepacket.o mqttsendpacket.o \
-	  sslsocket.o sslsimpleclientsocket.o adaptedsocket.o net_sockets.o \
+	  tlssocket.o tlssimpleclientsocket.o adaptedsocket.o net_sockets.o \
 	  x509certchain.o entropymodule.o
 
 libcircle-mbedtls.a: $(OBJS)

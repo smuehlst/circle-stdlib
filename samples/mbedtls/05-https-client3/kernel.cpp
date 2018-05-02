@@ -17,7 +17,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 #include "kernel.h"
-#include <circle-mbedtls/sslsimpleclientsocket.h>
+#include <circle-mbedtls/tlssimpleclientsocket.h>
 #include <circle/net/in.h>
 #include <circle/types.h>
 #include <assert.h>
@@ -58,7 +58,7 @@ CStdlibApp::TShutdownMode CKernel::Run (void)
 
 int CKernel::GetDocument (void)
 {
-	CSSLSimpleClientSocket Socket (&mNet, IPPROTO_TCP);
+	CTLSSimpleClientSocket Socket (&mNet, IPPROTO_TCP);
 
 	int nResult = Socket.AddCertificatePath ("/");
 	if (nResult <= 0)

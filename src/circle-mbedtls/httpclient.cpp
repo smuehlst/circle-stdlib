@@ -18,7 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 #include <circle-mbedtls/httpclient.h>
-#include <circle-mbedtls/sslsimpleclientsocket.h>
+#include <circle-mbedtls/tlssimpleclientsocket.h>
 #include <circle/usb/netdevice.h>
 #include <circle/util.h>
 #include <circle/net/socket.h>
@@ -80,8 +80,8 @@ THTTPStatus CHTTPClient::Request (THTTPRequestMethod  Method,
 	}
 	else
 	{
-		CSSLSimpleClientSocket *pSSLSocket =
-			new CSSLSimpleClientSocket (m_pNetSubSystem, IPPROTO_TCP);
+		CTLSSimpleClientSocket *pSSLSocket =
+			new CTLSSimpleClientSocket (m_pNetSubSystem, IPPROTO_TCP);
 		assert (pSSLSocket != 0);
 
 		m_pSocket = pSSLSocket;

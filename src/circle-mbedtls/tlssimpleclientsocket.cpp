@@ -1,5 +1,5 @@
 //
-// sslsimpleclientsocket.cpp
+// tlssimpleclientsocket.cpp
 //
 // Copyright (C) 2018  R. Stange <rsta2@o2online.de>
 //
@@ -16,24 +16,24 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-#include <circle-mbedtls/sslsimpleclientsocket.h>
+#include <circle-mbedtls/tlssimpleclientsocket.h>
 #include <assert.h>
 #include <stdio.h>
 
 using namespace CircleMbedTLS;
 
-CSSLSimpleClientSocket::CSSLSimpleClientSocket (CNetSubSystem *pNetSubSystem, int nProtocol)
-:	CSSLSocket (pNetSubSystem, nProtocol),
+CTLSSimpleClientSocket::CTLSSimpleClientSocket (CNetSubSystem *pNetSubSystem, int nProtocol)
+:	CTLSSocket (pNetSubSystem, nProtocol),
 	m_CTR_DRBG (&m_Entropy),
 	m_bCertAdded (FALSE)
 {
 }
 
-CSSLSimpleClientSocket::~CSSLSimpleClientSocket (void)
+CTLSSimpleClientSocket::~CTLSSimpleClientSocket (void)
 {
 }
 
-int CSSLSimpleClientSocket::AddCertificate (const u8 *pBuffer, size_t nLength)
+int CTLSSimpleClientSocket::AddCertificate (const u8 *pBuffer, size_t nLength)
 {
 	int nResult = m_CertChain.AddCertificate (pBuffer, nLength);
 	if (nResult != 0)
@@ -46,7 +46,7 @@ int CSSLSimpleClientSocket::AddCertificate (const u8 *pBuffer, size_t nLength)
 	return 0;
 }
 
-int CSSLSimpleClientSocket::AddCertificateFile (const char *pFilename)
+int CTLSSimpleClientSocket::AddCertificateFile (const char *pFilename)
 {
 	int nResult = m_CertChain.AddCertificateFile (pFilename);
 	if (nResult != 0)
@@ -59,7 +59,7 @@ int CSSLSimpleClientSocket::AddCertificateFile (const char *pFilename)
 	return 0;
 }
 
-int CSSLSimpleClientSocket::AddCertificatePath (const char *pPath)
+int CTLSSimpleClientSocket::AddCertificatePath (const char *pPath)
 {
 	int nResult = m_CertChain.AddCertificatePath (pPath);
 	if (nResult <= 0)
@@ -72,7 +72,7 @@ int CSSLSimpleClientSocket::AddCertificatePath (const char *pPath)
 	return nResult;
 }
 
-int CSSLSimpleClientSocket::Setup (const char *pServername, const char *pPersonalizationString,
+int CTLSSimpleClientSocket::Setup (const char *pServername, const char *pPersonalizationString,
 				   unsigned nRSAMinimumKeySize)
 {
 	int nResult = m_CTR_DRBG.Seed (pPersonalizationString);
@@ -81,7 +81,7 @@ int CSSLSimpleClientSocket::Setup (const char *pServername, const char *pPersona
 		return nResult;
 	}
 
-	nResult = m_SSLConfig.SetDefaults (MBEDTLS_SSL_IS_CLIENT, MBEDTLS_SSL_TRANSPORT_STREAM,
+	nResult = m_TLSConfig.SetDefaults (MBEDTLS_SSL_IS_CLIENT, MBEDTLS_SSL_TRANSPORT_STREAM,
 					   MBEDTLS_SSL_PRESET_DEFAULT);
 	if (nResult != 0)
 	{
@@ -90,22 +90,22 @@ int CSSLSimpleClientSocket::Setup (const char *pServername, const char *pPersona
 
 	if (m_bCertAdded)
 	{
-		m_SSLConfig.SetAuthMode (MBEDTLS_SSL_VERIFY_REQUIRED);
+		m_TLSConfig.SetAuthMode (MBEDTLS_SSL_VERIFY_REQUIRED);
 
 		m_CertProfile.SetRSAMinimumKeySize (nRSAMinimumKeySize);
-		m_SSLConfig.SetCertProfile (&m_CertProfile);
+		m_TLSConfig.SetCertProfile (&m_CertProfile);
 
-		m_SSLConfig.SetCA_Chain (&m_CertChain);
+		m_TLSConfig.SetCA_Chain (&m_CertChain);
 	}
 	else
 	{
-		m_SSLConfig.SetAuthMode (MBEDTLS_SSL_VERIFY_NONE);
+		m_TLSConfig.SetAuthMode (MBEDTLS_SSL_VERIFY_NONE);
 	}
 
-	m_SSLConfig.SetRNG (&m_CTR_DRBG);
-	m_SSLConfig.SetDebugCallback (DebugCallback, stdout);
+	m_TLSConfig.SetRNG (&m_CTR_DRBG);
+	m_TLSConfig.SetDebugCallback (DebugCallback, stdout);
 
-        nResult = CSSLSocket::Setup (m_SSLConfig);
+        nResult = CTLSSocket::Setup (m_TLSConfig);
 	if (nResult != 0)
 	{
 		return nResult;
@@ -115,7 +115,7 @@ int CSSLSimpleClientSocket::Setup (const char *pServername, const char *pPersona
 	return SetHostname (pServername);
 }
 
-void CSSLSimpleClientSocket::DebugCallback (void *pContext, int nLevel,
+void CTLSSimpleClientSocket::DebugCallback (void *pContext, int nLevel,
 					    const char *pFilename, int nLine, const char *pMsg)
 {
 	FILE *pFile = reinterpret_cast<FILE *> (pContext);
