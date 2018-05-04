@@ -27,7 +27,7 @@
 #include <circle-mbedtls/mqtt.h>
 #include <circle-mbedtls/mqttsendpacket.h>
 #include <circle-mbedtls/mqttreceivepacket.h>
-#include <circle/net/netsubsystem.h>
+#include <circle-mbedtls/tlssimplesupport.h>
 #include <circle/net/netsocket.h>
 #include <circle/ptrlist.h>
 #include <circle/string.h>
@@ -80,13 +80,13 @@ enum TMQTTConnectStatus
 class CMQTTClient : public CTask	/// Client for the MQTT IoT protocol
 {
 public:
-	/// \param pNetSubSystem     Pointer to the network subsystem
+	/// \param pTLSSupport       Pointer to the TLS simple support environment
 	/// \param nMaxPacketSize    Maximum allowed size of a MQTT packet sent or received\n
 	/// (topic size + payload size + some bytes protocol overhead)
 	/// \param nMaxPacketsQueued Maximum number of MQTT packets queue-able on receive\n
 	/// If processing a received packet takes longer, further packets have to be queued.
 	/// \param nMaxTopicSize     Maximum allowed size of a received topic string
-	CMQTTClient (CNetSubSystem *pNetSubSystem,
+	CMQTTClient (CTLSSimpleSupport *pTLSSupport,
 		     size_t nMaxPacketSize    = 1024,
 		     size_t nMaxPacketsQueued = 4,
 		     size_t nMaxTopicSize     = 256);
@@ -184,7 +184,7 @@ private:
 	void CleanupPacketIdentifierStore (void);
 
 private:
-	CNetSubSystem *m_pNetSubSystem;
+	CTLSSimpleSupport *m_pTLSSupport;
 	size_t m_nMaxPacketSize;
 	size_t m_nMaxTopicSize;
 

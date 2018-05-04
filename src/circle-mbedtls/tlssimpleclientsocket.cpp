@@ -22,8 +22,9 @@
 
 using namespace CircleMbedTLS;
 
-CTLSSimpleClientSocket::CTLSSimpleClientSocket (CNetSubSystem *pNetSubSystem, int nProtocol)
-:	CTLSSocket (pNetSubSystem, nProtocol),
+CTLSSimpleClientSocket::CTLSSimpleClientSocket (CTLSSimpleSupport *pTLSSupport, int nProtocol)
+:	CTLSSocket (pTLSSupport->GetNet (), nProtocol),
+	m_pTLSSupport (pTLSSupport),
 	m_CTR_DRBG (&m_Entropy),
 	m_bCertAdded (FALSE)
 {
@@ -72,8 +73,7 @@ int CTLSSimpleClientSocket::AddCertificatePath (const char *pPath)
 	return nResult;
 }
 
-int CTLSSimpleClientSocket::Setup (const char *pServername, const char *pPersonalizationString,
-				   unsigned nRSAMinimumKeySize)
+int CTLSSimpleClientSocket::Setup (const char *pServername, const char *pPersonalizationString)
 {
 	int nResult = m_CTR_DRBG.Seed (pPersonalizationString);
 	if (nResult != 0)
@@ -92,8 +92,8 @@ int CTLSSimpleClientSocket::Setup (const char *pServername, const char *pPersona
 	{
 		m_TLSConfig.SetAuthMode (MBEDTLS_SSL_VERIFY_REQUIRED);
 
-		m_CertProfile.SetRSAMinimumKeySize (nRSAMinimumKeySize);
-		m_TLSConfig.SetCertProfile (&m_CertProfile);
+		assert (m_pTLSSupport != 0);
+		m_TLSConfig.SetCertProfile (m_pTLSSupport->GetCertProfile ());
 
 		m_TLSConfig.SetCA_Chain (&m_CertChain);
 	}

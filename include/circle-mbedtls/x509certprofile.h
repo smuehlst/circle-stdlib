@@ -28,12 +28,17 @@ public:
 	CX509CertificateProfile (void)
 	{
 		// init from default profile
-		memcpy (&m_Profile, &mbedtls_x509_crt_profile_default, sizeof m_Profile);
+		Set (&mbedtls_x509_crt_profile_default);
 	}
 
 	const mbedtls_x509_crt_profile *Get (void) const
 	{
 		return &m_Profile;
+	}
+
+	void Set (const mbedtls_x509_crt_profile *pProfile)
+	{
+		memcpy (&m_Profile, pProfile, sizeof m_Profile);
 	}
 
 	/// \brief Set specific minimum size for RSA keys

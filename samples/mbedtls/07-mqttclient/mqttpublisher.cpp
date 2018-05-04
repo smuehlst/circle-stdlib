@@ -27,8 +27,8 @@ static const char FromPublisher[] = "mqttpub";
 
 using namespace CircleMbedTLS;
 
-CMQTTPublisher::CMQTTPublisher (CNetSubSystem *pNetSubSystem)
-:	CMQTTClient (pNetSubSystem, MAX_PACKET_SIZE, MAX_PACKETS_QUEUED, MAX_TOPIC_SIZE),
+CMQTTPublisher::CMQTTPublisher (CTLSSimpleSupport *pTLSSupport)
+:	CMQTTClient (pTLSSupport, MAX_PACKET_SIZE, MAX_PACKETS_QUEUED, MAX_TOPIC_SIZE),
 	m_bTimerRunning (FALSE)
 {
 	Connect (TRUE, MQTT_BROKER_HOSTNAME, MQTT_TLS_PORT,

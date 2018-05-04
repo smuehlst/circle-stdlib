@@ -30,12 +30,12 @@
 
 using namespace CircleMbedTLS;
 
-CHTTPClient::CHTTPClient (CNetSubSystem	*pNetSubSystem,
+CHTTPClient::CHTTPClient (CTLSSimpleSupport *pTLSSupport,
 			  CIPAddress	&rServerIP,
 			  u16	    	 nServerPort,
 			  const char	*pServerName,
 			  boolean	 bUseSSL)
-:	m_pNetSubSystem (pNetSubSystem),
+:	m_pTLSSupport (pTLSSupport),
 	m_ServerIP (rServerIP),
 	m_ServerPort (nServerPort),
 	m_ServerName (pServerName),
@@ -49,7 +49,7 @@ CHTTPClient::~CHTTPClient (void)
 	delete m_pSocket;
 	m_pSocket = 0;
 
-	m_pNetSubSystem = 0;
+	m_pTLSSupport = 0;
 }
 
 THTTPStatus CHTTPClient::Get (const char *pPath, u8 *pBuffer, unsigned *pLength)
@@ -70,18 +70,18 @@ THTTPStatus CHTTPClient::Request (THTTPRequestMethod  Method,
 				  const char	     *pFormData)
 {
 	// connect to server
-	assert (m_pNetSubSystem != 0);
+	assert (m_pTLSSupport != 0);
 	assert (m_pSocket == 0);
 
 	if (!m_bUseSSL)
 	{
-		m_pSocket = new CSocket (m_pNetSubSystem, IPPROTO_TCP);
+		m_pSocket = new CSocket (m_pTLSSupport->GetNet (), IPPROTO_TCP);
 		assert (m_pSocket != 0);
 	}
 	else
 	{
 		CTLSSimpleClientSocket *pSSLSocket =
-			new CTLSSimpleClientSocket (m_pNetSubSystem, IPPROTO_TCP);
+			new CTLSSimpleClientSocket (m_pTLSSupport, IPPROTO_TCP);
 		assert (pSSLSocket != 0);
 
 		m_pSocket = pSSLSocket;

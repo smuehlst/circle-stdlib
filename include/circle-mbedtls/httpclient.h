@@ -20,7 +20,7 @@
 #ifndef _circle_mbedtls_httpclient_h
 #define _circle_mbedtls_httpclient_h
 
-#include <circle/net/netsubsystem.h>
+#include <circle-mbedtls/tlssimplesupport.h>
 #include <circle/net/ipaddress.h>
 #include <circle-mbedtls/http.h>
 #include <circle/net/netsocket.h>
@@ -32,7 +32,7 @@ namespace CircleMbedTLS {
 class CHTTPClient
 {
 public:
-	CHTTPClient (CNetSubSystem *pNetSubSystem,
+	CHTTPClient (CTLSSimpleSupport *pTLSSupport,
 		     CIPAddress	   &rServerIP,
 		     u16	    nServerPort = HTTP_PORT,
 		     const char	   *pServerName = 0,		// required for virtual and HTTPS servers
@@ -56,7 +56,7 @@ private:
 			     const char		*pFormData = 0);// form data for POST or 0
 
 private:
-	CNetSubSystem *m_pNetSubSystem;
+	CTLSSimpleSupport *m_pTLSSupport;
 	CIPAddress     m_ServerIP;
 	u16	       m_ServerPort;
 	CString	       m_ServerName;

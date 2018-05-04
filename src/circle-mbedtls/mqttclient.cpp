@@ -54,9 +54,9 @@ const char *CMQTTClient::s_pErrorMsg[MQTTDisconnectUnknown+1] =
 
 static const char FromMQTTClient[] = "mqtt";
 
-CMQTTClient::CMQTTClient (CNetSubSystem *pNetSubSystem, size_t nMaxPacketSize,
+CMQTTClient::CMQTTClient (CTLSSimpleSupport *pTLSSupport, size_t nMaxPacketSize,
 			  size_t nMaxPacketsQueued, size_t nMaxTopicSize)
-:	m_pNetSubSystem (pNetSubSystem),
+:	m_pTLSSupport (pTLSSupport),
 	m_nMaxPacketSize (nMaxPacketSize),
 	m_nMaxTopicSize (nMaxTopicSize),
 	m_pTimer (CTimer::Get ()),
@@ -79,7 +79,7 @@ CMQTTClient::~CMQTTClient (void)
 	m_pTopicBuffer = 0;
 
 	m_pTimer = 0;
-	m_pNetSubSystem = 0;
+	m_pTLSSupport = 0;
 }
 
 boolean CMQTTClient::IsConnected (void) const
@@ -103,8 +103,8 @@ void CMQTTClient::Connect (boolean bUseSSL,
 		return;
 	}
 
-	assert (m_pNetSubSystem != 0);
-	CDNSClient DNSClient (m_pNetSubSystem);
+	assert (m_pTLSSupport != 0);
+	CDNSClient DNSClient (m_pTLSSupport->GetNet ());
 
 	assert (pHost != 0);
 	CIPAddress IPServer;
@@ -125,13 +125,13 @@ void CMQTTClient::Connect (boolean bUseSSL,
 
 	if (!bUseSSL)
 	{
-		m_pSocket = new CSocket (m_pNetSubSystem, IPPROTO_TCP);
+		m_pSocket = new CSocket (m_pTLSSupport->GetNet (), IPPROTO_TCP);
 		assert (m_pSocket != 0);
 	}
 	else
 	{
 		CTLSSimpleClientSocket *pSSLSocket =
-			new CTLSSimpleClientSocket (m_pNetSubSystem, IPPROTO_TCP);
+			new CTLSSimpleClientSocket (m_pTLSSupport, IPPROTO_TCP);
 		assert (pSSLSocket != 0);
 
 		m_pSocket = pSSLSocket;

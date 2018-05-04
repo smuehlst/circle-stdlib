@@ -23,9 +23,8 @@
 #include <circle-mbedtls/entropycontext.h>
 #include <circle-mbedtls/ctr_drbg.h>
 #include <circle-mbedtls/tlsconfig.h>
-#include <circle-mbedtls/x509certprofile.h>
 #include <circle-mbedtls/x509certchain.h>
-#include <circle/net/netsubsystem.h>
+#include <circle-mbedtls/tlssimplesupport.h>
 #include <circle/types.h>
 
 namespace CircleMbedTLS {
@@ -33,7 +32,7 @@ namespace CircleMbedTLS {
 class CTLSSimpleClientSocket : public CTLSSocket	/// Easy to use socket for SSL/TLS clients
 {
 public:
-	CTLSSimpleClientSocket (CNetSubSystem *pNetSubSystem, int nProtocol);
+	CTLSSimpleClientSocket (CTLSSimpleSupport *pTLSSupport, int nProtocol);
 	~CTLSSimpleClientSocket (void);
 
 	/// \brief Add certificate in PEM or DER format
@@ -55,18 +54,17 @@ public:
 	/// \brief Setup SSL/TLS configuration prior to Connect()
 	/// \param pServername The hostname of the server to be connected
 	/// \param pPersonalizationString Optional string for seeding the random bit generator
-	/// \param nRSAMinimumKeySize Minimum size of verified RSA keys in bits
-	int Setup (const char *pServername, const char *pPersonalizationString = 0,
-		   unsigned nRSAMinimumKeySize = 1024);
+	int Setup (const char *pServername, const char *pPersonalizationString = 0);
 
 private:
 	static void DebugCallback (void *pContext, int nLevel,
 				   const char *pFile, int nLine, const char *pMsg);
 
 private:
+	CTLSSimpleSupport *m_pTLSSupport;
+
 	CEntropyContext		m_Entropy;
 	CCTR_DRBG		m_CTR_DRBG;
-	CX509CertificateProfile	m_CertProfile;
 	CX509CertificateChain	m_CertChain;
 	CTLSConfig		m_TLSConfig;
 
