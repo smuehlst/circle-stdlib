@@ -18,6 +18,10 @@
 #define _circle_mbedtls_x509certprofile_h
 
 #include <mbedtls/x509_crt.h>
+#include <mbedtls/md.h>
+#include <mbedtls/pk.h>
+#include <mbedtls/ecp.h>
+#include <circle/types.h>
 #include <string.h>
 
 namespace CircleMbedTLS {
@@ -39,6 +43,87 @@ public:
 	void Set (const mbedtls_x509_crt_profile *pProfile)
 	{
 		memcpy (&m_Profile, pProfile, sizeof m_Profile);
+	}
+
+	// Message digests (see: mbedtls/md.h)
+
+	void SetAllowedMessageDigests (u32 nFlags)
+	{
+		m_Profile.allowed_mds = nFlags;
+	}
+
+	u32 GetAllowedMessageDigests (void) const
+	{
+		return m_Profile.allowed_mds;
+	}
+
+	void EnableMessageDigest (mbedtls_md_type_t Type)
+	{
+		m_Profile.allowed_mds |= MBEDTLS_X509_ID_FLAG (Type);
+	}
+
+	void DisableMessageDigest (mbedtls_md_type_t Type)
+	{
+		m_Profile.allowed_mds &= ~MBEDTLS_X509_ID_FLAG (Type);
+	}
+
+	boolean IsMessageDigestAllowed (mbedtls_md_type_t Type) const
+	{
+		return m_Profile.allowed_mds & MBEDTLS_X509_ID_FLAG (Type) ? TRUE : FALSE;
+	}
+
+	// Public key algorithms (see: mbedtls/pk.h)
+
+	void SetAllowedPublicKeys (u32 nFlags)
+	{
+		m_Profile.allowed_pks = nFlags;
+	}
+
+	u32 GetAllowedPublicKeys (void) const
+	{
+		return m_Profile.allowed_pks;
+	}
+
+	void EnablePublicKey (mbedtls_pk_type_t Type)
+	{
+		m_Profile.allowed_pks |= MBEDTLS_X509_ID_FLAG (Type);
+	}
+
+	void DisablePublicKey (mbedtls_pk_type_t Type)
+	{
+		m_Profile.allowed_pks &= ~MBEDTLS_X509_ID_FLAG (Type);
+	}
+
+	boolean IsPublicKeyAllowed (mbedtls_pk_type_t Type) const
+	{
+		return m_Profile.allowed_pks & MBEDTLS_X509_ID_FLAG (Type) ? TRUE : FALSE;
+	}
+
+	// Elliptic Curves (see: mbedtls/ecp.h)
+
+	void SetAllowedEllipticCurves (u32 nFlags)
+	{
+		m_Profile.allowed_curves = nFlags;
+	}
+
+	u32 GetAllowedEllipticCurves (void) const
+	{
+		return m_Profile.allowed_curves;
+	}
+
+	void EnableEllipticCurve (mbedtls_ecp_group_id Type)
+	{
+		m_Profile.allowed_curves |= MBEDTLS_X509_ID_FLAG (Type);
+	}
+
+	void DisableEllipticCurve (mbedtls_ecp_group_id Type)
+	{
+		m_Profile.allowed_curves &= ~MBEDTLS_X509_ID_FLAG (Type);
+	}
+
+	boolean IsEllipticCurveAllowed (mbedtls_ecp_group_id Type) const
+	{
+		return m_Profile.allowed_curves & MBEDTLS_X509_ID_FLAG (Type) ? TRUE : FALSE;
 	}
 
 	/// \brief Set specific minimum size for RSA keys
