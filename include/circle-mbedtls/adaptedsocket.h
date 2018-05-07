@@ -28,7 +28,7 @@
 
 namespace CircleMbedTLS {
 
-class CAdaptedSocket	// Specific socket for adaption of the mbed TLS networking routines
+class CAdaptedSocket	/// Helper class for adaption of the mbed TLS networking routines
 {
 public:
 	CAdaptedSocket (CNetSubSystem *pNetSubSystem, int nProtocol);

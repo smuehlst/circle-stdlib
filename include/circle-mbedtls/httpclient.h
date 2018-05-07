@@ -29,7 +29,7 @@
 
 namespace CircleMbedTLS {
 
-class CHTTPClient
+class CHTTPClient	/// Client for the HTTP(S) protocol
 {
 public:
 	CHTTPClient (CTLSSimpleSupport *pTLSSupport,
