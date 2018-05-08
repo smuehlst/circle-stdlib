@@ -22,11 +22,18 @@ newlib:
 	$(MAKE) -C $(NEWLIB_BUILD_DIR) && \
 	$(MAKE) -C $(NEWLIB_BUILD_DIR) install
 
+build-samples:
+	$(MAKE) -C samples/01-nosys
+	$(MAKE) -C samples/02-stdio-hello
+	$(MAKE) -C samples/03-stdio-fatfs
+	$(MAKE) -C samples/04-std
+
 clean:
-	cd libs/circle && ./makeall --nosample PREFIX=$(TOOLPREFIX) clean
-	$(MAKE) -C libs/circle/addon/SDCard PREFIX=$(TOOLPREFIX) clean
-	$(MAKE) -C $(NEWLIB_BUILD_DIR) clean
-	test -n "$(NEWLIB_BUILD_DIR)" && echo rm -rf "$(NEWLIB_BUILD_DIR)"/* || :
-	test -n "$(NEWLIB_INSTALL_DIR)" && echo rm -rf "$(NEWLIB_INSTALL_DIR)"/* || :
-	$(MAKE) -C libs/mbedtls/library clean
-	$(MAKE) -C src/circle-mbedtls clean
+	-cd libs/circle && ./makeall --nosample PREFIX=$(TOOLPREFIX) clean
+	-$(MAKE) -C libs/circle/addon/SDCard PREFIX=$(TOOLPREFIX) clean
+	-$(MAKE) -C $(NEWLIB_BUILD_DIR) clean
+	-test -n "$(NEWLIB_INSTALL_DIR)" && rm -rf "$(NEWLIB_INSTALL_DIR)"/*
+	-$(MAKE) -C samples/01-nosys clean
+	-$(MAKE) -C samples/02-stdio-hello clean
+	-$(MAKE) -C samples/03-stdio-fatfs clean
+	-$(MAKE) -C samples/04-std clean
