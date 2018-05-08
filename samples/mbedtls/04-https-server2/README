@@ -1,0 +1,22 @@
+README
+
+This sample contains a slightly modified version of programs/ssl/ssl_server2.c
+from the mbed TLS project. It is written in C and uses the mbed TLS C API. The
+class CKernel only provides the needed environment of a circle-stdlib
+application.
+
+The program is a simple HTTPS server which provides only one document. You can
+request it by entering the following URL in the web browser on another computer
+in your local network:
+
+	https://ip_address_of_your_raspberry_pi
+
+Normally you will get an error message from your web browser about security
+violations. You should be able to ignore this message to see the sent data. A
+web server, which provides secure access, requires a specific configuration
+which is not easy to accomplish. But in any case the transferred data will be
+encrypted.
+
+This sample can be configured in some way. To change the configuration, you have
+to provide the wanted options in the argv[] array in CKernel::Run() in the file
+kernel.cpp.

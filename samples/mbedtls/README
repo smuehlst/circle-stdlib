@@ -1,0 +1,18 @@
+README
+
+Samples written in C and using the mbed TLS C API:
+
+01-https-client1	Simple HTTPS client
+02-https-client2	Configurable HTTPS client
+03-https-server1	Simple HTTPS server
+04-https-server2	Configurable HTTPS server
+
+Please note, that the samples above have to be changed to provide real secure
+applications. The samples below should not have this issue.
+
+Samples written in C++ and using the circle-mbedtls C++ API:
+
+05-https-client3	Simple HTTPS client
+06-webclient		Fetching a RPi hardware revision list from a HTTPS
+			web-server and parsing it
+07-mqttclient		Demonstrating the MQTT client over TLS
