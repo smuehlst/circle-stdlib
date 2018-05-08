@@ -1,5 +1,9 @@
 #!/bin/bash
 
+echo "This script is deprecated and will be removed in a future release!"
+echo "Please use configure and make instead"
+sleep 3
+
 set -e
 
 function usage() {
