@@ -9,6 +9,9 @@ Raspberry Pi bare metal environment [Circle](https://github.com/rsta2/circle).
 [circle-newlib](https://github.com/smuehlst/circle-newlib) contains the changes for
 building Newlib in combination with Circle.
 
+[mbed TLS](https://tls.mbed.org/) can optionally be used for TLS connections (configure
+with `--opt-tls`).
+
 ## Getting Started
 
 ### Prerequisites
@@ -19,9 +22,6 @@ building Newlib in combination with Circle.
   * `gcc version 7.1.1 20170510 (Linaro GCC 7.1-2017.05)` (gcc-linaro-7.1.1-2017.05-x86_64_arm-eabi.tar.xz from https://releases.linaro.org/components/toolchain/binaries/7.1-2017.05/arm-linux-gnueabihf) 
 
 ### Building the Libraries
-
-Clone the `circle-stdlib` repository with its submodules and run
-the script `build.bash` to build the libraries:
 
 ```
 git clone --recursive https://github.com/smuehlst/circle-stdlib.git
@@ -35,7 +35,7 @@ The `configure` script has the following options:
 ```
 $ ./configure -h
 usage: configure [ <option> ... ]
-Build Circle with newlib standard C library.
+Configure Circle with newlib standard C library and mbed TLS library.
 
 Options:
   -c, --clean                    clean build results and exit
@@ -49,13 +49,13 @@ Options:
   -s <path>, --stddefpath <path>
                                  path where stddef.h header is located (only necessary
                                  if  script cannot determine it automatically)
+  --opt-tls                      build with mbed TLS support
 ```
 
-### Building a Sample Program
+### Building the Samples
 
 ```
-cd samples/01-nosys
-make
+make build-samples
 ```
 
 ## Current Release
@@ -64,10 +64,11 @@ v5.0
 
 * Synced with [Circle Step 35](https://github.com/rsta2/circle/releases/tag/Step35).
 * Added support for <dirent.h> functions.
-* mbed TLS support TODO
-* Added configure script and Makefile to replace build.bash
+* [mbed TLS](libs/mbedtls) support implemented by Rene Stange.
+* Added `configure` script and `Makefile` to replace `build.bash`. build.bash is
+  deprecated and will be removed in a future release.
 
-## Previous releases
+## Previous Releases
 
 ### v4.0
 
@@ -104,4 +105,4 @@ Version 3 - see the [LICENSE](LICENSE) file for details
 
 * Rene Stange for [Circle](https://github.com/rsta2/circle).
 * The Newlib team for [Newlib](https://sourceware.org/newlib/).
-* The mbed TLS team for [mbet TLS](https://tls.mbed.org/).
+* The mbed TLS team for [mbed TLS](https://tls.mbed.org/).

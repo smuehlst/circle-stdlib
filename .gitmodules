@@ -5,3 +5,6 @@
 	path = libs/circle-newlib
 	url = https://github.com/smuehlst/circle-newlib
 	branch = circle-newlib
+[submodule "libs/mbedtls"]
+	path = libs/mbedtls
+	url = https://github.com/ARMmbed/mbedtls.git

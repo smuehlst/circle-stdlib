@@ -4,7 +4,7 @@ set -e
 
 function usage() {
     echo "usage: configure [ <option> ... ]"
-    echo "Configure Circle with newlib standard C library."
+    echo "Configure Circle with newlib standard C library and mbed TLS library."
     echo
     echo "Options:"
     echo "  -c, --clean                    clean build results and exit"
@@ -193,4 +193,10 @@ export CFLAGS_FOR_TARGET
     echo "RANLIB_FOR_TARGET = ${RANLIB_FOR_TARGET}"
     echo "OBJCOPY_FOR_TARGET =  ${OBJCOPY_FOR_TARGET}"
     echo "OBJDUMP_FOR_TARGET = ${OBJDUMP_FOR_TARGET}"
+
+    if [ $OPTTLS -eq 1 ]
+    then
+        echo "MBEDTLS = mbedtls"
+        echo "MBEDTLS_SAMPLES = build-mbedtls-samples"
+    fi
 ) >Config.mk

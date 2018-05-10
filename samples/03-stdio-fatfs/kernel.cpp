@@ -68,35 +68,37 @@ CStdlibApp::TShutdownMode CKernel::Run (void)
 		mLogger.Write (GetKernelName (), LogPanic, "Cannot open file for writing with fopen()");
 	}
 
-	// We have only a single directory with Circle
-	DIR * const dir = opendir(".");
+        // We have only a single directory with Circle
+        DIR * const dir = opendir (".");
 
-	if (dir != nullptr)
-	{
-	        printf("Listing \".\" directory with readdir:\n");
-	        while (true)
-	        {
+        if (dir != nullptr)
+        {
+                printf ("Listing \".\" directory with readdir:\n");
+                while (true)
+                {
                         errno = 0;
                         struct dirent const * const dp = readdir (dir);
                         if (dp != nullptr)
                         {
-                                printf("\t%s\n", dp->d_name);
+                                printf ("\t%s\n", dp->d_name);
                         }
                         else
                         {
                                 if (errno != 0 && errno != ENOENT)
                                 {
-                                        fprintf(stderr, "readdir failed with errno %d\n", errno);
+                                        fprintf (stderr,
+                                                "readdir failed with errno %d\n",
+                                                errno);
                                 }
 
                                 break;
                         }
-	        }
+                }
 
-                printf("Rewinding directory...\n");
+                printf ("Rewinding directory...\n");
                 rewinddir (dir);
 
-                printf("Listing \".\" directory with readdir_r:\n");
+                printf ("Listing \".\" directory with readdir_r:\n");
                 while (true)
                 {
                         struct dirent de;
@@ -104,23 +106,26 @@ CStdlibApp::TShutdownMode CKernel::Run (void)
                         int error = readdir_r (dir, &de, &dep);
                         if (error != 0)
                         {
-                                fprintf(stderr, "readdir_r failed with error number %d\n", error);
+                                fprintf (stderr,
+                                        "readdir_r failed with error number %d\n",
+                                        error);
                         }
                         if (dep != nullptr)
                         {
-                                printf("\t%s\n", dep->d_name);
+                                printf ("\t%s\n", dep->d_name);
                         }
                         else
                         {
                                 break;
                         }
                 }
-                printf("Closing directory...\n");
+                printf ("Closing directory...\n");
                 if (closedir (dir) != 0)
                 {
-                        fprintf(stderr, "closedir failed with errno %d\n", errno);
+                        fprintf (stderr, "closedir failed with errno %d\n",
+                                 errno);
                 }
-	}
+        }
 
 	mLogger.Write (GetKernelName (), LogNotice, "C Standard Library Demo finished");
 

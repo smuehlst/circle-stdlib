@@ -2,7 +2,9 @@
 
 include Config.mk
 
-all: circle newlib
+all: circle newlib $(MBEDTLS)
+
+build-samples: build-stdlib-samples $(MBEDTLS_SAMPLES)
 
 circle:
 	cd libs/circle && ./makeall --nosample
@@ -22,12 +24,30 @@ newlib:
 	$(MAKE) -C $(NEWLIB_BUILD_DIR) && \
 	$(MAKE) -C $(NEWLIB_BUILD_DIR) install
 
-build-samples:
+build-stdlib-samples:
 	$(MAKE) -C samples/01-nosys
 	$(MAKE) -C samples/02-stdio-hello
 	$(MAKE) -C samples/03-stdio-fatfs
 	$(MAKE) -C samples/04-std
 
+MBEDTLS_INCLUDE = -I../../../include
+MBED_DEFINE = -DMBEDTLS_CONFIG_FILE='<circle-mbedtls/config-circle-mbedtls.h>'
+
+mbedtls:
+	CC=$(CC) \
+	CFLAGS="$(ARCH) -fsigned-char -ffreestanding -O2 -g $(MBEDTLS_INCLUDE) $(MBED_DEFINE)" \
+	$(MAKE) -C libs/mbedtls/library && \
+	$(MAKE) -C src/circle-mbedtls
+
+build-mbedtls-samples:
+	$(MAKE) -C samples/mbedtls/01-https-client1
+	$(MAKE) -C samples/mbedtls/02-https-client2
+	$(MAKE) -C samples/mbedtls/03-https-server1
+	$(MAKE) -C samples/mbedtls/04-https-server2
+	$(MAKE) -C samples/mbedtls/05-https-client3
+	$(MAKE) -C samples/mbedtls/06-webclient
+	$(MAKE) -C samples/mbedtls/07-mqttclient
+	
 clean:
 	-cd libs/circle && ./makeall --nosample PREFIX=$(TOOLPREFIX) clean
 	-$(MAKE) -C libs/circle/addon/SDCard PREFIX=$(TOOLPREFIX) clean
@@ -37,3 +57,5 @@ clean:
 	-$(MAKE) -C samples/02-stdio-hello clean
 	-$(MAKE) -C samples/03-stdio-fatfs clean
 	-$(MAKE) -C samples/04-std clean
+	-$(MAKE) -C libs/mbedtls/library clean
+	-$(MAKE) -C src/circle-mbedtls clean
