@@ -28,17 +28,11 @@ CKernel::CKernel (void)
 CStdlibApp::TShutdownMode CKernel::Run (void)
 {
 	char *argv[] = {"https-client2",
-#if 1
 			"server_name=elinux.org",
 			"request_page=/Main_Page",
-#else
-			"server_name=www.raspberrypi.org",
-			"request_page=/forums/app.php/feed/forum/72",
-#endif
 			"server_port=443",
 			"auth_mode=none",
 			//"debug_level=1",
-			//"nbio=1",
 			0};
 
 	int ret = tlsmain (sizeof argv/sizeof argv[0]-1, argv);

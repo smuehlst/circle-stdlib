@@ -1,5 +1,5 @@
 //
-// sslsocket.cpp
+// tlssocket.cpp
 //
 // Copyright (C) 2018  R. Stange <rsta2@o2online.de>
 //
@@ -16,7 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-#include <circle-mbedtls/sslsocket.h>
+#include <circle-mbedtls/tlssocket.h>
 #include <circle/net/dnsclient.h>
 #include <circle/net/ipaddress.h>
 #include <circle/net/in.h>
@@ -26,7 +26,7 @@
 
 using namespace CircleMbedTLS;
 
-CSSLSocket::CSSLSocket (CNetSubSystem *pNetSubSystem, int nProtocol)
+CTLSSocket::CTLSSocket (CNetSubSystem *pNetSubSystem, int nProtocol)
 :	CNetSocket (pNetSubSystem),
 	m_pNetSubSystem (pNetSubSystem),
 	m_pSocket (new CAdaptedSocket (pNetSubSystem, nProtocol)),
@@ -35,7 +35,7 @@ CSSLSocket::CSSLSocket (CNetSubSystem *pNetSubSystem, int nProtocol)
 	mbedtls_ssl_init (&m_Context);
 }
 
-CSSLSocket::~CSSLSocket (void)
+CTLSSocket::~CTLSSocket (void)
 {
 	if (m_bConnected)
 	{
@@ -50,20 +50,20 @@ CSSLSocket::~CSSLSocket (void)
 	m_pNetSubSystem = 0;
 }
 
-int CSSLSocket::Setup (const CSSLConfig &rConfig)
+int CTLSSocket::Setup (const CTLSConfig &rConfig)
 {
 	assert (!m_bConnected);
 	return mbedtls_ssl_setup (&m_Context, rConfig.Get ());
 }
 
-int CSSLSocket::SetHostname (const char *pHostname)
+int CTLSSocket::SetHostname (const char *pHostname)
 {
 	assert (!m_bConnected);
 	assert (pHostname != 0);
 	return mbedtls_ssl_set_hostname (&m_Context, pHostname);
 }
 
-int CSSLSocket::Connect (CIPAddress &rForeignIP, u16 nForeignPort)
+int CTLSSocket::Connect (CIPAddress &rForeignIP, u16 nForeignPort)
 {
 	if (m_pSocket == 0)
 	{
@@ -97,7 +97,7 @@ int CSSLSocket::Connect (CIPAddress &rForeignIP, u16 nForeignPort)
 		char Info[512];
 		mbedtls_x509_crt_verify_info (Info, sizeof Info, "x509: ", nFlags);
 
-		CLogger::Get ()->Write ("sslsocket", LogWarning, Info);
+		CLogger::Get ()->Write ("tlssocket", LogWarning, Info);
 
 		return MBEDTLS_ERR_X509_CERT_VERIFY_FAILED;
 	}
@@ -105,7 +105,7 @@ int CSSLSocket::Connect (CIPAddress &rForeignIP, u16 nForeignPort)
 	return 0;
 }
 
-int CSSLSocket::Connect (const char *pHost, const char *pPort)
+int CTLSSocket::Connect (const char *pHost, const char *pPort)
 {
 	assert (pHost != 0);
 	assert (pPort != 0);
@@ -129,7 +129,7 @@ int CSSLSocket::Connect (const char *pHost, const char *pPort)
 	return Connect (IPAddress, static_cast<u16> (ulPort));
 }
 
-int CSSLSocket::Receive (void *pBuffer, unsigned nLength, int nFlags)
+int CTLSSocket::Receive (void *pBuffer, unsigned nLength, int nFlags)
 {
 	assert (m_pSocket != 0);
 	m_pSocket->SetOptionBlocking (nFlags != MSG_DONTWAIT ? TRUE : FALSE);
@@ -152,13 +152,13 @@ int CSSLSocket::Receive (void *pBuffer, unsigned nLength, int nFlags)
 	return nResult;
 }
 
-int CSSLSocket::Send (const void *pBuffer, unsigned nLength, int nFlags)
+int CTLSSocket::Send (const void *pBuffer, unsigned nLength, int nFlags)
 {
 	assert (m_bConnected);
 	return mbedtls_ssl_write (&m_Context, reinterpret_cast<const u8 *> (pBuffer), nLength);
 }
 
-const u8 *CSSLSocket::GetForeignIP (void) const
+const u8 *CTLSSocket::GetForeignIP (void) const
 {
 	if (m_pSocket == 0)
 	{
@@ -168,14 +168,14 @@ const u8 *CSSLSocket::GetForeignIP (void) const
 	return m_pSocket->GetForeignIP ();
 }
 
-int CSSLSocket::ReceiveCallback (void *pParam, u8 *pBuffer, size_t nLength)
+int CTLSSocket::ReceiveCallback (void *pParam, u8 *pBuffer, size_t nLength)
 {
 	CAdaptedSocket *pSocket = reinterpret_cast<CAdaptedSocket *> (pParam);
 	assert (pSocket != 0);
 	return pSocket->Receive (pBuffer, nLength);
 }
 
-int CSSLSocket::ReceiveTimeoutCallback (void *pParam, u8 *pBuffer, size_t nLength,
+int CTLSSocket::ReceiveTimeoutCallback (void *pParam, u8 *pBuffer, size_t nLength,
 					uint32_t nTimeoutMs)
 {
 	CAdaptedSocket *pSocket = reinterpret_cast<CAdaptedSocket *> (pParam);
@@ -183,7 +183,7 @@ int CSSLSocket::ReceiveTimeoutCallback (void *pParam, u8 *pBuffer, size_t nLengt
 	return pSocket->ReceiveTimeout (pBuffer, nLength, nTimeoutMs);
 }
 
-int CSSLSocket::SendCallback (void *pParam, const u8 *pBuffer, size_t nLength)
+int CTLSSocket::SendCallback (void *pParam, const u8 *pBuffer, size_t nLength)
 {
 	CAdaptedSocket *pSocket = reinterpret_cast<CAdaptedSocket *> (pParam);
 	assert (pSocket != 0);

@@ -1,5 +1,5 @@
 //
-// sslconfig.h
+// tlsconfig.h
 //
 // Copyright (C) 2018  R. Stange <rsta2@o2online.de>
 //
@@ -16,8 +16,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-#ifndef _circle_mbedtls_sslconfig_h
-#define _circle_mbedtls_sslconfig_h
+#ifndef _circle_mbedtls_tlsconfig_h
+#define _circle_mbedtls_tlsconfig_h
 
 #include <mbedtls/ssl.h>
 #include <circle-mbedtls/x509certprofile.h>
@@ -29,15 +29,15 @@ namespace CircleMbedTLS {
 typedef void TSSLDebugCallback (void *pContext, int nDebugLevel,
 				const char *pFilename, int nLine, const char *pMessage);
 
-class CSSLConfig	/// SSL/TLS configuration
+class CTLSConfig	/// SSL/TLS configuration
 {
 public:
-	CSSLConfig (void)
+	CTLSConfig (void)
 	{
 		mbedtls_ssl_config_init (&m_Config);
 	}
 
-	~CSSLConfig (void)
+	~CTLSConfig (void)
 	{
 		mbedtls_ssl_config_free (&m_Config);
 	}

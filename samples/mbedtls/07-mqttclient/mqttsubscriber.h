@@ -20,7 +20,7 @@
 #define _mqttsubscriber_h
 
 #include <circle-mbedtls/mqttclient.h>
-#include <circle/net/netsubsystem.h>
+#include <circle-mbedtls/tlssimplesupport.h>
 #include <circle/types.h>
 
 namespace CircleMbedTLS
@@ -29,7 +29,7 @@ namespace CircleMbedTLS
 class CMQTTSubscriber : public CMQTTClient
 {
 public:
-	CMQTTSubscriber (CNetSubSystem *pNetSubSystem);
+	CMQTTSubscriber (CTLSSimpleSupport *pTLSSupport);
 
 	void OnConnect (boolean bSessionPresent);
 

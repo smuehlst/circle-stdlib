@@ -1,0 +1,13 @@
+README
+
+This sample requests the document https://elinux.org/Main_Page and displays the
+first received bytes of the response (the HTTP header). For further received
+data there is only a point ('.') displayed. The program uses the circle-mbedtls
+C++ API.
+
+By default the transferred data will be encrypted, but there is no
+authentication of the server. If you want server authentication, you have to
+provide the needed certificate. Just do "make certs" in the directory of the
+sample and put the downloaded .pem file in the root directory of the SD card
+along with the kernel image. The connection will be secure against
+Man-in-the-middle attacks then.

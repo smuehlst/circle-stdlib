@@ -1,0 +1,62 @@
+README
+
+This sample program demonstrates, how the circle-mbedtls MQTT client can be used
+to subscribe topics from a MQTT server/broker and receive messages from it, and
+how to publish messages to the MQTT server.
+
+
+To use this sample you need a MQTT server/broker, which supports version 3.1.1
+of the MQTT protocol (e.g. Mosquitto) and TLS, installed and running somewhere
+in your local network (difficult because of the needed TLS support) or on the
+Internet.
+
+One option for a first test is the public MQTT server/broker
+"test.mosquitto.org" on the Internet. Please note that this server is available
+for anybody without authentication. That means, anybody may read your published
+messages, may overwrite them at any time or may publish viral content. So be
+careful!
+
+Another option are the different MQTT cloud servers on the Internet. This option
+is more secure, because these servers require a password.
+
+
+Before building the sample program, you may have to update its configuration in
+the file mqttconfig.cpp. You need to set the hostname of the MQTT server/broker
+to be used, the unique client identifier, user name (as C-string if needed,
+otherwise 0), password and the MQTT topic used by the MQTT publisher client, and
+the same for the MQTT subscriber client. Other options in this file can normally
+remain unchanged. The #define TLS_RSA_MIN_KEY_SIZE is required for
+"test.mosquitto.org" only, because it provides a certificate with only 1024 bits
+RSA key size, which is normally too short for mbed TLS applications. If you are
+not using DHCP you can set your local network configuration in the file
+kernel.cpp.
+
+After initialization the sample program creates two connections to the
+configured MQTT server/broker (one for the publisher and one for the
+subscriber). The MQTT subscriber subscribes to a topic (default
+"circle/status/json") and after 5 seconds the MQTT publisher publishes (by
+default) the current CPU temperature of your Raspberry Pi to the same topic.
+Because the subscriber has subscribed to this topic before, it will receive a
+message back with this content (payload), which will be display on the screen
+(OnMessage). After another 30 seconds the publisher publishes the same topic
+again, and so on until it disconnects from the server/broker after 120 seconds.
+Please note that normally a computer would not subscribe to the topics it
+publishes by itself. This is used here for demonstration purpose only.
+
+By default the transferred data will be encrypted, but there is no
+authentication of the server. If you want server authentication, you have to
+provide the needed certificate. For "test.mosquitto.org" just do "make certs" in
+the directory of the sample and put the downloaded .der file in the root
+directory of the SD card along with the kernel image. The connection will be
+secure against Man-in-the-middle attacks then. If you use a MQTT cloud server of
+your choice, you have to provide the needed certificate file (.pem, .crt or
+.der) by yourself on the SD card.
+
+
+Some possible disconnect reasons (error messages) may be:
+
+* "Unacceptable protocol version" (MQTT server does not support MQTT v3.1.1)
+* "Not authorized" (MQTT server/broker requires authentication)
+* "DNS error" (Invalid host name or IP address of the MQTT server configured)
+* "Not supported" (Trying to send or receive multi-byte-character strings)
+* "Insufficient resources" (Increase Maximum packet size and/or queue depth)

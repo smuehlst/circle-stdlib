@@ -1,0 +1,14 @@
+README
+
+This sample contains a slightly modified version of programs/ssl/ssl_client1.c
+from the mbed TLS project. It is written in C and uses the mbed TLS C API. The
+class CKernel only provides the needed environment of a circle-stdlib
+application.
+
+The program requests the document https://elinux.org/Main_Page and displays the
+received response (the HTTP header and the HTML content).
+
+The transferred data will be encrypted, but normally there will be no
+authentication, because the authentication mode is set to optional and the
+provided certificates do not match. If you want authentication, you have to
+provide the matching certificates.

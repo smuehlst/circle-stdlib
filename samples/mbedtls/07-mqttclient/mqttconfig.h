@@ -5,6 +5,7 @@
 #define _mqttconfig_h
 
 #define MQTT_BROKER_HOSTNAME	"test.mosquitto.org"
+#define TLS_RSA_MIN_KEY_SIZE	1024
 
 #define PUB_CLIENT_ID		"circle:pub:001"
 #define PUB_USER_NAME		0

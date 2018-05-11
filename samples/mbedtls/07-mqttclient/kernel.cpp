@@ -20,8 +20,8 @@
 #include "kernel.h"
 #include "mqttpublisher.h"
 #include "mqttsubscriber.h"
+#include "mqttconfig.h"
 #include <circle/net/ntpdaemon.h>
-#include <mbedtls/debug.h>
 
 using namespace CircleMbedTLS;
 
@@ -42,24 +42,29 @@ CKernel::CKernel (void)
 #ifndef USE_DHCP
 	, IPAddress, NetMask, DefaultGateway, DNSServer
 #endif
-	)
+	),
+	m_TLSSupport (&mNet)
 {
 	mActLED.Blink (5);	// show we are alive
 }
 
 CStdlibApp::TShutdownMode CKernel::Run (void)
 {
-	//mbedtls_debug_set_threshold (1);
+	//m_TLSSupport.SetDebugThreshold (1);
+
+#ifdef TLS_RSA_MIN_KEY_SIZE
+	m_TLSSupport.GetCertProfile ()->SetRSAMinimumKeySize (TLS_RSA_MIN_KEY_SIZE);
+#endif
 
 #ifdef NTP_SERVER
 	new CNTPDaemon (NTP_SERVER, &mNet);
 	mScheduler.Sleep (4);
 #endif
 
-	new CMQTTSubscriber (&mNet);
+	new CMQTTSubscriber (&m_TLSSupport);
 	mScheduler.Sleep (2);
 
-	new CMQTTPublisher (&mNet);
+	new CMQTTPublisher (&m_TLSSupport);
 
 	for (unsigned nCount = 0; 1; nCount++)
 	{

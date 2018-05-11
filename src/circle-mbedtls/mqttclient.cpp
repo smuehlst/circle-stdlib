@@ -18,7 +18,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 #include <circle-mbedtls/mqttclient.h>
-#include <circle-mbedtls/sslsimpleclientsocket.h>
+#include <circle-mbedtls/tlssimpleclientsocket.h>
 #include <circle/net/socket.h>
 #include <circle/net/dnsclient.h>
 #include <circle/net/ipaddress.h>
@@ -54,9 +54,9 @@ const char *CMQTTClient::s_pErrorMsg[MQTTDisconnectUnknown+1] =
 
 static const char FromMQTTClient[] = "mqtt";
 
-CMQTTClient::CMQTTClient (CNetSubSystem *pNetSubSystem, size_t nMaxPacketSize,
+CMQTTClient::CMQTTClient (CTLSSimpleSupport *pTLSSupport, size_t nMaxPacketSize,
 			  size_t nMaxPacketsQueued, size_t nMaxTopicSize)
-:	m_pNetSubSystem (pNetSubSystem),
+:	m_pTLSSupport (pTLSSupport),
 	m_nMaxPacketSize (nMaxPacketSize),
 	m_nMaxTopicSize (nMaxTopicSize),
 	m_pTimer (CTimer::Get ()),
@@ -79,7 +79,7 @@ CMQTTClient::~CMQTTClient (void)
 	m_pTopicBuffer = 0;
 
 	m_pTimer = 0;
-	m_pNetSubSystem = 0;
+	m_pTLSSupport = 0;
 }
 
 boolean CMQTTClient::IsConnected (void) const
@@ -103,8 +103,8 @@ void CMQTTClient::Connect (boolean bUseSSL,
 		return;
 	}
 
-	assert (m_pNetSubSystem != 0);
-	CDNSClient DNSClient (m_pNetSubSystem);
+	assert (m_pTLSSupport != 0);
+	CDNSClient DNSClient (m_pTLSSupport->GetNet ());
 
 	assert (pHost != 0);
 	CIPAddress IPServer;
@@ -125,13 +125,13 @@ void CMQTTClient::Connect (boolean bUseSSL,
 
 	if (!bUseSSL)
 	{
-		m_pSocket = new CSocket (m_pNetSubSystem, IPPROTO_TCP);
+		m_pSocket = new CSocket (m_pTLSSupport->GetNet (), IPPROTO_TCP);
 		assert (m_pSocket != 0);
 	}
 	else
 	{
-		CSSLSimpleClientSocket *pSSLSocket =
-			new CSSLSimpleClientSocket (m_pNetSubSystem, IPPROTO_TCP);
+		CTLSSimpleClientSocket *pSSLSocket =
+			new CTLSSimpleClientSocket (m_pTLSSupport, IPPROTO_TCP);
 		assert (pSSLSocket != 0);
 
 		m_pSocket = pSSLSocket;

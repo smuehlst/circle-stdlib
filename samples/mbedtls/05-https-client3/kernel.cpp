@@ -17,14 +17,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 #include "kernel.h"
-#include <circle-mbedtls/sslsimpleclientsocket.h>
+#include <circle-mbedtls/tlssimpleclientsocket.h>
 #include <circle/net/in.h>
 #include <circle/types.h>
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <mbedtls/error.h>
-#include <mbedtls/debug.h>
 
 #define SERVER_NAME	"elinux.org"
 #define SERVER_PORT	"443"
@@ -33,14 +32,15 @@
 using namespace CircleMbedTLS;
 
 CKernel::CKernel (void)
-        : CStdlibAppNetwork ("https-client3")
+        : CStdlibAppNetwork ("https-client3"),
+          m_TLSSupport (&mNet)
 {
 	mActLED.Blink (5);	// show we are alive
 }
 
 CStdlibApp::TShutdownMode CKernel::Run (void)
 {
-	//mbedtls_debug_set_threshold (1);
+	//m_TLSSupport.SetDebugThreshold (1);
 
 	int nResult = GetDocument ();
 
@@ -58,7 +58,7 @@ CStdlibApp::TShutdownMode CKernel::Run (void)
 
 int CKernel::GetDocument (void)
 {
-	CSSLSimpleClientSocket Socket (&mNet, IPPROTO_TCP);
+	CTLSSimpleClientSocket Socket (&m_TLSSupport, IPPROTO_TCP);
 
 	int nResult = Socket.AddCertificatePath ("/");
 	if (nResult <= 0)

@@ -50,7 +50,8 @@ CKernel::CKernel (void)
 #ifndef USE_DHCP
 	, IPAddress, NetMask, DefaultGateway, DNSServer
 #endif
-	)
+	),
+	m_TLSSupport (&mNet)
 {
 	mActLED.Blink (5);	// show we are alive
 }
@@ -86,7 +87,7 @@ CStdlibApp::TShutdownMode CKernel::Run (void)
 boolean CKernel::GetDocument (char *pBuffer)
 {
 	CIPAddress ForeignIP;
-	CDNSClient DNSClient (&mNet);
+	CDNSClient DNSClient (m_TLSSupport.GetNet ());
 	if (!DNSClient.Resolve (Server, &ForeignIP))
 	{
 		CLogger::Get ()->Write (GetKernelName (), LogError, "Cannot resolve: %s", Server);
@@ -101,7 +102,8 @@ boolean CKernel::GetDocument (char *pBuffer)
 	unsigned nLength = nDocMaxSize;
 
 	assert (pBuffer != 0);
-	CHTTPClient Client (&mNet, ForeignIP, bUseSSL ? HTTPS_PORT : HTTP_PORT, Server, bUseSSL);
+	CHTTPClient Client (&m_TLSSupport, ForeignIP,
+			    bUseSSL ? HTTPS_PORT : HTTP_PORT, Server, bUseSSL);
 	THTTPStatus Status = Client.Get (Document, (u8 *) pBuffer, &nLength);
 	if (Status != HTTPOK)
 	{

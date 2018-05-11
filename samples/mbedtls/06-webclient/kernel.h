@@ -21,7 +21,7 @@
 #define _kernel_h
 
 #include <circle_stdlib_app.h>
-#include <circle-mbedtls/entropymodule.h>
+#include <circle-mbedtls/tlssimplesupport.h>
 
 class CKernel : public CStdlibAppNetwork
 {
@@ -36,7 +36,7 @@ private:
 	boolean ParseDocument (const char *pDocument);
 
 private:
-	CircleMbedTLS::CEntropyModule m_EntropyModule;
+	CircleMbedTLS::CTLSSimpleSupport m_TLSSupport;
 };
 
 #endif
