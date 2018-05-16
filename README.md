@@ -9,8 +9,9 @@ Raspberry Pi bare metal environment [Circle](https://github.com/rsta2/circle).
 [circle-newlib](https://github.com/smuehlst/circle-newlib) contains the changes for
 building Newlib in combination with Circle.
 
-[mbed TLS](https://tls.mbed.org/) can optionally be used for TLS connections (configure
-with `--opt-tls`).
+[mbed TLS](https://tls.mbed.org/) can optionally be used for TLS connections in
+Circle (call configure with `--opt-tls`, see also the
+[README file for circle-mbedtls](circle-mbedtls.md)).
 
 ## Getting Started
 
@@ -62,8 +63,9 @@ make build-samples
 
 v5.0
 
-* Synced with [Circle Step 35](https://github.com/rsta2/circle/releases/tag/Step35).
+* Synced with [Circle Step 35.1](https://github.com/rsta2/circle/releases/tag/Step35.1).
 * Added support for <dirent.h> functions.
+* Added support for time()-related functions.
 * [mbed TLS](libs/mbedtls) support implemented by Rene Stange.
 * Added `configure` script and `Makefile` to replace `build.bash`. build.bash is
   deprecated and will be removed in a future release.
