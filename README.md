@@ -61,7 +61,7 @@ make build-samples
 
 ## Current Release
 
-[v5.0](tree/v5.0)
+[v5.0](https://github.com/smuehlst/circle-stdlib/releases/tag/v5.0)
 
 * Synced with [Circle Step 35.1](https://github.com/rsta2/circle/releases/tag/Step35.1).
 * Added support for <dirent.h> functions.
@@ -72,13 +72,13 @@ make build-samples
 
 ## Previous Releases
 
-### [v4.0](tree/v4.0)
+### [v4.0](https://github.com/smuehlst/circle-stdlib/tree/v4.0)
 
 * Synced with [Circle Step 34](https://github.com/rsta2/circle/releases/tag/Step34).
 * Added CStdlibApp, CStdlibAppScreen, CStdlibAppStdio and CStdlibAppNetwork for
 easier application creation (thanks to Rene Stange).
 
-### [v3.0](tree/V3.0)
+### [v3.0](https://github.com/smuehlst/circle-stdlib/tree/V3.0)
 
 * Synced with [Circle Step 33](https://github.com/rsta2/circle/releases/tag/Step33).
 * Implemented stdin/stdout/stderr based on Circle's CConsole class.
@@ -87,14 +87,14 @@ support for C and C++ standard libraries. This is due to the fact that the Newli
 is replaced by circle-stdlib's Newlib build, and the toolchain's standard C++ library works with the
 replaced Newlib.
 
-### [v2.0](tree/v2.0)
+### [v2.0](https://github.com/smuehlst/circle-stdlib/tree/v2.0)
 
 This release implements Newlib's open(), close(), read() and write()
 system calls bases on Circle's I/O functions. This enables stdio functionality.
 A small [test program](samples/03-stdio-fatfs) demonstrates the use of
 stdio file system functions with Circle.
 
-### [v1.0](tree/v1.0)
+### [v1.0](https://github.com/smuehlst/circle-stdlib/tree/v1.0)
 
 Initial build of Newlib with Circle, without any systems calls being implemented.
 
