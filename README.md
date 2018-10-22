@@ -61,6 +61,12 @@ make build-samples
 
 ## Current Release
 
+v6.0
+
+* Synced with [Circle Step 36](https://github.com/rsta2/circle/releases/tag/Step36).
+
+## Previous Releases
+
 v5.0
 
 * Synced with [Circle Step 35.1](https://github.com/rsta2/circle/releases/tag/Step35.1).
@@ -70,7 +76,6 @@ v5.0
 * Added `configure` script and `Makefile` to replace `build.bash`. build.bash is
   deprecated and will be removed in a future release.
 
-## Previous Releases
 
 ### v4.0
 
