@@ -61,7 +61,13 @@ make build-samples
 
 ## Current Release
 
-[v5.0](https://github.com/smuehlst/circle-stdlib/releases/tag/v5.0)
+v6.0
+
+* Synced with [Circle Step 36](https://github.com/rsta2/circle/releases/tag/Step36).
+
+## Previous Releases
+
+### [v5.0](https://github.com/smuehlst/circle-stdlib/releases/tag/v5.0)
 
 * Synced with [Circle Step 35.1](https://github.com/rsta2/circle/releases/tag/Step35.1).
 * Added support for <dirent.h> functions.
@@ -70,7 +76,6 @@ make build-samples
 * Added `configure` script and `Makefile` to replace `build.bash`. build.bash is
   deprecated and will be removed in a future release.
 
-## Previous Releases
 
 ### [v4.0](https://github.com/smuehlst/circle-stdlib/tree/v4.0)
 
