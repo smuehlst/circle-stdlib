@@ -19,8 +19,7 @@ Circle (call configure with `--opt-tls`, see also the
 
 * Linux or Windows 10 Subsystem for Linux (WSL).
 * gcc ARM toolchain on the path. Successfully tested with:
-  * `gcc version 6.3.1 20170215 (release) [ARM/embedded-6-branch revision 245512] (GNU Tools for ARM Embedded Processors 6-2017-q1-update)` (gcc-arm-none-eabi-6-2017-q1-update-linux.tar.bz2 from https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads)
-  * `gcc version 7.1.1 20170510 (Linaro GCC 7.1-2017.05)` (gcc-linaro-7.1.1-2017.05-x86_64_arm-eabi.tar.xz from https://releases.linaro.org/components/toolchain/binaries/7.1-2017.05/arm-linux-gnueabihf) 
+  * `gcc version 7.3.1 20180622 (release) [ARM/embedded-7-branch revision 261907] (GNU Tools for ARM Embedded Processors 7-2018-q2-update)` (gcc-arm-none-eabi-7-2018-q2-update-linux.tar.bz2 https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads)
 
 ### Building the Libraries
 
@@ -61,11 +60,22 @@ make build-samples
 
 ## Current Release
 
-v6.0
+v7.0
 
-* Synced with [Circle Step 36](https://github.com/rsta2/circle/releases/tag/Step36).
+* Synced with [Circle Step 37](https://github.com/rsta2/circle/releases/tag/Step37).
+* [mbed TLS](libs/mbedtls) support updated to release 2.14.1.
+* Circle is now included from its default repository. To sync an existing clone of the circle-stdlib repository, enter the following commands:
+
+```
+git submodule sync libs/circle
+git submodule update --init --remote libs/circle
+```
 
 ## Previous Releases
+
+### [v6.0](https://github.com/smuehlst/circle-stdlib/releases/tag/v6.0)
+
+* Synced with [Circle Step 36](https://github.com/rsta2/circle/releases/tag/Step36).
 
 ### [v5.0](https://github.com/smuehlst/circle-stdlib/releases/tag/v5.0)
 
