@@ -19,8 +19,7 @@ Circle (call configure with `--opt-tls`, see also the
 
 * Linux or Windows 10 Subsystem for Linux (WSL).
 * gcc ARM toolchain on the path. Successfully tested with:
-  * `gcc version 6.3.1 20170215 (release) [ARM/embedded-6-branch revision 245512] (GNU Tools for ARM Embedded Processors 6-2017-q1-update)` (gcc-arm-none-eabi-6-2017-q1-update-linux.tar.bz2 from https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads)
-  * `gcc version 7.1.1 20170510 (Linaro GCC 7.1-2017.05)` (gcc-linaro-7.1.1-2017.05-x86_64_arm-eabi.tar.xz from https://releases.linaro.org/components/toolchain/binaries/7.1-2017.05/arm-linux-gnueabihf) 
+  * `gcc version 7.3.1 20180622 (release) [ARM/embedded-7-branch revision 261907] (GNU Tools for ARM Embedded Processors 7-2018-q2-update)` (gcc-arm-none-eabi-7-2018-q2-update-linux.tar.bz2 https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads)
 
 ### Building the Libraries
 
@@ -61,13 +60,24 @@ make build-samples
 
 ## Current Release
 
-v6.0
+v7.0
 
-* Synced with [Circle Step 36](https://github.com/rsta2/circle/releases/tag/Step36).
+* Synced with [Circle Step 37](https://github.com/rsta2/circle/releases/tag/Step37).
+* [mbed TLS](libs/mbedtls) support updated to release 2.14.1.
+* Circle is now included from its default repository. To sync an existing clone of the circle-stdlib repository, enter the following commands:
+
+```
+git submodule sync libs/circle
+git submodule update --init --remote libs/circle
+```
 
 ## Previous Releases
 
-v5.0
+### [v6.0](https://github.com/smuehlst/circle-stdlib/releases/tag/v6.0)
+
+* Synced with [Circle Step 36](https://github.com/rsta2/circle/releases/tag/Step36).
+
+### [v5.0](https://github.com/smuehlst/circle-stdlib/releases/tag/v5.0)
 
 * Synced with [Circle Step 35.1](https://github.com/rsta2/circle/releases/tag/Step35.1).
 * Added support for <dirent.h> functions.
@@ -77,13 +87,13 @@ v5.0
   deprecated and will be removed in a future release.
 
 
-### v4.0
+### [v4.0](https://github.com/smuehlst/circle-stdlib/tree/v4.0)
 
 * Synced with [Circle Step 34](https://github.com/rsta2/circle/releases/tag/Step34).
 * Added CStdlibApp, CStdlibAppScreen, CStdlibAppStdio and CStdlibAppNetwork for
 easier application creation (thanks to Rene Stange).
 
-### v3.0
+### [v3.0](https://github.com/smuehlst/circle-stdlib/tree/V3.0)
 
 * Synced with [Circle Step 33](https://github.com/rsta2/circle/releases/tag/Step33).
 * Implemented stdin/stdout/stderr based on Circle's CConsole class.
@@ -92,14 +102,14 @@ support for C and C++ standard libraries. This is due to the fact that the Newli
 is replaced by circle-stdlib's Newlib build, and the toolchain's standard C++ library works with the
 replaced Newlib.
 
-### v2.0
+### [v2.0](https://github.com/smuehlst/circle-stdlib/tree/v2.0)
 
 This release implements Newlib's open(), close(), read() and write()
 system calls bases on Circle's I/O functions. This enables stdio functionality.
 A small [test program](samples/03-stdio-fatfs) demonstrates the use of
 stdio file system functions with Circle.
 
-### V1.0
+### [v1.0](https://github.com/smuehlst/circle-stdlib/tree/v1.0)
 
 Initial build of Newlib with Circle, without any systems calls being implemented.
 
