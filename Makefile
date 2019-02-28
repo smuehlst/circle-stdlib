@@ -59,3 +59,7 @@ clean:
 	-$(MAKE) -C samples/04-std clean
 	-$(MAKE) -C libs/mbedtls/library clean
 	-$(MAKE) -C src/circle-mbedtls clean
+
+mrproper: clean
+	-rm -f Config.mk
+	-rm -rf build/circle-newlib/*
