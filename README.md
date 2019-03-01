@@ -52,6 +52,14 @@ Options:
   --opt-tls                      build with mbed TLS support
 ```
 
+To clean the project directory, the following commands can be used:
+
+```
+make clean
+make mrpropper		# removes the configuration too
+```
+
+
 ### Building the Samples
 
 ```
@@ -60,7 +68,14 @@ make build-samples
 
 ## Current Release
 
-v7.0
+v8.0
+
+* Synced with [Circle Step 39](https://github.com/rsta2/circle/releases/tag/Step39).
+* [mbed TLS](libs/mbedtls) support updated to release 2.16.0.
+
+## Previous Releases
+
+### [v7.0](https://github.com/smuehlst/circle-stdlib/releases/tag/v7.0)
 
 * Synced with [Circle Step 37](https://github.com/rsta2/circle/releases/tag/Step37).
 * [mbed TLS](libs/mbedtls) support updated to release 2.14.1.
@@ -70,8 +85,6 @@ v7.0
 git submodule sync libs/circle
 git submodule update --init --remote libs/circle
 ```
-
-## Previous Releases
 
 ### [v6.0](https://github.com/smuehlst/circle-stdlib/releases/tag/v6.0)
 
