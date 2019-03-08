@@ -7,7 +7,7 @@ CIRCLE_STDLIB_DIR ?= ../../..
 -include $(CIRCLE_STDLIB_DIR)/Config.mk
 
 MBEDTLS_DIR ?= $(CIRCLE_STDLIB_DIR)/libs/mbedtls
-NEWLIBDIR   ?= $(CIRCLE_STDLIB_DIR)/install/arm-none-circle
+NEWLIBDIR   ?= $(CIRCLE_STDLIB_DIR)/install/$(NEWLIB_ARCH)
 CIRCLEHOME  ?= $(CIRCLE_STDLIB_DIR)/libs/circle
 
 include $(CIRCLEHOME)/Rules.mk
