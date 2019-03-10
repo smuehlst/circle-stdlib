@@ -178,9 +178,9 @@ export \
 
 if [ $DEBUG -eq 1 ]
 then
-    CFLAGS_FOR_TARGET="$ARCH -O0 -g"
+    CFLAGS_FOR_TARGET="$ARCH -O0 -g -Wno-parentheses"
 else
-    CFLAGS_FOR_TARGET="$ARCH"
+    CFLAGS_FOR_TARGET="$ARCH -Wno-parentheses"
 fi
 export CFLAGS_FOR_TARGET
 

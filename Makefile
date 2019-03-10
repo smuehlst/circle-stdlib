@@ -35,7 +35,7 @@ MBED_DEFINE = -DMBEDTLS_CONFIG_FILE='<circle-mbedtls/config-circle-mbedtls.h>'
 
 mbedtls:
 	CC=$(CC) \
-	CFLAGS="$(ARCH) -fsigned-char -ffreestanding -O2 -g $(MBEDTLS_INCLUDE) $(MBED_DEFINE)" \
+	CFLAGS="$(ARCH) -fsigned-char -ffreestanding -O2 -Wno-parentheses -g $(MBEDTLS_INCLUDE) $(MBED_DEFINE)" \
 	$(MAKE) -C libs/mbedtls/library && \
 	$(MAKE) -C src/circle-mbedtls
 
