@@ -19,7 +19,10 @@ Circle (call configure with `--opt-tls`, see also the
 
 * Linux or Windows 10 Subsystem for Linux (WSL).
 * gcc ARM toolchain on the path. Successfully tested with:
-  * `gcc version 7.3.1 20180622 (release) [ARM/embedded-7-branch revision 261907] (GNU Tools for ARM Embedded Processors 7-2018-q2-update)` (gcc-arm-none-eabi-7-2018-q2-update-linux.tar.bz2 https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads)
+  * gcc version 7.3.1 20180622: gcc-arm-none-eabi-7-2018-q2-update-linux.tar.bz2 from https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads
+  * gcc version 8.2-2019.01 32-bit and 64-bit:
+    * gcc-arm-8.2-2019.01-x86_64-arm-eabi.tar.xz from https://developer.arm.com/open-source/gnu-toolchain/gnu-a/downloads
+    * gcc-arm-8.2-2019.01-x86_64-aarch64-elf.tar.xz from https://developer.arm.com/open-source/gnu-toolchain/gnu-a/downloads
 
 ### Building the Libraries
 
@@ -38,7 +41,6 @@ usage: configure [ <option> ... ]
 Configure Circle with newlib standard C library and mbed TLS library.
 
 Options:
-  -c, --clean                    clean build results and exit
   -d, --debug                    build with debug information, without optimizer
   -h, --help                     show usage message
   -n, --no-cpp                   do not support C++ standard library
@@ -56,9 +58,8 @@ To clean the project directory, the following commands can be used:
 
 ```
 make clean
-make mrpropper		# removes the configuration too
+make mrproper		# removes the configuration too
 ```
-
 
 ### Building the Samples
 
@@ -66,14 +67,18 @@ make mrpropper		# removes the configuration too
 make build-samples
 ```
 
-## Current Release
+## Current Release [v9.0](https://github.com/smuehlst/circle-stdlib/releases/tag/v9.0)
 
-v8.0
+* Synced with [Circle Step 39.1](https://github.com/rsta2/circle/releases/tag/Step39.1).
+* AArch64 support.
+* Removed deprecated build script `build.bash` (use `configure` and `make` instead).
+
+## Previous Releases
+
+### [v8.0](https://github.com/smuehlst/circle-stdlib/releases/tag/v8.0)
 
 * Synced with [Circle Step 39](https://github.com/rsta2/circle/releases/tag/Step39).
 * [mbed TLS](libs/mbedtls) support updated to release 2.16.0.
-
-## Previous Releases
 
 ### [v7.0](https://github.com/smuehlst/circle-stdlib/releases/tag/v7.0)
 
@@ -98,7 +103,6 @@ git submodule update --init --remote libs/circle
 * [mbed TLS](libs/mbedtls) support implemented by Rene Stange.
 * Added `configure` script and `Makefile` to replace `build.bash`. build.bash is
   deprecated and will be removed in a future release.
-
 
 ### [v4.0](https://github.com/smuehlst/circle-stdlib/tree/v4.0)
 
