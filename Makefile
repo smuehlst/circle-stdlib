@@ -30,12 +30,12 @@ build-stdlib-samples:
 	$(MAKE) -C samples/03-stdio-fatfs
 	$(MAKE) -C samples/04-std
 
-MBEDTLS_INCLUDE = -I../../../include
+MBEDTLS_INCLUDE = -I../../../include -I../../circle/include
 MBED_DEFINE = -DMBEDTLS_CONFIG_FILE='<circle-mbedtls/config-circle-mbedtls.h>'
 
 mbedtls:
 	CC=$(CC) \
-	CFLAGS="$(ARCH) -fsigned-char -ffreestanding -O2 -g $(MBEDTLS_INCLUDE) $(MBED_DEFINE)" \
+	CFLAGS="$(ARCH) -fsigned-char -ffreestanding -O2 -Wno-parentheses -g $(MBEDTLS_INCLUDE) $(MBED_DEFINE)" \
 	$(MAKE) -C libs/mbedtls/library && \
 	$(MAKE) -C src/circle-mbedtls
 

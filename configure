@@ -44,6 +44,8 @@ STDDEF_INCPATH=""
 STDLIB_SUPPORT=3
 FLOAT_ABI=hard
 OPTTLS=0
+SIXTY_FOUR_BIT=0
+NEWLIB_ARCH="arm-none-circle"
 
 NEWLIB_INSTALL_DIR="$TOPDIR/install"
 NEWLIB_BUILD_DIR="$TOPDIR/build/circle-newlib"
@@ -88,6 +90,14 @@ then
     echo "Error: Invalid toolchain prefix, exiting" >&2
     echo "TOOLPREFIX is \"$TOOLPREFIX\"" >&2
     exit 1
+fi
+
+# Try to determine 64-bit build from Target: output of gcc
+if [ "$($CC -v 2>&1 | grep '^Target:.*64')" != "" ]
+then
+    echo "64-bit compiler detected"
+    SIXTY_FOUR_BIT=1
+    NEWLIB_ARCH="aarch64-none-circle"
 fi
 
 if [ "$STDDEF_INCPATH" = "" ]
@@ -143,9 +153,14 @@ fi
     then
 	echo "OPTIMIZE = -O0 -g"
     fi
+    if [ $SIXTY_FOUR_BIT -eq 1 ]
+    then
+        echo "AARCH = 64"
+        echo "PREFIX64 = $TOOLPREFIX"
+    fi
 ) > libs/circle/Config.mk
 
-# Retrieve the resulting compiler flags from Cicle's top-level Makefile rules
+# Retrieve the resulting compiler flags from Circle's top-level Makefile rules
 ARCH=$(make -n -p -f libs/circle/Rules.mk CIRCLEHOME=libs/circle | grep ^ARCH | \
     sed -e "s/\$(FLOAT_ABI)/$FLOAT_ABI/" -e 's/ARCH = //')
 
@@ -163,15 +178,15 @@ export \
 
 if [ $DEBUG -eq 1 ]
 then
-    CFLAGS_FOR_TARGET="$ARCH -O0 -g"
+    CFLAGS_FOR_TARGET="$ARCH -O0 -g -Wno-parentheses"
 else
-    CFLAGS_FOR_TARGET="$ARCH"
+    CFLAGS_FOR_TARGET="$ARCH -Wno-parentheses"
 fi
 export CFLAGS_FOR_TARGET
 
 (
     cd $NEWLIB_BUILD_DIR
-    "$TOPDIR/libs/circle-newlib/configure" --target arm-none-circle --disable-multilib \
+    "$TOPDIR/libs/circle-newlib/configure" --target "${NEWLIB_ARCH}" --disable-multilib \
         --prefix "$NEWLIB_INSTALL_DIR"
 )
 
@@ -193,6 +208,7 @@ export CFLAGS_FOR_TARGET
     echo "RANLIB_FOR_TARGET = ${RANLIB_FOR_TARGET}"
     echo "OBJCOPY_FOR_TARGET =  ${OBJCOPY_FOR_TARGET}"
     echo "OBJDUMP_FOR_TARGET = ${OBJDUMP_FOR_TARGET}"
+    echo "NEWLIB_ARCH = ${NEWLIB_ARCH}"
 
     if [ $OPTTLS -eq 1 ]
     then

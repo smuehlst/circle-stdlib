@@ -2,8 +2,10 @@
 # Makefile
 #
 
+include ../../Config.mk
+
 CIRCLEHOME = ../../libs/circle
-NEWLIBDIR = ../../install/arm-none-circle
+NEWLIBDIR = ../../install/$(NEWLIB_ARCH)
 
 OBJS	= main.o kernel.o
 
