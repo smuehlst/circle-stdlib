@@ -149,6 +149,7 @@ fi
     echo "FLOAT_ABI = $FLOAT_ABI"
     echo "STDLIB_SUPPORT = $STDLIB_SUPPORT"
     echo "STDDEF_INCPATH = \"$STDDEF_INCPATH\""
+    echo "CFLAGS = -Wno-parentheses"
     if [ $DEBUG -eq 1 ]
     then
 	echo "OPTIMIZE = -O0 -g"
