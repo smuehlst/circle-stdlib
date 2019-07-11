@@ -28,11 +28,15 @@ subdirectory. Go to the subdirectory of the sample of your choice and do `make`.
 
 ## Current State
 
+V1.3:
+
+* Uses mbed TLS 2.16.2
+
+## Previous Releases
+
 V1.2:
 
 * Uses mbed TLS 2.16.0
-
-## Previous Releases
 
 V1.1:
 
