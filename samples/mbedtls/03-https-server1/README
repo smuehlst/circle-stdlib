@@ -16,3 +16,8 @@ violations. You should be able to ignore this message to see the sent data. A
 web server, which provides secure access, requires a specific configuration
 which is not easy to accomplish. But in any case the transferred data will be
 encrypted.
+
+You may also get an error message from your web browser about an invalid serial
+number of the used certificate, which cannot be ignored. This seems to be caused
+by a new test certificate in mbed TLS, which uses the same serial number as the
+previous one. This error should be gone, in case you use your own certificates.
