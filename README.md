@@ -67,6 +67,10 @@ make mrproper		# removes the configuration too
 make build-samples
 ```
 
+## Current Release [v10.0](https://github.com/smuehlst/circle-stdlib/releases/tag/v10.0)
+
+* Synced with [Circle Step 39.2](https://github.com/rsta2/circle/releases/tag/Step39.2).
+
 ## Current Release [v9.0](https://github.com/smuehlst/circle-stdlib/releases/tag/v9.0)
 
 * Synced with [Circle Step 39.1](https://github.com/rsta2/circle/releases/tag/Step39.1).
