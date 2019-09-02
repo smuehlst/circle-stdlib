@@ -12,7 +12,7 @@ function usage() {
     echo "  -n, --no-cpp                   do not support C++ standard library"
     echo "  -p <string>, --prefix <string> prefix of the toolchain commands (default: arm-none-eabi-)"
     echo "  -r <number>, --raspberrypi <number>"
-    echo "                                 Circle Raspberry Pi model number (1, 2, 3, default: 1)"
+    echo "                                 Circle Raspberry Pi model number (1, 2, 3, 4, default: 1)"
     echo "  --softfp                       use float ABI setting \"softfp\" instead of \"hard\""
     echo "  -s <path>, --stddefpath <path>"
     echo "                                 path where stddef.h header is located (only necessary"
@@ -111,7 +111,7 @@ fi
 echo "STDDEF_INCPATH=$STDDEF_INCPATH"
 
 case "$RASPBERRYPI" in
-    1|2|3) ;;
+    1|2|3|4) ;;
     *) echo "Unknown Raspberry Pi target" >&2; exit 1;;
 esac
 

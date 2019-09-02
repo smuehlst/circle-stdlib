@@ -20,7 +20,7 @@
 #include <circle/serial.h>
 #include <circle/timer.h>
 #include <circle/logger.h>
-#include <circle/usb/dwhcidevice.h>
+#include <circle/usb/usbhcidevice.h>
 #include <SDCard/emmc.h>
 #include <circle/fs/fat/fatfs.h>
 #include <circle/input/console.h>
@@ -151,7 +151,7 @@ public:
                          const char *pPartitionName = CSTDLIBAPP_DEFAULT_PARTITION)
                 : CStdlibAppScreen (kernel),
                   mpPartitionName (pPartitionName),
-                  mDWHCI (&mInterrupt, &mTimer),
+                  mUSBHCI (&mInterrupt, &mTimer),
                   mEMMC (&mInterrupt, &mTimer, &mActLED),
                   mConsole (&mScreen)
         {
@@ -187,7 +187,7 @@ public:
                         return false;
                 }
 
-                if (!mDWHCI.Initialize ())
+                if (!mUSBHCI.Initialize ())
                 {
                         return false;
                 }
@@ -213,7 +213,7 @@ public:
         }
 
 protected:
-        CDWHCIDevice    mDWHCI;
+        CUSBHCIDevice    mUSBHCI;
         CEMMCDevice     mEMMC;
         CFATFileSystem  mFileSystem;
         CConsole        mConsole;
