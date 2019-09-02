@@ -1,7 +1,7 @@
 //
 // adaptedsocket.h
 //
-// Copyright (C) 2018  R. Stange <rsta2@o2online.de>
+// Copyright (C) 2018-2019  R. Stange <rsta2@o2online.de>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
 #include <circle/net/netsubsystem.h>
 #include <circle/net/socket.h>
 #include <circle/net/ipaddress.h>
-#include <circle/usb/netdevice.h>
+#include <circle/netdevice.h>
 #include <circle/ptrarray.h>
 #include <circle/types.h>
 
