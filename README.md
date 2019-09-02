@@ -67,17 +67,22 @@ make mrproper		# removes the configuration too
 make build-samples
 ```
 
-## Current Release [v10.0](https://github.com/smuehlst/circle-stdlib/releases/tag/v10.0)
+## Current Release [v11.0](https://github.com/smuehlst/circle-stdlib/releases/tag/v11.0)
+
+* Synced with [Circle Step 40](https://github.com/rsta2/circle/releases/tag/Step40).
+* Raspberry Pi 4 support.
+
+## Previous Releases
+
+## [v10.0](https://github.com/smuehlst/circle-stdlib/releases/tag/v10.0)
 
 * Synced with [Circle Step 39.2](https://github.com/rsta2/circle/releases/tag/Step39.2).
 
-## Current Release [v9.0](https://github.com/smuehlst/circle-stdlib/releases/tag/v9.0)
+## [v9.0](https://github.com/smuehlst/circle-stdlib/releases/tag/v9.0)
 
 * Synced with [Circle Step 39.1](https://github.com/rsta2/circle/releases/tag/Step39.1).
 * AArch64 support.
 * Removed deprecated build script `build.bash` (use `configure` and `make` instead).
-
-## Previous Releases
 
 ### [v8.0](https://github.com/smuehlst/circle-stdlib/releases/tag/v8.0)
 
