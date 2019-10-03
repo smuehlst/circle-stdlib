@@ -183,7 +183,7 @@ export CFLAGS_FOR_TARGET
 (
     cd $NEWLIB_BUILD_DIR
     "$TOPDIR/libs/circle-newlib/configure" --target "${NEWLIB_ARCH}" --disable-multilib \
-        --prefix "$NEWLIB_INSTALL_DIR"
+        --prefix "$NEWLIB_INSTALL_DIR" --enable-newlib-long-time_t
 )
 
 # create circle-stdlib's configuration file
