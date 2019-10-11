@@ -19,10 +19,9 @@ Circle (call configure with `--opt-tls`, see also the
 
 * Linux or Windows 10 Subsystem for Linux (WSL).
 * gcc ARM toolchain on the path. Successfully tested with:
-  * gcc version 7.3.1 20180622: gcc-arm-none-eabi-7-2018-q2-update-linux.tar.bz2 from https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads
-  * gcc version 8.2-2019.01 32-bit and 64-bit:
-    * gcc-arm-8.2-2019.01-x86_64-arm-eabi.tar.xz from https://developer.arm.com/open-source/gnu-toolchain/gnu-a/downloads
-    * gcc-arm-8.2-2019.01-x86_64-aarch64-elf.tar.xz from https://developer.arm.com/open-source/gnu-toolchain/gnu-a/downloads
+  * gcc version 7.3.1 20180622 from https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads
+  * gcc version 8.2-2019.01 32-bit and 64-bit from https://developer.arm.com/open-source/gnu-toolchain/gnu-a/downloads
+  * gcc version 8.3-2019.03 32-bit and 64-bit from https://developer.arm.com/open-source/gnu-toolchain/gnu-a/downloads
 
 ### Building the Libraries
 
@@ -67,12 +66,16 @@ make mrproper		# removes the configuration too
 make build-samples
 ```
 
-## Current Release [v11.0](https://github.com/smuehlst/circle-stdlib/releases/tag/v11.0)
+## Current Release [v12.0](https://github.com/smuehlst/circle-stdlib/releases/tag/v12.0)
+
+* Updated circle-newlib from upstream to fix a compilation error in the C++ sample when using gcc 8.3-2019.03.
+
+## Previous Releases
+
+## [v11.0](https://github.com/smuehlst/circle-stdlib/releases/tag/v11.0)
 
 * Synced with [Circle Step 40](https://github.com/rsta2/circle/releases/tag/Step40).
 * Raspberry Pi 4 support.
-
-## Previous Releases
 
 ## [v10.0](https://github.com/smuehlst/circle-stdlib/releases/tag/v10.0)
 
