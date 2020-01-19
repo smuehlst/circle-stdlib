@@ -1,5 +1,7 @@
 # circle-stdlib
 
+![](https://github.com/smuehlst/circle-stdlib/workflows/CI/badge.svg)
+
 ## Overview
 
 The goal of this project is to provide C and C++ standard library support for the
