@@ -1,0 +1,33 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+        
+    - name: Install ARM GCC
+      run: |
+        cd
+        pwd
+        wget "https://developer.arm.com/-/media/Files/downloads/gnu-a/8.3-2019.03/binrel/gcc-arm-8.3-2019.03-x86_64-arm-eabi.tar.xz"
+        tar xvf gcc-arm-8.3-2019.03-x86_64-arm-eabi.tar.xz
+        ls
+        echo ::set-env name=PATH::$(echo "$PATH:$HOME/gcc-arm-8.3-2019.03-x86_64-arm-eabi")
+        echo $PATH
+        
+    - name: Update submodules
+      run: |
+        pwd
+        git submodule update
+                
+    - name: Configure
+      run: ./configure
+        
+    - name: Build
+      run: make
+        
