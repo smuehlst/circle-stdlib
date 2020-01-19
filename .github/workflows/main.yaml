@@ -20,13 +20,15 @@ jobs:
         wget -nv "https://developer.arm.com/-/media/Files/downloads/gnu-a/8.3-2019.03/binrel/gcc-arm-8.3-2019.03-x86_64-arm-eabi.tar.xz"
         tar xf gcc-arm-8.3-2019.03-x86_64-arm-eabi.tar.xz
         echo ::set-env name=PATH::$(echo "$PATH:$HOME/gcc-arm-8.3-2019.03-x86_64-arm-eabi/bin")
+        ls $HOME/gcc-arm-8.3-2019.03-x86_64-arm-eabi/bin/arm-eabi-gcc
         
     - name: Update submodules
       run: git submodule update --init --recursive
                 
     - name: Configure
       run: |
-        echo $PATH
+        echo PATH is $PATH
+        ls $HOME/gcc-arm-8.3-2019.03-x86_64-arm-eabi/bin/arm-eabi-gcc
         which arm-eabi-gcc
         bash -x ./configure -p arm-eabi-
         
