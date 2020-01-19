@@ -29,6 +29,9 @@ jobs:
     - name: Configure
       run: ./configure -p arm-eabi- --opt-tls
         
-    - name: Build
+    - name: Build libraries
       run: make
+              
+    - name: Build samples
+      run: make build-samples
         
