@@ -28,7 +28,7 @@ jobs:
       run: |
         echo $PATH
         which arm-eabi-gcc
-        bash -x ./configure -p arm-eabi- --opt-tls
+        bash -x ./configure -p arm-eabi-
         
     - name: Build libraries
       run: make
