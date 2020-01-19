@@ -1,6 +1,6 @@
 # circle-stdlib
 
-![](https://github.com/smuehlst/circle-stdlib/workflows/Build/badge.svg)
+![GitHub Actions build status badge](https://github.com/smuehlst/circle-stdlib/workflows/Build/badge.svg)
 
 ## Overview
 
@@ -27,7 +27,7 @@ Circle (call configure with `--opt-tls`, see also the
 
 ### Building the Libraries
 
-```
+```bash
 git clone --recursive https://github.com/smuehlst/circle-stdlib.git
 cd circle-stdlib
 ./configure
@@ -36,7 +36,7 @@ make
 
 The `configure` script has the following options:
 
-```
+```bash
 $ ./configure -h
 usage: configure [ <option> ... ]
 Configure Circle with newlib standard C library and mbed TLS library.
@@ -57,14 +57,14 @@ Options:
 
 To clean the project directory, the following commands can be used:
 
-```
+```bash
 make clean
-make mrproper		# removes the configuration too
+make mrproper   # removes the configuration too
 ```
 
 ### Building the Samples
 
-```
+```bash
 make build-samples
 ```
 
@@ -100,7 +100,7 @@ make build-samples
 * [mbed TLS](libs/mbedtls) support updated to release 2.14.1.
 * Circle is now included from its default repository. To sync an existing clone of the circle-stdlib repository, enter the following commands:
 
-```
+```bash
 git submodule sync libs/circle
 git submodule update --init --remote libs/circle
 ```
