@@ -26,7 +26,7 @@ jobs:
       run: git submodule update --init --recursive
                 
     - name: Configure
-      run: bash -x ./configure --opt-tls -p arm-eabi-
+      run: ./configure --opt-tls -p arm-eabi-
         
     - name: Build libraries
       run: make
