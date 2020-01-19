@@ -1,6 +1,6 @@
 # circle-stdlib
 
-![](https://github.com/smuehlst/circle-stdlib/workflows/CI/badge.svg)
+![](https://github.com/smuehlst/circle-stdlib/workflows/Build/badge.svg)
 
 ## Overview
 
