@@ -19,7 +19,9 @@
 //
 #include "kernel.h"
 
-static const char FromKernel[] = "kernel";
+namespace {
+	const char FromKernel[] = "kernel";
+}
 
 CKernel::CKernel (void)
 :	//m_LogFile ("circle.log"),	// uncomment this to write the log to a regular file
@@ -58,14 +60,16 @@ TShutdownMode CKernel::Run (void)
 {
 	m_Logger.Write (FromKernel, LogNotice, "Compile time: " __DATE__ " " __TIME__);
 
-	m_Logger.Write (FromKernel, LogNotice, "An exception will occur after 15 seconds from now");
+	m_Logger.Write (FromKernel, LogNotice, "A timer will stop the loop");
+
+	bool volatile nTimerFired = false;
 
 	// start timer to elapse after 15 seconds
-	m_Timer.StartKernelTimer (15 * HZ, TimerHandler);
+	m_Timer.StartKernelTimer (15 * HZ, TimerHandler, const_cast<bool *>(&nTimerFired));
 
 	// generate a log message every second
 	unsigned nTime = m_Timer.GetTime ();
-	while (1)
+	while (!nTimerFired)
 	{
 		while (nTime == m_Timer.GetTime ())
 		{
@@ -77,18 +81,13 @@ TShutdownMode CKernel::Run (void)
 		m_Logger.Write (FromKernel, LogNotice, "Time is %u", nTime);
 	}
 
+	m_Logger.Write (FromKernel, LogNotice, "Shutting down...");
+
 	return ShutdownHalt;
 }
 
-void CKernel::TimerHandler (TKernelTimerHandle hTimer, void *pParam, void *pContext)
+void CKernel::TimerHandler (TKernelTimerHandle, void *pParam, void *)
 {
-#if 1
-	// jump to an invalid address (execution is only allowed below _etext, see circle.ld)
-	void (*pInvalid) (void) = (void (*) (void)) 0x500000;
-
-	(*pInvalid) ();
-#else
-	// alternatively execute an undefined instruction
-	asm volatile (".word 0xFF000000");
-#endif
+	bool *pTimerFired = static_cast<bool *>(pParam);
+	*pTimerFired = true;
 }

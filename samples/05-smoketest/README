@@ -1,0 +1,2 @@
+This is based on Circle's hostlog example. It is intended
+as a small smoke test that can run automatically under QEMU.
