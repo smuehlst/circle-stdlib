@@ -10,21 +10,22 @@ function usage() {
     echo "  -d, --debug                    build with debug information, without optimizer"
     echo "  -h, --help                     show usage message"
     echo "  -n, --no-cpp                   do not support C++ standard library"
+    echo "  --opt-tls                      build with mbed TLS support"
     echo "  -p <string>, --prefix <string> prefix of the toolchain commands (default: arm-none-eabi-)"
+    echo "  --qemu                         build for running under QEMU in semihosting mode"
     echo "  -r <number>, --raspberrypi <number>"
     echo "                                 Circle Raspberry Pi model number (1, 2, 3, 4, default: 1)"
     echo "  --softfp                       use float ABI setting \"softfp\" instead of \"hard\""
     echo "  -s <path>, --stddefpath <path>"
     echo "                                 path where stddef.h header is located (only necessary"
     echo "                                 if  script cannot determine it automatically)"
-    echo "  --opt-tls                      build with mbed TLS support"
 }
 
 # From the bash FAQ: How to use pathnames relative to the script
 cd "${BASH_SOURCE%/*}" || exit 1
 TOPDIR="$PWD"
 
-TEMP=$(getopt -o dhnp:r:s: --long debug,help,no-circle-build,no-cpp,opt-tls,prefix:,raspberrypi:,script-debug,softfp,stddefpath: \
+TEMP=$(getopt -o dhnp:r:s: --long debug,help,no-circle-build,no-cpp,opt-tls,qemu,prefix:,raspberrypi:,script-debug,softfp,stddefpath: \
      -n 'build.bash' -- "$@")
 
 if [ $? != 0 ] ; then echo usage; exit 1 ; fi
@@ -35,6 +36,7 @@ eval set -- "$TEMP"
 DEBUG=0
 RASPBERRYPI=1
 CIRCLE_BUILD=1
+CIRCLE_CFLAGS=""
 NEWLIB_BUILD=1
 TOOLPREFIX=arm-none-eabi-
 STDDEF_INCPATH=""
@@ -54,6 +56,7 @@ while true ; do
 	-h|--help) usage ; exit 0;;
 	-n|--no-cpp) STDLIB_SUPPORT=2 ; shift;;
 	--opt-tls) OPTTLS=1 ; shift;;
+	--qemu) CIRCLE_CFLAGS="$CIRCLE_CFLAGS -DLEAVE_QEMU_ON_HALT" ; shift;;
 	-p|--prefix) TOOLPREFIX="$2" ; shift 2;;
 	-r|--raspberrypi) RASPBERRYPI="$2" ; shift 2;;
 	--script-debug) set -x ; shift;;
@@ -144,10 +147,10 @@ fi
     echo "FLOAT_ABI = $FLOAT_ABI"
     echo "STDLIB_SUPPORT = $STDLIB_SUPPORT"
     echo "STDDEF_INCPATH = \"$STDDEF_INCPATH\""
-    echo "CFLAGS = -Wno-parentheses"
+    echo "CFLAGS = -Wno-parentheses $CIRCLE_CFLAGS"
     if [ $DEBUG -eq 1 ]
     then
-	echo "OPTIMIZE = -O0 -g"
+        echo "OPTIMIZE = -O0 -g"
     fi
     if [ $SIXTY_FOUR_BIT -eq 1 ]
     then

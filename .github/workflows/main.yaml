@@ -1,4 +1,4 @@
-name: Build
+name: Build And Test "develop" Branch
 
 on:
   push:
@@ -15,22 +15,44 @@ jobs:
     steps:
     - uses: actions/checkout@v1
         
-    - name: Install ARM GCC
+    - name: Install Debian QEMU
+      run: |
+        sudo apt-get install qemu-system-aarch64
+        dpkg -l | grep qemu
+        qemu-system-aarch64 -version
+
+    - name: Install AArch64 GCC
       run: |
         cd
-        wget -nv "https://developer.arm.com/-/media/Files/downloads/gnu-a/8.3-2019.03/binrel/gcc-arm-8.3-2019.03-x86_64-arm-eabi.tar.xz"
-        tar xf gcc-arm-8.3-2019.03-x86_64-arm-eabi.tar.xz
+        wget -nv "https://developer.arm.com/-/media/Files/downloads/gnu-a/9.2-2019.12/binrel/gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf.tar.xz"
+        tar xf gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf.tar.xz
         echo ::set-env name=PATH::$(echo "$PATH:$HOME/gcc-arm-8.3-2019.03-x86_64-arm-eabi/bin")
-        
+
+    - name: Build AArch64 QEMU
+      run: |
+        cd
+        wget -nv "https://download.qemu.org/qemu-4.2.0.tar.xz"
+        tar xf qemu-4.2.0.tar.xz
+        cd qemu-4.2.0
+        ./configure --prefix=$HOME/local/qemu --target-list=aarch64-softmmu
+        make -j
+        echo ::set-env name=PATH::$(echo "$PATH:$HOME/gcc-arm-8.3-2019.03-x86_64-arm-eabi/bin")
+
     - name: Update submodules
       run: git submodule update --init --recursive
                 
-    - name: Configure
-      run: ./configure --opt-tls -p arm-eabi-
+    - name: Configure for AArch64 Raspberry Pi with QEMU support
+      run: ./configure -p aarch64-none-elf- -r 3 --qemu
         
     - name: Build libraries
-      run: make
-              
+      run: make -j
+
     - name: Build samples
       run: make build-samples
+      
+    - name: Run smoke test with QEMU
+      run: |
+        make -C libs/circle/addon/qemu
+        make -C samples/04-std
+        $HOME/qemu-4.2.0/aarch64-softmmu/qemu-system-aarch64 -M raspi3 -kernel git/circle-stdlib/samples/05-hostlog/kernel8.img  -display none -nographic -semihosting
         
