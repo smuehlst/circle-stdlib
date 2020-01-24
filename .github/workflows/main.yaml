@@ -17,7 +17,8 @@ jobs:
         
     - name: Install Debian QEMU
       run: |
-        sudo apt-get install qemu-system-aarch64
+        sudo apt-get update
+        sudo apt-get --assume-yes install qemu-system-aarch64
         dpkg -l | grep qemu
         qemu-system-aarch64 -version
 
