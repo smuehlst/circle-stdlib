@@ -12,15 +12,20 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    name: ${{ matrix.config.compiler }}
+    name: ${{ matrix.config.dirname }}
 
     strategy:
       fail-fast: false
       matrix:
         config:
-        - { url: "https://developer.arm.com/-/media/Files/downloads/gnu-a/9.2-2019.12/binrel/gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf.tar.xz",
-            tarname: "gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf.tar.xz",
-            dirname: "gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf"}
+        - { url:      "https://developer.arm.com/-/media/Files/downloads/gnu-a/8.2-2019.01/gcc-arm-8.2-2019.01-x86_64-aarch64-elf.tar.xz",
+            tarname:  "gcc-arm-8.2-2019.01-x86_64-aarch64-elf.tar.xz",
+            dirname:  "gcc-arm-8.2-2019.01-x86_64-aarch64-elf",
+            prefix:   "aarch64-elf-" }
+        - { url:      "https://developer.arm.com/-/media/Files/downloads/gnu-a/9.2-2019.12/binrel/gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf.tar.xz",
+            tarname:  "gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf.tar.xz",
+            dirname:  "gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf",
+            prefix:   "aarch64-none-elf-" }
 
     steps:
     - uses: actions/checkout@v1
@@ -40,13 +45,12 @@ jobs:
         cd qemu-4.2.0
         ./configure --prefix=$HOME/local/qemu --target-list=aarch64-softmmu
         make -j
-        echo ::set-env name=PATH::$(echo "$HOME/gcc-arm-8.3-2019.03-x86_64-arm-eabi/bin:$PATH")
 
     - name: Update submodules
       run: git submodule update --init --recursive
                 
     - name: Configure for AArch64 Raspberry Pi with QEMU support
-      run: ./configure -p aarch64-none-elf- -r 3 --qemu
+      run: ./configure -p ${{ matrix.config.prefix }} -r 3 --qemu
         
     - name: Build libraries
       run: make -j
