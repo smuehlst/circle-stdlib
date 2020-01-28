@@ -12,15 +12,25 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    name: ${{ matrix.config.compiler }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+        - { url: "https://developer.arm.com/-/media/Files/downloads/gnu-a/9.2-2019.12/binrel/gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf.tar.xz",
+            tarname: "gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf.tar.xz",
+            dirname: "gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf"}
+
     steps:
     - uses: actions/checkout@v1
 
     - name: Install AArch64 GCC
       run: |
         cd
-        wget -nv "https://developer.arm.com/-/media/Files/downloads/gnu-a/9.2-2019.12/binrel/gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf.tar.xz"
-        tar xf gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf.tar.xz
-        echo ::set-env name=PATH::$(echo "$PATH:$HOME/gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf/bin")
+        wget -nv -o ${{ matrix.config.tarname }} ${{ matrix.config.url }}
+        tar xf ${{ matrix.config.tarname }}
+        echo ::set-env name=PATH::$(echo "$HOME/${{ matrix.config.dirname }}/bin:$PATH")
 
     - name: Build AArch64 QEMU
       run: |
@@ -49,4 +59,3 @@ jobs:
         make -C libs/circle/addon/qemu
         make -C samples/05-smoketest
         $HOME/qemu-4.2.0/aarch64-softmmu/qemu-system-aarch64 -M raspi3 -kernel samples/05-smoketest/kernel8.img -display none -nographic -semihosting
-        
