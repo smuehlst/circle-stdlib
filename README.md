@@ -22,9 +22,8 @@ Circle (call configure with `--opt-tls`, see also the
 
 * Linux or Windows 10 Subsystem for Linux (WSL).
 * gcc ARM toolchain on the path. Successfully tested with:
-  * gcc version 7.3.1 20180622 from https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads
   * gcc version 8.2-2019.01 32-bit and 64-bit from https://developer.arm.com/open-source/gnu-toolchain/gnu-a/downloads
-  * gcc version 8.3-2019.03 32-bit and 64-bit from https://developer.arm.com/open-source/gnu-toolchain/gnu-a/downloads
+  * gcc version 9.2-2019.12 32-bit and 64-bit from https://developer.arm.com/open-source/gnu-toolchain/gnu-a/downloads
 
 ### Building the Libraries
 
