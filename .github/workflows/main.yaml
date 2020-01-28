@@ -25,12 +25,10 @@ jobs:
     steps:
     - uses: actions/checkout@v1
 
-    - name: Install AArch64 GCC
+    - name: Install Compiler
       run: |
         cd
-        wget -o ${{ matrix.config.tarname }} ${{ matrix.config.url }}
-        file ${{ matrix.config.tarname }}
-        ls -l ${{ matrix.config.tarname }}
+        wget -nv -O ${{ matrix.config.tarname }} ${{ matrix.config.url }}
         tar xf ${{ matrix.config.tarname }}
         echo ::set-env name=PATH::$(echo "$HOME/${{ matrix.config.dirname }}/bin:$PATH")
 
