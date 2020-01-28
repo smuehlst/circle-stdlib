@@ -28,7 +28,9 @@ jobs:
     - name: Install AArch64 GCC
       run: |
         cd
-        wget -nv -o ${{ matrix.config.tarname }} ${{ matrix.config.url }}
+        wget -o ${{ matrix.config.tarname }} ${{ matrix.config.url }}
+        file ${{ matrix.config.tarname }}
+        ls -l ${{ matrix.config.tarname }}
         tar xf ${{ matrix.config.tarname }}
         echo ::set-env name=PATH::$(echo "$HOME/${{ matrix.config.dirname }}/bin:$PATH")
 
