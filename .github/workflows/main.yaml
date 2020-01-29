@@ -66,6 +66,8 @@ jobs:
         cd
         wget -nv -O ${{ matrix.config.tarname }} ${{ matrix.config.url }}
         tar -x -f ${{ matrix.config.tarname }} -C ~/local
+ 
+    - name: Set Compiler Path ${{ matrix.config.dirname }}
         echo ::set-env name=PATH::$(echo "$HOME/local/${{ matrix.config.dirname }}/bin:$PATH")
 
     - name: Update submodules
