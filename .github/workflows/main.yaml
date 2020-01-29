@@ -35,15 +35,15 @@ jobs:
     - uses: actions/checkout@v1
 
     - name: Cache QEMU 4.2.0
-      id: qemu-4.2.0-cache-id
+      id: qemu-4-2-0-cache-id
       uses: actions/cache@v1
       with:
         path: ~/local/qemu
-        key: ${{ runner.os }}-qemu-4.2.0
-        restore-keys: ${{ runner.os }}-qemu-4.2.0
+        key: ${{ runner.os }}-qemu-4-2-0
+        restore-keys: ${{ runner.os }}-qemu-4-2-0
 
     - name: Install QEMU 4.2.0
-      if: steps.qemu-4.2.0-cache-id.outputs.cache-hit != 'true'
+      if: steps.qemu-4-2-0-cache-id.outputs.cache-hit != 'true'
       run: |
         cd
         wget -nv "https://download.qemu.org/qemu-4.2.0.tar.xz"
