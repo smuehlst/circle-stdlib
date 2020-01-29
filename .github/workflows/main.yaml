@@ -35,7 +35,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
 
-    - name: Cache QEMU 4.2.0
+    - name: Cache QEMU ${{ matrix.qemu }}
       id: qemu-cache-id
       uses: actions/cache@v1
       with:
@@ -53,12 +53,20 @@ jobs:
         make -j
         make install
 
-    - name: Install Compiler
+    - name: Cache Compiler ${{ matrix.config.dirname }}
+      id: compiler-cache-id
+      uses: actions/cache@v1
+      with:
+        path: ~/local/${{ matrix.config.dirname }}
+        key: ${{ runner.os }}-compiler-${{ matrix.config.dirname }}
+
+    - name: Install Compiler ${{ matrix.config.dirname }}
+      if: steps.compiler-cache-id.outputs.cache-hit != 'true'
       run: |
         cd
         wget -nv -O ${{ matrix.config.tarname }} ${{ matrix.config.url }}
-        tar xf ${{ matrix.config.tarname }}
-        echo ::set-env name=PATH::$(echo "$HOME/${{ matrix.config.dirname }}/bin:$PATH")
+        tar -x -f ${{ matrix.config.tarname }} -C ~/local
+        echo ::set-env name=PATH::$(echo "$HOME/local/${{ matrix.config.dirname }}/bin:$PATH")
 
     - name: Update submodules
       run: git submodule update --init --recursive
