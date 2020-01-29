@@ -9,6 +9,28 @@ on:
       - '**.md'
 
 jobs:
+  setup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Cache QEMU
+        id: qemu-cache-id
+        uses: actions/cache@v1
+        with:
+          path: ~/local/qemu
+          key: ${{ runner.os }}-qemu
+
+      - name: Install QEMU
+        if: steps.qemu-cache-id.outputs.cache-hit != 'true'
+        run: |
+          cd
+          wget -nv "https://download.qemu.org/qemu-4.2.0.tar.xz"
+          tar xf qemu-4.2.0.tar.xz
+          cd qemu-4.2.0
+          ./configure --prefix=$HOME/local/qemu --target-list=aarch64-softmmu
+          make -j
+          make install
+
   build:
     runs-on: ubuntu-latest
 
@@ -34,21 +56,18 @@ jobs:
     steps:
     - uses: actions/checkout@v1
 
+    - name: Restore QEMU from cache
+      uses: actions/cache@v1
+      with:
+        path: ~/local/qemu
+        key: ${{ runner.os }}-qemu
+
     - name: Install Compiler
       run: |
         cd
         wget -nv -O ${{ matrix.config.tarname }} ${{ matrix.config.url }}
         tar xf ${{ matrix.config.tarname }}
         echo ::set-env name=PATH::$(echo "$HOME/${{ matrix.config.dirname }}/bin:$PATH")
-
-    - name: Build AArch64 QEMU
-      run: |
-        cd
-        wget -nv "https://download.qemu.org/qemu-4.2.0.tar.xz"
-        tar xf qemu-4.2.0.tar.xz
-        cd qemu-4.2.0
-        ./configure --prefix=$HOME/local/qemu --target-list=aarch64-softmmu
-        make -j
 
     - name: Update submodules
       run: git submodule update --init --recursive
@@ -66,4 +85,4 @@ jobs:
       run: |
         make -C libs/circle/addon/qemu
         make -C samples/05-smoketest
-        $HOME/qemu-4.2.0/aarch64-softmmu/qemu-system-aarch64 -M raspi3 -kernel samples/05-smoketest/kernel8.img -display none -nographic -semihosting
+        $HOME/local/qemu/bin/qemu-system-aarch64 -M raspi3 -kernel samples/05-smoketest/kernel8.img -display none -nographic -semihosting
