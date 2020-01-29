@@ -15,7 +15,7 @@ jobs:
     name: ${{ matrix.config.dirname }}
 
     strategy:
-      fail-fast: false
+      # fail-fast: false
       matrix:
         config:
         - { url:      "https://developer.arm.com/-/media/Files/downloads/gnu-a/8.2-2019.01/gcc-arm-8.2-2019.01-x86_64-aarch64-elf.tar.xz",
@@ -30,26 +30,26 @@ jobs:
             tarname:  "gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf.tar.xz",
             dirname:  "gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf",
             prefix:   "aarch64-none-elf-" }
+        qemu: [ qemu-4.2.0 ]
 
     steps:
     - uses: actions/checkout@v1
 
     - name: Cache QEMU 4.2.0
-      id: qemu-4-2-0-cache-id
+      id: qemu-cache-id
       uses: actions/cache@v1
       with:
-        path: ~/local/qemu
-        key: ${{ runner.os }}-qemu-4-2-0
-        restore-keys: ${{ runner.os }}-qemu-4-2-0
+        path: ~/local/${{ matrix.qemu }}
+        key: ${{ runner.os }}-qemu
 
-    - name: Install QEMU 4.2.0
-      if: steps.qemu-4-2-0-cache-id.outputs.cache-hit != 'true'
+    - name: Install QEMU ${{ matrix.qemu }}
+      if: steps.qemu-cache-id.outputs.cache-hit != 'true'
       run: |
         cd
-        wget -nv "https://download.qemu.org/qemu-4.2.0.tar.xz"
-        tar xf qemu-4.2.0.tar.xz
-        cd qemu-4.2.0
-        ./configure --prefix=$HOME/local/qemu-4.2.0 --target-list=aarch64-softmmu
+        wget -nv https://download.qemu.org/${{ matrix.qemu }}.tar.xz
+        tar xf ${{ matrix.qemu }}.tar.xz
+        cd ${{ matrix.qemu }}
+        ./configure --prefix=$HOME/local/${{ matrix.qemu }} --target-list=aarch64-softmmu
         make -j
         make install
 
@@ -76,4 +76,4 @@ jobs:
       run: |
         make -C libs/circle/addon/qemu
         make -C samples/05-smoketest
-        $HOME/local/qemu/bin/qemu-system-aarch64 -M raspi3 -kernel samples/05-smoketest/kernel8.img -display none -nographic -semihosting
+        $HOME/local/${{ matrix.qemu }}/bin/qemu-system-aarch64 -M raspi3 -kernel samples/05-smoketest/kernel8.img -display none -nographic -semihosting
