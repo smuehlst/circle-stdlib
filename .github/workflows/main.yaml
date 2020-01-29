@@ -68,7 +68,7 @@ jobs:
         tar -x -f ${{ matrix.config.tarname }} -C ~/local
  
     - name: Set Compiler Path ${{ matrix.config.dirname }}
-        run: echo ::set-env name=PATH::$(echo "$HOME/local/${{ matrix.config.dirname }}/bin:$PATH")
+      run: echo ::set-env name=PATH::$(echo "$HOME/local/${{ matrix.config.dirname }}/bin:$PATH")
 
     - name: Update submodules
       run: git submodule update --init --recursive
