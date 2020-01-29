@@ -9,28 +9,6 @@ on:
       - '**.md'
 
 jobs:
-  setup:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Cache QEMU
-        id: qemu-cache-id
-        uses: actions/cache@v1
-        with:
-          path: ~/local/qemu
-          key: ${{ runner.os }}-qemu
-
-      - name: Install QEMU
-        if: steps.qemu-cache-id.outputs.cache-hit != 'true'
-        run: |
-          cd
-          wget -nv "https://download.qemu.org/qemu-4.2.0.tar.xz"
-          tar xf qemu-4.2.0.tar.xz
-          cd qemu-4.2.0
-          ./configure --prefix=$HOME/local/qemu --target-list=aarch64-softmmu
-          make -j
-          make install
-
   build:
     runs-on: ubuntu-latest
 
@@ -56,11 +34,24 @@ jobs:
     steps:
     - uses: actions/checkout@v1
 
-    - name: Restore QEMU from cache
+    - name: Cache QEMU 4.2.0
+      id: qemu-4.2.0-cache-id
       uses: actions/cache@v1
       with:
         path: ~/local/qemu
-        key: ${{ runner.os }}-qemu
+        key: ${{ runner.os }}-qemu-4.2.0
+        restore-keys: ${{ runner.os }}-qemu-4.2.0
+
+    - name: Install QEMU 4.2.0
+      if: steps.qemu-4.2.0-cache-id.outputs.cache-hit != 'true'
+      run: |
+        cd
+        wget -nv "https://download.qemu.org/qemu-4.2.0.tar.xz"
+        tar xf qemu-4.2.0.tar.xz
+        cd qemu-4.2.0
+        ./configure --prefix=$HOME/local/qemu-4.2.0 --target-list=aarch64-softmmu
+        make -j
+        make install
 
     - name: Install Compiler
       run: |
