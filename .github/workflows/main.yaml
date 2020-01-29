@@ -15,7 +15,7 @@ jobs:
     name: ${{ matrix.config.dirname }}
 
     strategy:
-      # fail-fast: false
+      fail-fast: false
       matrix:
         config:
         - { url:      "https://developer.arm.com/-/media/Files/downloads/gnu-a/8.2-2019.01/gcc-arm-8.2-2019.01-x86_64-aarch64-elf.tar.xz",
