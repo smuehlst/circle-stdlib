@@ -74,7 +74,8 @@ jobs:
     - name: Build QEMU 32-bit     
       if: steps.qemu-7d7af6c3-32-cache-id.outputs.cache-hit != 'true'
       run: |
-        cd ~/qemu-32
+        cd $GITHUB_WORKSPACE/qemu-32
+        git submodule update --init dtc
         ./configure --prefix=$HOME/local/qemu-7d7af6c3-32 --target-list=arm-softmmu
         make -j
         make install
