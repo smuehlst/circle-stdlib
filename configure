@@ -36,6 +36,7 @@ eval set -- "$TEMP"
 DEBUG=0
 RASPBERRYPI=1
 CIRCLE_BUILD=1
+CIRCLE_QEMU=0
 CIRCLE_CFLAGS=""
 NEWLIB_BUILD=1
 TOOLPREFIX=arm-none-eabi-
@@ -45,7 +46,6 @@ FLOAT_ABI=hard
 OPTTLS=0
 SIXTY_FOUR_BIT=0
 NEWLIB_ARCH="arm-none-circle"
-
 NEWLIB_INSTALL_DIR="$TOPDIR/install"
 NEWLIB_BUILD_DIR="$TOPDIR/build/circle-newlib"
 CIRCLEHOME="$TOPDIR/libs/circle"
@@ -56,7 +56,7 @@ while true ; do
 	-h|--help) usage ; exit 0;;
 	-n|--no-cpp) STDLIB_SUPPORT=2 ; shift;;
 	--opt-tls) OPTTLS=1 ; shift;;
-	--qemu) CIRCLE_CFLAGS="$CIRCLE_CFLAGS -DLEAVE_QEMU_ON_HALT" ; shift;;
+	--qemu) CIRCLE_QEMU=1 ; shift;;
 	-p|--prefix) TOOLPREFIX="$2" ; shift 2;;
 	-r|--raspberrypi) RASPBERRYPI="$2" ; shift 2;;
 	--script-debug) set -x ; shift;;
@@ -70,6 +70,7 @@ done
 echo "RASPBERRYPI=$RASPBERRYPI"
 echo "TOOLPREFIX=$TOOLPREFIX"
 echo "CIRCLE_BUILD=$CIRCLE_BUILD"
+echo "CIRCLE_QEMU=$CIRCLE_QEMU"
 echo "FLOAT_ABI=$FLOAT_ABI"
 echo "NEWLIB_BUILD=$NEWLIB_BUILD"
 echo "RASPBERRYPI=$RASPBERRYPI"
@@ -137,6 +138,17 @@ then
     then
         echo "mbedtls sub-module not found" >&2
         exit 1
+    fi
+fi
+
+# Special compiler flags for running under QEMU
+if [ $CIRCLE_QEMU -eq 1 ]
+then
+    CIRCLE_CFLAGS="$CIRCLE_CFLAGS -DLEAVE_QEMU_ON_HALT"
+
+    if [ $SIXTY_FOUR_BIT -eq 0 ]
+    then
+        CIRCLE_CFLAGS="$CIRCLE_CFLAGS -DNO_PHYSICAL_COUNTER -DUSE_QEMU_USB_FIX"
     fi
 fi
 
