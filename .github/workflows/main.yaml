@@ -57,26 +57,26 @@ jobs:
         make install
 
     - name: Cache QEMU 32-bit
-      id: qemu-7d7af6c3-32-cache-id
+      id: qemu-ubuntu-18-compile-fix-32-cache-id
       uses: actions/cache@v1
       with:
-        path: ~/local/qemu-7d7af6c3-32
-        key: ${{ runner.os }}-qemu-7d7af6c3-32
+        path: ~/local/qemu-ubuntu-18-compile-fix-32
+        key: ${{ runner.os }}-qemu-ubuntu-18-compile-fix-32
 
     - name: Clone QEMU 32-bit Repository
-      if: steps.qemu-7d7af6c3-32-cache-id.outputs.cache-hit != 'true'
+      if: steps.qemu-ubuntu-18-compile-fix-32-cache-id.outputs.cache-hit != 'true'
       uses: actions/checkout@v2
       with:
-        repository: rsta2/qemu
-        ref: 7d7af6c31ebdb31a501adc134364826a7218db61
+        repository: smuehlst/qemu
+        ref: ubuntu-18-compile-fix
         path: qemu-32
 
     - name: Build QEMU 32-bit     
-      if: steps.qemu-7d7af6c3-32-cache-id.outputs.cache-hit != 'true'
+      if: steps.qemu-ubuntu-18-compile-fix-32-cache-id.outputs.cache-hit != 'true'
       run: |
         cd $GITHUB_WORKSPACE/qemu-32
         git submodule update --init dtc
-        ./configure --prefix=$HOME/local/qemu-7d7af6c3-32 --target-list=arm-softmmu
+        ./configure --prefix=$HOME/local/qemu-ubuntu-18-compile-fix-32 --target-list=arm-softmmu
         make -j
         make install
 
