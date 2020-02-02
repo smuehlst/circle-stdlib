@@ -9,6 +9,7 @@ build-samples: build-stdlib-samples $(MBEDTLS_SAMPLES)
 circle:
 	cd libs/circle && ./makeall --nosample
 	$(MAKE) -C libs/circle/addon/SDCard
+	$(MAKE) -C libs/circle/addon/qemu
 	
 newlib:
 	CPPFLAGS_FOR_TARGET='$(CPPFLAGS_FOR_TARGET)' \
