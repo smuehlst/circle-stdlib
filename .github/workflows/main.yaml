@@ -74,7 +74,7 @@ jobs:
       if: steps.qemu-92e53233-64-cache-id.outputs.cache-hit != 'true'
       uses: actions/checkout@v2
       with:
-        repository: rsta/qemu
+        repository: rsta2/qemu
         ref: 92e53233035e6bef24ce79e9cebd45d670de3902
         path: qemu-32
 
