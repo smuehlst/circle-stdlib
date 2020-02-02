@@ -29,7 +29,7 @@ jobs:
             tarname:  "gcc-arm-9.2-2019.12-x86_64-arm-none-eabi.tar.xz",
             dirname:  "gcc-arm-9.2-2019.12-x86_64-arm-none-eabi",
             prefix:   "arm-none-eabi-",
-            qemu:     "$HOME/local/qemu-ubuntu-18-compile-fix-32/bin/qemu-system-arm",
+            qemu:     "$HOME/local/qemu-92e53233-64/bin/qemu-system-arm",
             raspi:    "2",
             kernel:   "kernel7.img" }
         # - { url:      "https://developer.arm.com/-/media/Files/downloads/gnu-a/8.3-2019.03/binrel/gcc-arm-8.3-2019.03-x86_64-aarch64-elf.tar.xz",
@@ -64,26 +64,26 @@ jobs:
         make install
 
     - name: Cache QEMU 32-bit
-      id: qemu-ubuntu-18-compile-fix-32-cache-id
+      id: qemu-92e53233-64-cache-id
       uses: actions/cache@v1
       with:
-        path: ~/local/qemu-ubuntu-18-compile-fix-32
-        key: ${{ runner.os }}-qemu-ubuntu-18-compile-fix-32
+        path: ~/local/qemu-92e53233-64
+        key: ${{ runner.os }}-qemu-92e53233-64
 
     - name: Clone QEMU 32-bit Repository
-      if: steps.qemu-ubuntu-18-compile-fix-32-cache-id.outputs.cache-hit != 'true'
+      if: steps.qemu-92e53233-64-cache-id.outputs.cache-hit != 'true'
       uses: actions/checkout@v2
       with:
-        repository: smuehlst/qemu
-        ref: ubuntu-18-compile-fix
+        repository: rsta/qemu
+        ref: 92e53233035e6bef24ce79e9cebd45d670de3902
         path: qemu-32
 
     - name: Build QEMU 32-bit     
-      if: steps.qemu-ubuntu-18-compile-fix-32-cache-id.outputs.cache-hit != 'true'
+      if: steps.qemu-92e53233-64-cache-id.outputs.cache-hit != 'true'
       run: |
         cd $GITHUB_WORKSPACE/qemu-32
         git submodule update --init dtc
-        ./configure --prefix=$HOME/local/qemu-ubuntu-18-compile-fix-32 --target-list=arm-softmmu
+        ./configure --prefix=$HOME/local/qemu-92e53233-64 --target-list=arm-softmmu
         make -j
         make install
 
@@ -120,7 +120,6 @@ jobs:
       run: |
         make -C libs/circle/addon/qemu
         make -C samples/05-smoketest
-        # Guard against endless loop in QEMU run
+        # Guard against endless loop in QEMU run (120 CPU secs)
         ulimit -t 120
-        ulimit -a
         ${{ matrix.config.qemu }} -M raspi${{ matrix.config.raspi }} -kernel samples/05-smoketest/${{ matrix.config.kernel }} -display none -nographic -semihosting
