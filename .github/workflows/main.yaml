@@ -22,7 +22,7 @@ jobs:
             tarname:  "gcc-arm-8.2-2019.01-x86_64-aarch64-elf.tar.xz",
             dirname:  "gcc-arm-8.2-2019.01-x86_64-aarch64-elf",
             prefix:   "aarch64-elf-",
-            qemu:     "$HOME/local/local/qemu-4.2.0-64/bin/qemu-system-aarch64",
+            qemu:     "$HOME/local/qemu-4.2.0-64/bin/qemu-system-aarch64",
             raspi:    "3",
             kernel:   "kernel8.img" }
         # - { url:      "https://developer.arm.com/-/media/Files/downloads/gnu-a/8.3-2019.03/binrel/gcc-arm-8.3-2019.03-x86_64-aarch64-elf.tar.xz",
