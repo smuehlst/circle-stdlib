@@ -1,7 +1,7 @@
 //
 // entropymodule.h
 //
-// Copyright (C) 2018  R. Stange <rsta2@o2online.de>
+// Copyright (C) 2018-2020  R. Stange <rsta2@o2online.de>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -19,6 +19,9 @@
 #ifndef _circle_mbedtls_entropymodule_h
 #define _circle_mbedtls_entropymodule_h
 
+// use rand() instead of hardware RNG, because the RNG may not work with QEMU
+//#define USE_QEMU_FOR_TEST		// not for production!
+
 #include <stdlib.h>
 #include <circle/bcmrandom.h>
 
@@ -33,7 +36,11 @@ public:
 				size_t nLength, size_t *pResultLength);
 
 private:
+#ifndef USE_QEMU_FOR_TEST
 	CBcmRandomNumberGenerator m_RNG;
+#else
+	boolean m_bInitialized;
+#endif
 
 	static CEntropyModule *s_pThis;
 };

@@ -1,7 +1,7 @@
 //
 // entropymodule.cpp
 //
-// Copyright (C) 2018  R. Stange <rsta2@o2online.de>
+// Copyright (C) 2018-2020  R. Stange <rsta2@o2online.de>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -20,15 +20,18 @@
 #include <mbedtls/entropy.h>
 #include <mbedtls/entropy_poll.h>
 #include <circle/timer.h>
+#include <assert.h>
 
-// use system clock instead of hardware RNG, because the RNG may not work with QEMU
-//#define USE_QEMU_FOR_TEST		// not for production!
+ASSERT_STATIC (RAND_MAX == 0x7FFFFFFF);
 
 using namespace CircleMbedTLS;
 
 CEntropyModule *CEntropyModule::s_pThis = 0;
 
 CEntropyModule::CEntropyModule (void)
+#ifdef USE_QEMU_FOR_TEST
+:	m_bInitialized (FALSE)
+#endif
 {
 	s_pThis = this;
 }
@@ -36,6 +39,15 @@ CEntropyModule::CEntropyModule (void)
 int CEntropyModule::EntropyPoll (void *pData, unsigned char *pOutput,
 				 size_t nLength, size_t *pResultLength)
 {
+#ifdef USE_QEMU_FOR_TEST
+	if (!s_pThis->m_bInitialized)
+	{
+		srand ((int) CTimer::Get ()->GetClockTicks ());
+
+		s_pThis->m_bInitialized = TRUE;
+	}
+#endif
+
 	assert (pData == 0);	// not used here
 
 	assert (nLength >= 4);	// TODO: allow smaller lengths
@@ -50,7 +62,7 @@ int CEntropyModule::EntropyPoll (void *pData, unsigned char *pOutput,
 #ifndef USE_QEMU_FOR_TEST
 		*(u32 *) pOutput = s_pThis->m_RNG.GetNumber ();
 #else
-		*(u32 *) pOutput = CTimer::Get ()->GetClockTicks ();
+		*(u32 *) pOutput = (u32) rand ();
 #endif
 	}
 
