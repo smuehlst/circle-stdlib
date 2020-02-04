@@ -39,7 +39,7 @@ CStdlibApp::TShutdownMode CKernel::Run (void)
 
 	printf ("tlsmain() returned %d\n", ret);
 
-	mScheduler.Sleep (60);		// allow network subsystem to close connections
+	mScheduler.Sleep (10);		// allow network subsystem to close connections
 
 	return ShutdownHalt;
 }

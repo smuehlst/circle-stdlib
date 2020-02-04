@@ -61,17 +61,17 @@ CStdlibApp::TShutdownMode CKernel::Run (void)
 	mScheduler.Sleep (4);
 #endif
 
-	new CMQTTSubscriber (&m_TLSSupport);
+	CMQTTSubscriber *pSubscriber = new CMQTTSubscriber (&m_TLSSupport);
 	mScheduler.Sleep (2);
 
-	new CMQTTPublisher (&m_TLSSupport);
+	CMQTTPublisher *pPublisher = new CMQTTPublisher (&m_TLSSupport);
 
-	for (unsigned nCount = 0; 1; nCount++)
+	do
 	{
-		mScheduler.Yield ();
-
-		mScreen.Rotor (0, nCount);
+		mScheduler.Sleep (10);
 	}
+	while (   pSubscriber->IsConnected ()
+	       || pPublisher->IsConnected ());
 
 	return ShutdownHalt;
 }

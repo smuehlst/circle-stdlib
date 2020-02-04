@@ -72,14 +72,8 @@ CStdlibApp::TShutdownMode CKernel::Run (void)
 	delete pBuffer;
 	pBuffer = 0;
 
-	// should not halt here, because TCP disconnect may still be in process
-
-	for (unsigned nCount = 0; 1; nCount++)
-	{
-		mScheduler.Yield ();
-
-		mScreen.Rotor (0, nCount);
-	}
+	// should not halt here immediately, because TCP disconnect may still be in process
+	mScheduler.Sleep (10);
 
 	return ShutdownHalt;
 }
