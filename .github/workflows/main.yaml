@@ -18,24 +18,36 @@ jobs:
       fail-fast: false
       matrix:
         config:
-        - { url:      "https://developer.arm.com/-/media/Files/downloads/gnu-a/8.2-2019.01/gcc-arm-8.2-2019.01-x86_64-aarch64-elf.tar.xz",
-            tarname:  "gcc-arm-8.2-2019.01-x86_64-aarch64-elf.tar.xz",
-            dirname:  "gcc-arm-8.2-2019.01-x86_64-aarch64-elf",
-            prefix:   "aarch64-elf-",
-            raspi:    "3" }
+        - { url:      "https://developer.arm.com/-/media/Files/downloads/gnu-a/8.2-2019.01/gcc-arm-8.2-2019.01-x86_64-arm-eabi.tar.xz",
+            tarname:  "gcc-arm-8.2-2019.01-x86_64-arm-eabi.tar.xz",
+            dirname:  "gcc-arm-8.2-2019.01-x86_64-arm-eabi",
+            prefix:   "arm-eabi-",
+            raspi:    "2" }
+        - { url:      "https://developer.arm.com/-/media/Files/downloads/gnu-a/8.3-2019.03/binrel/gcc-arm-8.3-2019.03-x86_64-arm-eabi.tar.xz",
+            tarname:  "gcc-arm-8.3-2019.03-x86_64-arm-eabi.tar.xz",
+            dirname:  "gcc-arm-8.3-2019.03-x86_64-arm-eabi",
+            prefix:   "arm-eabi-",
+            raspi:    "2" }
         - { url:      "https://developer.arm.com/-/media/Files/downloads/gnu-a/9.2-2019.12/binrel/gcc-arm-9.2-2019.12-x86_64-arm-none-eabi.tar.xz",
             tarname:  "gcc-arm-9.2-2019.12-x86_64-arm-none-eabi.tar.xz",
             dirname:  "gcc-arm-9.2-2019.12-x86_64-arm-none-eabi",
             prefix:   "arm-none-eabi-",
             raspi:    "2" }
-        # - { url:      "https://developer.arm.com/-/media/Files/downloads/gnu-a/8.3-2019.03/binrel/gcc-arm-8.3-2019.03-x86_64-aarch64-elf.tar.xz",
-        #     tarname:  "gcc-arm-8.3-2019.03-x86_64-aarch64-elf.tar.xz",
-        #     dirname:  "gcc-arm-8.3-2019.03-x86_64-aarch64-elf",
-        #     prefix:   "aarch64-elf-" }
-        # - { url:      "https://developer.arm.com/-/media/Files/downloads/gnu-a/9.2-2019.12/binrel/gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf.tar.xz",
-        #     tarname:  "gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf.tar.xz",
-        #     dirname:  "gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf",
-        #     prefix:   "aarch64-none-elf-" }
+        - { url:      "https://developer.arm.com/-/media/Files/downloads/gnu-a/8.2-2019.01/gcc-arm-8.2-2019.01-x86_64-aarch64-elf.tar.xz",
+            tarname:  "gcc-arm-8.2-2019.01-x86_64-aarch64-elf.tar.xz",
+            dirname:  "gcc-arm-8.2-2019.01-x86_64-aarch64-elf",
+            prefix:   "aarch64-elf-",
+            raspi:    "3" }
+        - { url:      "https://developer.arm.com/-/media/Files/downloads/gnu-a/8.3-2019.03/binrel/gcc-arm-8.3-2019.03-x86_64-aarch64-elf.tar.xz",
+            tarname:  "gcc-arm-8.3-2019.03-x86_64-aarch64-elf.tar.xz",
+            dirname:  "gcc-arm-8.3-2019.03-x86_64-aarch64-elf",
+            prefix:   "aarch64-elf-",
+            raspi:    "3" }
+        - { url:      "https://developer.arm.com/-/media/Files/downloads/gnu-a/9.2-2019.12/binrel/gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf.tar.xz",
+            tarname:  "gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf.tar.xz",
+            dirname:  "gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf",
+            prefix:   "aarch64-none-elf-",
+            raspi:    "3" }
 
     steps:
     - name: Select 32-bit QEMU
