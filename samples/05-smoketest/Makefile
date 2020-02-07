@@ -22,3 +22,5 @@ LIBS := "$(NEWLIBDIR)/lib/libm.a" "$(NEWLIBDIR)/lib/libc.a" "$(NEWLIBDIR)/lib/li
   	$(CIRCLEHOME)/lib/sched/libsched.a \
 	$(CIRCLEHOME)/addon/qemu/libqemusupport.a \
   	$(CIRCLEHOME)/lib/libcircle.a
+
+-include $(DEPS)

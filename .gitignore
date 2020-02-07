@@ -4,6 +4,7 @@
 *.lst
 *.map
 *.elf
+*.d
 *.o
 *.a
 .settings
