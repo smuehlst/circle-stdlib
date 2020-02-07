@@ -28,11 +28,16 @@ subdirectory. Go to the subdirectory of the sample of your choice and do `make`.
 
 ## Current State
 
+V1.4:
+
+* Uses Mbed TLS 2.16.4
+* Quality of random numbers for QEMU test improved
+
+## Previous Releases
+
 V1.3:
 
 * Uses mbed TLS 2.16.2
-
-## Previous Releases
 
 V1.2:
 
