@@ -22,16 +22,12 @@ jobs:
             tarname:  "gcc-arm-8.2-2019.01-x86_64-aarch64-elf.tar.xz",
             dirname:  "gcc-arm-8.2-2019.01-x86_64-aarch64-elf",
             prefix:   "aarch64-elf-",
-            qemu:     "$HOME/local/qemu-4.2.0-64/bin/qemu-system-aarch64",
-            raspi:    "3",
-            kernelopt: "-kernel samples/05-smoketest/kernel8.img" }
+            raspi:    "3" }
         - { url:      "https://developer.arm.com/-/media/Files/downloads/gnu-a/9.2-2019.12/binrel/gcc-arm-9.2-2019.12-x86_64-arm-none-eabi.tar.xz",
             tarname:  "gcc-arm-9.2-2019.12-x86_64-arm-none-eabi.tar.xz",
             dirname:  "gcc-arm-9.2-2019.12-x86_64-arm-none-eabi",
             prefix:   "arm-none-eabi-",
-            qemu:     "$HOME/local/qemu-92e53233-32/bin/qemu-system-arm",
-            raspi:    "2",
-            kernelopt: "-bios samples/05-smoketest/kernel7.img" }
+            raspi:    "2" }
         # - { url:      "https://developer.arm.com/-/media/Files/downloads/gnu-a/8.3-2019.03/binrel/gcc-arm-8.3-2019.03-x86_64-aarch64-elf.tar.xz",
         #     tarname:  "gcc-arm-8.3-2019.03-x86_64-aarch64-elf.tar.xz",
         #     dirname:  "gcc-arm-8.3-2019.03-x86_64-aarch64-elf",
@@ -42,6 +38,20 @@ jobs:
         #     prefix:   "aarch64-none-elf-" }
 
     steps:
+    - name: Select 32-bit QEMU
+      if: matrix.config.raspi == '2'
+      run: |
+        echo ::set-env name=CFG_QEMU_BIN::$(echo "$HOME/local/qemu-92e53233-32/bin/qemu-system-arm")
+        echo ::set-env name=CFG_QEMU_OPT::$(echo "-bios")
+        echo ::set-env name=CFG_QEMU_IMG::$(echo "kernel7.img")
+
+    - name: Select 64-bit QEMU
+      if: matrix.config.raspi == '3'
+      run: |
+        echo ::set-env name=CFG_QEMU_BIN::$(echo "$HOME/local/qemu-4.2.0-64/bin/qemu-system-aarch64")
+        echo ::set-env name=CFG_QEMU_OPT::$(echo "-kernel")
+        echo ::set-env name=CFG_QEMU_IMG::$(echo "kernel8.img")
+
     - name: Checkout circle-stdlib
       uses: actions/checkout@v1
 
@@ -121,4 +131,4 @@ jobs:
         make -C samples/05-smoketest
         # Guard against endless loop in QEMU run (120 CPU secs)
         ulimit -t 120
-        ${{ matrix.config.qemu }} -M raspi${{ matrix.config.raspi }} ${{ matrix.config.kernelopt }} -display none -nographic -semihosting
+        $CFG_QEMU_BIN -M raspi${{ matrix.config.raspi }} $CFG_QEMU_OPT samples/05-smoketest/$CFG_QEMU_IMG -display none -nographic -semihosting
