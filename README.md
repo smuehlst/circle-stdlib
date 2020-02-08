@@ -1,6 +1,6 @@
 # circle-stdlib
 
-![Status badge for master branch](https://github.com/smuehlst/circle-stdlib/workflows/Build/badge.svg)
+![Status badge for master branch](https://github.com/smuehlst/circle-stdlib/workflows/branch%20%22master%22/badge.svg)
 ![Status badge for develop branch](https://github.com/smuehlst/circle-stdlib/workflows/branch%20%22develop%22/badge.svg)
 
 ## Overview
@@ -21,10 +21,10 @@ Circle (call configure with `--opt-tls`, see also the
 ### Prerequisites
 
 * Linux or Windows 10 Subsystem for Linux (WSL).
-* gcc ARM toolchain on the path. Successfully tested with:
-  * gcc version 8.2-2019.01 32-bit and 64-bit from https://developer.arm.com/open-source/gnu-toolchain/gnu-a/downloads
-  * gcc version 8.3-2019.03 32-bit and 64-bit from https://developer.arm.com/open-source/gnu-toolchain/gnu-a/downloads
-  * gcc version 9.2-2019.12 32-bit and 64-bit from https://developer.arm.com/open-source/gnu-toolchain/gnu-a/downloads
+* gcc ARM toolchain from [Arm Developer GNU-A Downloads](https://developer.arm.com/open-source/gnu-toolchain/gnu-a/downloads) on the path. Successfully tested with:
+  * gcc 8.2-2019.01 [32-bit](https://developer.arm.com/-/media/Files/downloads/gnu-a/8.2-2019.01/gcc-arm-8.2-2019.01-x86_64-arm-eabi.tar.xz)/[64-bit](https://developer.arm.com/-/media/Files/downloads/gnu-a/8.2-2019.01/gcc-arm-8.2-2019.01-x86_64-aarch64-elf.tar.xz).
+  * gcc 8.3-2019.03 [32-bit](https://developer.arm.com/-/media/Files/downloads/gnu-a/8.3-2019.03/binrel/gcc-arm-8.3-2019.03-x86_64-arm-eabi.tar.xz)/[64-bit](https://developer.arm.com/-/media/Files/downloads/gnu-a/8.3-2019.03/binrel/gcc-arm-8.3-2019.03-x86_64-aarch64-elf.tar.xz).
+  * gcc 9.2-2019.12 [32-bit](https://developer.arm.com/-/media/Files/downloads/gnu-a/9.2-2019.12/binrel/gcc-arm-9.2-2019.12-x86_64-arm-none-eabi.tar.xz)/[64-bit](https://developer.arm.com/-/media/Files/downloads/gnu-a/9.2-2019.12/binrel/gcc-arm-9.2-2019.12-x86_64-aarch64-none-elf.tar.xz).
 
 ### Building the Libraries
 
@@ -46,14 +46,15 @@ Options:
   -d, --debug                    build with debug information, without optimizer
   -h, --help                     show usage message
   -n, --no-cpp                   do not support C++ standard library
+  --opt-tls                      build with mbed TLS support
   -p <string>, --prefix <string> prefix of the toolchain commands (default: arm-none-eabi-)
+  --qemu                         build for running under QEMU in semihosting mode
   -r <number>, --raspberrypi <number>
                                  Circle Raspberry Pi model number (1, 2, 3, default: 1)
   --softfp                       use float ABI setting "softfp" instead of "hard"
   -s <path>, --stddefpath <path>
                                  path where stddef.h header is located (only necessary
                                  if  script cannot determine it automatically)
-  --opt-tls                      build with mbed TLS support
 ```
 
 To clean the project directory, the following commands can be used:
@@ -69,22 +70,34 @@ make mrproper   # removes the configuration too
 make build-samples
 ```
 
-## Current Release [v12.0](https://github.com/smuehlst/circle-stdlib/releases/tag/v12.0)
+## Current Release [v13.0](https://github.com/smuehlst/circle-stdlib/releases/tag/v13.0)
 
-* Updated circle-newlib from upstream to fix a compilation error in the C++ sample when using gcc 8.3-2019.03.
+* Synced with [Circle Step 41](https://github.com/rsta2/circle/releases/tag/Step41).
+* Updated mbedtls to [release 2.16.4](https://github.com/ARMmbed/mbedtls/releases/tag/mbedtls-2.16.4).
+* New [configure](configure) option `--qemu` to build with support for QEMU semihosting mode.
+* Added [GitHub action](https://github.com/smuehlst/circle-stdlib/actions) that builds
+  with the supported compilers in 32-bit and 64-bit mode and runs a smoke test under QEMU.
+* Minor changes to circle-stdlib and mbedtls samples so they terminate under QEMU.
+
+Thanks to Rene Stange for making it possible to run Circle programs under QEMU in
+a fully automated manner.
 
 ## Previous Releases
 
-## [v11.0](https://github.com/smuehlst/circle-stdlib/releases/tag/v11.0)
+### [v12.0](https://github.com/smuehlst/circle-stdlib/releases/tag/v12.0)
+
+* Updated circle-newlib from upstream to fix a compilation error in the C++ sample when using gcc 8.3-2019.03.
+
+### [v11.0](https://github.com/smuehlst/circle-stdlib/releases/tag/v11.0)
 
 * Synced with [Circle Step 40](https://github.com/rsta2/circle/releases/tag/Step40).
 * Raspberry Pi 4 support.
 
-## [v10.0](https://github.com/smuehlst/circle-stdlib/releases/tag/v10.0)
+### [v10.0](https://github.com/smuehlst/circle-stdlib/releases/tag/v10.0)
 
 * Synced with [Circle Step 39.2](https://github.com/rsta2/circle/releases/tag/Step39.2).
 
-## [v9.0](https://github.com/smuehlst/circle-stdlib/releases/tag/v9.0)
+### [v9.0](https://github.com/smuehlst/circle-stdlib/releases/tag/v9.0)
 
 * Synced with [Circle Step 39.1](https://github.com/rsta2/circle/releases/tag/Step39.1).
 * AArch64 support.
