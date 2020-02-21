@@ -50,7 +50,7 @@ Options:
   -p <string>, --prefix <string> prefix of the toolchain commands (default: arm-none-eabi-)
   --qemu                         build for running under QEMU in semihosting mode
   -r <number>, --raspberrypi <number>
-                                 Circle Raspberry Pi model number (1, 2, 3, default: 1)
+                                 Circle Raspberry Pi model number (1, 2, 3, 4, default: 1)
   --softfp                       use float ABI setting "softfp" instead of "hard"
   -s <path>, --stddefpath <path>
                                  path where stddef.h header is located (only necessary
