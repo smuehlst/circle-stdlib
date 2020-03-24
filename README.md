@@ -70,14 +70,18 @@ make mrproper   # removes the configuration too
 make build-samples
 ```
 
-## Current Release [v13.1](https://github.com/smuehlst/circle-stdlib/releases/tag/v13.1)
+## Current Release [v13.2](https://github.com/smuehlst/circle-stdlib/releases/tag/v13.2)
+
+* Synced with [Circle Step 41.2](https://github.com/rsta2/circle/releases/tag/Step41.2).
+
+## Previous Releases
+
+### [v13.1](https://github.com/smuehlst/circle-stdlib/releases/tag/v13.1)
 
 * Synced with [Circle Step 41.1](https://github.com/rsta2/circle/releases/tag/Step41.1).
 * Minor fix in the README.md file.
 
-## Previous Releases
-
-### Current Release [v13.0](https://github.com/smuehlst/circle-stdlib/releases/tag/v13.0)
+### [v13.0](https://github.com/smuehlst/circle-stdlib/releases/tag/v13.0)
 
 * Synced with [Circle Step 41](https://github.com/rsta2/circle/releases/tag/Step41).
 * Updated mbedtls to [release 2.16.4](https://github.com/ARMmbed/mbedtls/releases/tag/mbedtls-2.16.4).
