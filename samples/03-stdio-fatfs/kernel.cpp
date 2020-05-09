@@ -68,12 +68,11 @@ CStdlibApp::TShutdownMode CKernel::Run (void)
 		mLogger.Write (GetKernelName (), LogPanic, "Cannot open file for writing with fopen()");
 	}
 
-        // We have only a single directory with Circle
-        DIR * const dir = opendir (".");
+        DIR * const dir = opendir ("/");
 
         if (dir != nullptr)
         {
-                printf ("Listing \".\" directory with readdir:\n");
+                printf ("Listing \"/\" directory with readdir:\n");
                 while (true)
                 {
                         errno = 0;
@@ -122,9 +121,12 @@ CStdlibApp::TShutdownMode CKernel::Run (void)
                 printf ("Closing directory...\n");
                 if (closedir (dir) != 0)
                 {
-                        fprintf (stderr, "closedir failed with errno %d\n",
-                                 errno);
+                        perror ("closedir() failed ");
                 }
+        }
+        else
+        {
+            perror ("opendir (\"/\") failed");
         }
 
 	mLogger.Write (GetKernelName (), LogNotice, "C Standard Library Demo finished");

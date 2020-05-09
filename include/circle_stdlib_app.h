@@ -11,6 +11,7 @@
 #define _circle_stdlib_app_h
 
 #include <circle/actled.h>
+#include <circle/string.h>
 #include <circle/koptions.h>
 #include <circle/devicenameservice.h>
 #include <circle/nulldevice.h>
@@ -22,12 +23,12 @@
 #include <circle/logger.h>
 #include <circle/usb/usbhcidevice.h>
 #include <SDCard/emmc.h>
-#include <circle/fs/fat/fatfs.h>
 #include <circle/input/console.h>
 #include <circle/sched/scheduler.h>
 #include <circle/net/netsubsystem.h>
 
 #include <circle_glue.h>
+#include <cstring>
 
 /**
  * Basic Circle Stdlib application that supports GPIO access.
@@ -145,7 +146,8 @@ private:
 public:
         // TÒDO transform to constexpr
         // constexpr char static DefaultPartition[] = "emmc1-1";
-#define CSTDLIBAPP_DEFAULT_PARTITION "emmc1-1"
+#define CSTDLIBAPP_LEGACY_DEFAULT_PARTITION "emmc1-1"
+#define CSTDLIBAPP_DEFAULT_PARTITION "SD:"
 
         CStdlibAppStdio (const char *kernel,
                          const char *pPartitionName = CSTDLIBAPP_DEFAULT_PARTITION)
@@ -169,20 +171,18 @@ public:
                         return false;
                 }
 
-                CDevice * const pPartition =
-                        mDeviceNameService.GetDevice (mpPartitionName, true);
-                if (pPartition == 0)
-                {
-                        mLogger.Write (GetKernelName (), LogError,
-                                       "Partition not found: %s", mpPartitionName);
+                char const *partitionName = mpPartitionName;
 
-                        return false;
+                // Recognize the old default partion name
+                if (strcmp(partitionName, CSTDLIBAPP_LEGACY_DEFAULT_PARTITION) == 0)
+                {
+                        partitionName = CSTDLIBAPP_DEFAULT_PARTITION;
                 }
 
-                if (!mFileSystem.Mount (pPartition))
+                if (f_mount (&mFileSystem, partitionName, 1) != FR_OK)
                 {
                         mLogger.Write (GetKernelName (), LogError,
-                                         "Cannot mount partition: %s", mpPartitionName);
+                                         "Cannot mount partition: %s", partitionName);
 
                         return false;
                 }
@@ -207,15 +207,15 @@ public:
 
         virtual void Cleanup (void)
         {
-                mFileSystem.UnMount ();
+                f_mount(0, "", 0);
 
                 CStdlibAppScreen::Cleanup ();
         }
 
 protected:
-        CUSBHCIDevice    mUSBHCI;
+        CUSBHCIDevice   mUSBHCI;
         CEMMCDevice     mEMMC;
-        CFATFileSystem  mFileSystem;
+        FATFS           mFileSystem;
         CConsole        mConsole;
 };
 
