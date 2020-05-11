@@ -31,7 +31,15 @@ build-stdlib-samples:
 	$(MAKE) -C samples/02-stdio-hello
 	$(MAKE) -C samples/03-stdio-fatfs
 	$(MAKE) -C samples/04-std
+	$(MAKE) -C samples/05-smoketest
 
+clean-stdlib-samples:
+	-$(MAKE) -C samples/01-nosys clean
+	-$(MAKE) -C samples/02-stdio-hello clean
+	-$(MAKE) -C samples/03-stdio-fatfs clean
+	-$(MAKE) -C samples/04-std clean
+	-$(MAKE) -C samples/05-smoketest clean
+	
 MBEDTLS_INCLUDE = -I../../../include -I../../circle/include
 MBED_DEFINE = -DMBEDTLS_CONFIG_FILE='<circle-mbedtls/config-circle-mbedtls.h>'
 
@@ -49,18 +57,23 @@ build-mbedtls-samples:
 	$(MAKE) -C samples/mbedtls/05-https-client3
 	$(MAKE) -C samples/mbedtls/06-webclient
 	$(MAKE) -C samples/mbedtls/07-mqttclient
+
+clean-mbedtls-samples:
+	$(MAKE) -C samples/mbedtls/01-https-client1 clean
+	$(MAKE) -C samples/mbedtls/02-https-client2 clean
+	$(MAKE) -C samples/mbedtls/03-https-server1 clean
+	$(MAKE) -C samples/mbedtls/04-https-server2 clean
+	$(MAKE) -C samples/mbedtls/05-https-client3 clean
+	$(MAKE) -C samples/mbedtls/06-webclient clean
+	$(MAKE) -C samples/mbedtls/07-mqttclient clean
 	
-clean:
+clean: clean-stdlib-samples clean-mbedtls-samples
 	-cd libs/circle && ./makeall --nosample PREFIX=$(TOOLPREFIX) clean
 	-$(MAKE) -C libs/circle/addon/SDCard PREFIX=$(TOOLPREFIX) clean
+	-$(MAKE) -C libs/circle/addon/fatfs PREFIX=$(TOOLPREFIX) clean
 	-$(MAKE) -C libs/circle/addon/qemu PREFIX=$(TOOLPREFIX) clean
 	-$(MAKE) -C $(NEWLIB_BUILD_DIR) clean
 	-test -n "$(NEWLIB_INSTALL_DIR)" && rm -rf "$(NEWLIB_INSTALL_DIR)"/*
-	-$(MAKE) -C samples/01-nosys clean
-	-$(MAKE) -C samples/02-stdio-hello clean
-	-$(MAKE) -C samples/03-stdio-fatfs clean
-	-$(MAKE) -C samples/04-std clean
-	-$(MAKE) -C samples/05-smoketest clean
 	-$(MAKE) -C libs/mbedtls/library clean
 	-$(MAKE) -C src/circle-mbedtls clean
 
