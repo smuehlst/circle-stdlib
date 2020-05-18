@@ -142,7 +142,8 @@ jobs:
       run: |
         make -C samples/05-smoketest
         # Extract blank SD card image
+        rm -f samples/05-smoketest/sdcard.img
         unzip -d samples/05-smoketest samples/05-smoketest/sdcard.img.zip
         # Guard against endless loop in QEMU run (120 CPU secs)
         ulimit -t 120
-        $CFG_QEMU_BIN -M raspi${{ matrix.config.raspi }} $CFG_QEMU_OPT samples/05-smoketest/$CFG_QEMU_IMG -display none -nographic -semihosting -sd sdcard.img
+        $CFG_QEMU_BIN -M raspi${{ matrix.config.raspi }} $CFG_QEMU_OPT samples/05-smoketest/$CFG_QEMU_IMG -display none -nographic -semihosting -sd samples/05-smoketest/sdcard.img
