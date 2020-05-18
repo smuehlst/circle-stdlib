@@ -20,21 +20,22 @@
 #ifndef _kernel_h
 #define _kernel_h
 
-// #include <circle/memory.h>
-// #include <qemu/qemuhostfile.h>
 #include <circle_stdlib_app.h>
 
 class CKernel : public CStdlibAppStdio
 {
 public:
-	CKernel (void);
+    CKernel (void);
 
-	// boolean Initialize (void);
+    TShutdownMode Run (void);
 
-	TShutdownMode Run (void);
-	
 private:
-	static void TimerHandler (TKernelTimerHandle hTimer, void *pParam, void *pContext);
+    void IoTest (void);
+    void PErrorExit (const char *s);
+    void Report (const char *s);
+
+    static void
+    TimerHandler (TKernelTimerHandle hTimer, void *pParam, void *pContext);
 };
 
 #endif
