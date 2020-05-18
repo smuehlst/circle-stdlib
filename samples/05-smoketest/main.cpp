@@ -17,31 +17,33 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+
 #include "kernel.h"
 #include <circle/startup.h>
 
-int main (void)
+int
+main (void)
 {
-	// cannot return here because some destructors used in CKernel are not implemented
+    // cannot return here because some destructors used in CKernel are not implemented
 
-	CKernel Kernel;
-	if (!Kernel.Initialize ())
-	{
-		halt ();
-		return EXIT_HALT;
-	}
-	
-	TShutdownMode ShutdownMode = Kernel.Run ();
+    CKernel Kernel;
+    if (!Kernel.Initialize ())
+    {
+        halt ();
+        return EXIT_HALT;
+    }
 
-	switch (ShutdownMode)
-	{
-	case ShutdownReboot:
-		reboot ();
-		return EXIT_REBOOT;
+    CStdlibApp::TShutdownMode ShutdownMode = Kernel.Run ();
 
-	case ShutdownHalt:
-	default:
-		halt ();
-		return EXIT_HALT;
-	}
+    switch (ShutdownMode)
+    {
+        case CStdlibApp::ShutdownReboot:
+            reboot ();
+            return EXIT_REBOOT;
+
+        case CStdlibApp::ShutdownHalt:
+        default:
+            halt ();
+            return EXIT_HALT;
+    }
 }
