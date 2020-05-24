@@ -21,6 +21,7 @@
 #define _kernel_h
 
 #include <circle_stdlib_app.h>
+#include <qemu/qemuhostfile.h>
 
 class CKernel : public CStdlibAppStdio
 {
@@ -36,6 +37,8 @@ private:
 
     static void
     TimerHandler (TKernelTimerHandle hTimer, void *pParam, void *pContext);
+
+    CQEMUHostFile m_LogFile;
 };
 
 #endif

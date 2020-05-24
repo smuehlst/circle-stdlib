@@ -39,6 +39,8 @@ CKernel::CKernel (void)
 CStdlibApp::TShutdownMode
 CKernel::Run (void)
 {
+    mLogger.Initialize (&m_LogFile);
+
     mLogger.Write (GetKernelName (), LogNotice,
                     "Compile time: " __DATE__ " " __TIME__);
 
@@ -74,26 +76,26 @@ CKernel::Run (void)
 void
 CKernel::Report(const char *s)
 {
-    mLogger.Write (GetKernelName (), LogNotice, "%s\n", s);
+    mLogger.Write (GetKernelName (), LogNotice, "%s", s);
 }
 
 void
 CKernel::PErrorExit(const char *s)
 {
     perror (s);
-    mLogger.Write (GetKernelName (), LogError, "exiting with code 1...");
+    mLogger.Write (GetKernelName (), LogError, "error '%s', exiting with code 1...");
     exit (1);
 }
 
 void
 CKernel::IoTest (void)
 {
+    Report ("Test file operations...");
+
     char const stdio_filename[] = "stdio.txt";
 
-    Report ("Test fopen");
     FILE *fp = fopen (stdio_filename, "w");
 
-    Report ("Test file operations...");
     if (fp != nullptr)
     {
         fprintf (fp, "Opened file with (FILE *) %p\n", fp);
@@ -102,6 +104,8 @@ CKernel::IoTest (void)
         fp = fopen (stdio_filename, "r");
         if (fp != nullptr)
         {
+            Report ("fopen () test succeeded");
+
             char buf[200];
             char *p;
 
@@ -116,11 +120,12 @@ CKernel::IoTest (void)
             }
 
             // Read the blank after "Opened" by seeking
-            int seekResult = fseek(fp, 6L, SEEK_SET);
-            if (seekResult != 0)
+            if (fseek (fp, 6L, SEEK_SET) != 0)
             {
                 PErrorExit ("fseek failed");
             }
+
+            Report ("fseek () test succeeded");
 
             char c;
             if (fread (&c, 1, 1, fp) != 1)
@@ -128,13 +133,22 @@ CKernel::IoTest (void)
                 PErrorExit ("fread failed");
             }
 
+            Report ("fread () test succeeded");
+
             if (c != ' ')
             {
                 fprintf (stderr, "Bad read result, expected ' ', got '%c'\n", c);
                 exit (1);
             }
 
-            fclose (fp);
+            Report ("fseek () test succeeded");
+
+            if (fclose (fp) != 0)
+            {
+                PErrorExit ("fclose failed");
+            }
+
+            Report ("fclose () test succeeded");
         }
         else
         {
@@ -151,7 +165,8 @@ CKernel::IoTest (void)
     DIR * const dir = opendir ("/");
     if (dir != nullptr)
     {
-        Report ("Listing \"/\" directory with readdir:\n");
+        Report ("opendir () test succeeded");
+
         while (true)
         {
             errno = 0;
@@ -171,8 +186,12 @@ CKernel::IoTest (void)
             }
         }
 
+        Report ("readir () test succeeded");
+
         printf ("Rewinding directory...\n");
         rewinddir (dir);
+
+        Report ("rewinddir () test succeeded");
 
         printf ("Listing \".\" directory with readdir_r:\n");
         while (true)
@@ -198,6 +217,8 @@ CKernel::IoTest (void)
         {
             PErrorExit ("closedir() failed ");
         }
+
+        Report ("closedir () test succeeded");
     }
     else
     {
