@@ -259,7 +259,16 @@ CKernel::IoTest (void)
         PErrorExit ("fclose () failed");
     }
 
-    if (unlink (subdir_filename.c_str ()) < 0)
+    string const filename2 = "/file2.txt";
+
+    if (rename (subdir_filename.c_str (), filename2.c_str ()) < 0)
+    {
+        PErrorExit ("rename () failed");
+    }
+
+    Report ("rename () test succeeded");
+
+    if (unlink (filename2.c_str ()) < 0)
     {
         PErrorExit ("unlink () failed");
     }
