@@ -5,7 +5,7 @@
 * Additional file-related capabilities of [FatFs](http://elm-chan.org/fsw/ff/00index_e.html) available now:
   * File seeking in stdio and in the C++ standard library.
   * Directory operations rename(), mkdir() and unlink().
-* Extended the smoke test run by the [GitHub action](actions) with basic tests for file operations.
+* Extended the smoke test run by the [GitHub action](https://github.com/smuehlst/circle-stdlib/actions) with basic tests for file operations.
 
 ## [v14](https://github.com/smuehlst/circle-stdlib/releases/tag/v14)
 
