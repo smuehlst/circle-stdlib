@@ -144,7 +144,7 @@ fi
 # Special compiler flags for running under QEMU
 if [ $CIRCLE_QEMU -eq 1 ]
 then
-    CIRCLE_CFLAGS="$CIRCLE_CFLAGS -DLEAVE_QEMU_ON_HALT"
+    CIRCLE_CFLAGS="$CIRCLE_CFLAGS -DLEAVE_QEMU_ON_HALT -DNO_SDHOST"
 
     if [ $SIXTY_FOUR_BIT -eq 0 ]
     then

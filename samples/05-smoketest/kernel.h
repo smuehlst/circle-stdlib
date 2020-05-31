@@ -20,47 +20,25 @@
 #ifndef _kernel_h
 #define _kernel_h
 
-#include <circle/memory.h>
-#include <circle/actled.h>
-#include <circle/koptions.h>
-#include <circle/devicenameservice.h>
+#include <circle_stdlib_app.h>
 #include <qemu/qemuhostfile.h>
-#include <circle/exceptionhandler.h>
-#include <circle/interrupt.h>
-#include <circle/timer.h>
-#include <circle/logger.h>
-#include <circle/types.h>
 
-enum TShutdownMode
-{
-	ShutdownNone,
-	ShutdownHalt,
-	ShutdownReboot
-};
-
-class CKernel
+class CKernel : public CStdlibAppStdio
 {
 public:
-	CKernel (void);
-	~CKernel (void);
+    CKernel (void);
 
-	boolean Initialize (void);
-
-	TShutdownMode Run (void);
-	
-private:
-	static void TimerHandler (TKernelTimerHandle hTimer, void *pParam, void *pContext);
+    TShutdownMode Run (void);
 
 private:
-	// do not change this order
-	CMemorySystem		m_Memory;
-	CKernelOptions		m_Options;
-	CDeviceNameService	m_DeviceNameService;
-	CQEMUHostFile		m_LogFile;
-	CExceptionHandler	m_ExceptionHandler;
-	CInterruptSystem	m_Interrupt;
-	CTimer			m_Timer;
-	CLogger			m_Logger;
+    void IoTest (void);
+    void PErrorExit (const char *s);
+    void Report (const char *s);
+
+    static void
+    TimerHandler (TKernelTimerHandle hTimer, void *pParam, void *pContext);
+
+    CQEMUHostFile m_LogFile;
 };
 
 #endif
