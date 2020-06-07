@@ -82,7 +82,13 @@ void cxx_test(void) {
 	std::vector<std::string> const v = { "vector entry 1", "vector entry 2" };
 
 	std::cout << "Opening file via std::ofstream..." << std::endl;
+
 	std::ofstream ofs("test.txt", std::ofstream::out);
+	if (!ofs.is_open()) {
+		std::cerr << "Failed to open file 'test.txt'!" << std::endl;
+		return;
+	}
+
 	try {
 		barf();
 	} catch (std::exception& e) {

@@ -69,7 +69,7 @@ CStdlibApp::TShutdownMode CKernel::Run (void)
 		ParseDocument (pBuffer);
 	}
 
-	delete pBuffer;
+	delete [] pBuffer;
 	pBuffer = 0;
 
 	// should not halt here immediately, because TCP disconnect may still be in process
