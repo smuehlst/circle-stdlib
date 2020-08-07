@@ -2,7 +2,7 @@
 // kernel.cpp
 //
 // Circle - A C++ bare metal environment for Raspberry Pi
-// Copyright (C) 2015-2018  R. Stange <rsta2@o2online.de>
+// Copyright (C) 2015-2020  R. Stange <rsta2@o2online.de>
 // 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -26,6 +26,8 @@
 using namespace CircleMbedTLS;
 
 // Network configuration
+#define NET_DEVICE_TYPE		NetDeviceTypeEthernet		// or: NetDeviceTypeWLAN
+
 #define USE_DHCP
 
 #ifndef USE_DHCP
@@ -40,7 +42,9 @@ static const u8 DNSServer[]      = {192, 168, 0, 1};
 CKernel::CKernel (void)
         : CStdlibAppNetwork ("mqttclient", CSTDLIBAPP_DEFAULT_PARTITION
 #ifndef USE_DHCP
-	, IPAddress, NetMask, DefaultGateway, DNSServer
+	, IPAddress, NetMask, DefaultGateway, DNSServer, NET_DEVICE_TYPE
+#else
+	, 0, 0, 0, 0, NET_DEVICE_TYPE
 #endif
 	),
 	m_TLSSupport (&mNet)

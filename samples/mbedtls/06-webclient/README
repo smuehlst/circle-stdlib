@@ -1,10 +1,14 @@
 README
 
 This sample program is only working on Raspberry Pi models with on-board
-Ethernet controller. Before building it you may have to update the network
-configuration (DHCP is used by default) in kernel.cpp to meet your local network
-configuration. Don't forget to connect your local Ethernet to the Ethernet
-connector of the Raspberry Pi.
+Ethernet controller or with on-board WLAN module (see next paragraph). Before
+building it you may have to update the network configuration (DHCP is used by
+default) in kernel.cpp to meet your local network configuration. Don't forget to
+connect your local Ethernet to the Ethernet connector of the Raspberry Pi.
+
+For WLAN operation you have to change the NET_DEVICE_TYPE define in kernel.cpp
+to NetDeviceTypeWLAN. Please read the file libs/circle/addon/wlan/sample/README
+for further information on how to prepare your SD card for WLAN operation.
 
 The program fetches the document https://elinux.org/RPi_HardwareHistory and
 parses it to find and display a Raspberry Pi hardware revision table as a comma

@@ -11,6 +11,10 @@ computer in your local network:
 
 	https://ip_address_of_your_raspberry_pi
 
+For WLAN operation you have to change the NET_DEVICE_TYPE define in kernel.cpp
+to NetDeviceTypeWLAN. Please read the file libs/circle/addon/wlan/sample/README
+for further information on how to prepare your SD card for WLAN operation.
+
 Normally you will get an error message from your web browser about security
 violations. You should be able to ignore this message to see the sent data. A
 web server, which provides secure access, requires a specific configuration

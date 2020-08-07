@@ -17,10 +17,13 @@
 #include "kernel.h"
 #include <stdio.h>
 
+#define NET_DEVICE_TYPE		NetDeviceTypeEthernet		// or: NetDeviceTypeWLAN
+
 extern "C" int tlsmain (void);
 
 CKernel::CKernel (void)
-        : CStdlibAppNetwork ("https-client1")
+        : CStdlibAppNetwork ("https-client1", CSTDLIBAPP_DEFAULT_PARTITION,
+			     0, 0, 0, 0, NET_DEVICE_TYPE)
 {
 	mActLED.Blink (5);	// show we are alive
 }

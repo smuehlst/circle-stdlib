@@ -1,7 +1,7 @@
 //
 // kernel.cpp
 //
-// Copyright (C) 2018  R. Stange <rsta2@o2online.de>
+// Copyright (C) 2018-2020  R. Stange <rsta2@o2online.de>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -25,6 +25,8 @@
 #include <stdlib.h>
 #include <mbedtls/error.h>
 
+#define NET_DEVICE_TYPE		NetDeviceTypeEthernet		// or: NetDeviceTypeWLAN
+
 #define SERVER_NAME	"elinux.org"
 #define SERVER_PORT	"443"
 #define SERVER_PAGE	"/Main_Page"
@@ -32,7 +34,8 @@
 using namespace CircleMbedTLS;
 
 CKernel::CKernel (void)
-        : CStdlibAppNetwork ("https-client3"),
+        : CStdlibAppNetwork ("https-client3", CSTDLIBAPP_DEFAULT_PARTITION,
+			     0, 0, 0, 0, NET_DEVICE_TYPE),
           m_TLSSupport (&mNet)
 {
 	mActLED.Blink (5);	// show we are alive

@@ -11,3 +11,7 @@ provide the needed certificate. Just do "make certs" in the directory of the
 sample and put the downloaded .pem file in the root directory of the SD card
 along with the kernel image. The connection will be secure against
 Man-in-the-middle attacks then.
+
+For WLAN operation you have to change the NET_DEVICE_TYPE define in kernel.cpp
+to NetDeviceTypeWLAN. Please read the file libs/circle/addon/wlan/sample/README
+for further information on how to prepare your SD card for WLAN operation.

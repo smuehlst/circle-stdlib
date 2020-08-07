@@ -31,6 +31,10 @@ RSA key size, which is normally too short for mbed TLS applications. If you are
 not using DHCP you can set your local network configuration in the file
 kernel.cpp.
 
+For WLAN operation you have to change the NET_DEVICE_TYPE define in kernel.cpp
+to NetDeviceTypeWLAN. Please read the file libs/circle/addon/wlan/sample/README
+for further information on how to prepare your SD card for WLAN operation.
+
 After initialization the sample program creates two connections to the
 configured MQTT server/broker (one for the publisher and one for the
 subscriber). The MQTT subscriber subscribes to a topic (default

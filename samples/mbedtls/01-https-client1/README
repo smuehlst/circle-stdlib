@@ -12,3 +12,7 @@ The transferred data will be encrypted, but normally there will be no
 authentication, because the authentication mode is set to optional and the
 provided certificates do not match. If you want authentication, you have to
 provide the matching certificates.
+
+For WLAN operation you have to change the NET_DEVICE_TYPE define in kernel.cpp
+to NetDeviceTypeWLAN. Please read the file libs/circle/addon/wlan/sample/README
+for further information on how to prepare your SD card for WLAN operation.
