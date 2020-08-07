@@ -26,6 +26,8 @@
 #include <circle/input/console.h>
 #include <circle/sched/scheduler.h>
 #include <circle/net/netsubsystem.h>
+#include <wlan/bcm4343.h>
+#include <wlan/hostap/wpa_supplicant/wpasupplicant.h>
 
 #include <circle_glue.h>
 #include <cstring>
@@ -231,14 +233,21 @@ protected:
 class CStdlibAppNetwork: public CStdlibAppStdio
 {
 public:
+        #define CSTDLIBAPP_WLAN_FIRMWARE_PATH   CSTDLIBAPP_DEFAULT_PARTITION "/firmware/"
+        #define CSTDLIBAPP_WLAN_CONFIG_FILE     CSTDLIBAPP_DEFAULT_PARTITION "/wpa_supplicant.conf"
+
         CStdlibAppNetwork (const char *kernel,
                    const char *pPartitionName = CSTDLIBAPP_DEFAULT_PARTITION,
                    const u8 *pIPAddress      = 0,       // use DHCP if pIPAddress == 0
                    const u8 *pNetMask        = 0,
                    const u8 *pDefaultGateway = 0,
-                   const u8 *pDNSServer      = 0)
+                   const u8 *pDNSServer      = 0,
+                   TNetDeviceType DeviceType = NetDeviceTypeEthernet)
           : CStdlibAppStdio(kernel, pPartitionName),
-            mNet(pIPAddress, pNetMask, pDefaultGateway, pDNSServer)
+            mDeviceType (DeviceType),
+            mWLAN (CSTDLIBAPP_WLAN_FIRMWARE_PATH),
+            mNet(pIPAddress, pNetMask, pDefaultGateway, pDNSServer, DEFAULT_HOSTNAME, DeviceType),
+            mWPASupplicant (CSTDLIBAPP_WLAN_CONFIG_FILE)
         {
         }
 
@@ -249,11 +258,40 @@ public:
                         return false;
                 }
 
-                return mNet.Initialize ();
+                if (mDeviceType == NetDeviceTypeWLAN)
+                {
+                        if (!mWLAN.Initialize ())
+                        {
+                                return false;
+                        }
+                }
+
+                if (!mNet.Initialize (false))
+                {
+                        return false;
+                }
+
+                if (mDeviceType == NetDeviceTypeWLAN)
+                {
+                        if (!mWPASupplicant.Initialize ())
+                        {
+                                return false;
+                        }
+                }
+
+                while (!mNet.IsRunning ())
+                {
+                        mScheduler.Yield ();
+                }
+
+                return true;
         }
 
 protected:
         CScheduler      mScheduler;
+        TNetDeviceType  mDeviceType;
+        CBcm4343Device  mWLAN;
         CNetSubSystem   mNet;
+        CWPASupplicant  mWPASupplicant;
 };
 #endif

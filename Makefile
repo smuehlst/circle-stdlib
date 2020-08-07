@@ -11,7 +11,8 @@ circle:
 	$(MAKE) -C libs/circle/addon/SDCard
 	$(MAKE) -C libs/circle/addon/fatfs
 	$(MAKE) -C libs/circle/addon/qemu
-	
+	cd libs/circle/addon/wlan && ./makeall --nosample
+
 newlib:
 	CPPFLAGS_FOR_TARGET='$(CPPFLAGS_FOR_TARGET)' \
 	CC_FOR_TARGET='$(CC_FOR_TARGET)' \
@@ -72,6 +73,7 @@ clean: clean-stdlib-samples clean-mbedtls-samples
 	-$(MAKE) -C libs/circle/addon/SDCard PREFIX=$(TOOLPREFIX) clean
 	-$(MAKE) -C libs/circle/addon/fatfs PREFIX=$(TOOLPREFIX) clean
 	-$(MAKE) -C libs/circle/addon/qemu PREFIX=$(TOOLPREFIX) clean
+	-cd libs/circle/addon/wlan && ./makeall --nosample PREFIX=$(TOOLPREFIX) clean
 	-$(MAKE) -C $(NEWLIB_BUILD_DIR) clean
 	-test -n "$(NEWLIB_INSTALL_DIR)" && rm -rf "$(NEWLIB_INSTALL_DIR)"/*
 	-$(MAKE) -C libs/mbedtls/library clean
