@@ -1,5 +1,10 @@
 # Release History
 
+## [v15.1](https://github.com/smuehlst/circle-stdlib/releases/tag/v15.1)
+
+* Synced with [Circle Step 42.1](https://github.com/rsta2/circle/releases/tag/Step42.1).
+* Support for new WLAN features of Circle.
+
 ## [v15](https://github.com/smuehlst/circle-stdlib/releases/tag/v15)
 
 * Additional file-related capabilities of [FatFs](http://elm-chan.org/fsw/ff/00index_e.html) available now:
@@ -10,8 +15,10 @@
 ## [v14](https://github.com/smuehlst/circle-stdlib/releases/tag/v14)
 
 * Synced with [Circle Step 42](https://github.com/rsta2/circle/releases/tag/Step42).
-* Switched the FAT filesystem implementation to [FatFs](http://elm-chan.org/fsw/ff/00index_e.html). While FatFs offers more features than Circle's FAT filesystem implementation that was used previously, this release of
-circle-stdlib only aims to be compatible with previous releases regarding  filesystem-related functionality.
+* Switched the FAT filesystem implementation to [FatFs](http://elm-chan.org/fsw/ff/00index_e.html).
+  While FatFs offers more features than Circle's FAT filesystem implementation that was used previously,
+  this release of circle-stdlib only aims to be compatible with previous releases regarding
+  filesystem-related functionality.
 
 ## [v13.2](https://github.com/smuehlst/circle-stdlib/releases/tag/v13.2)
 
