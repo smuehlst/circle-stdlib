@@ -28,11 +28,16 @@ subdirectory. Go to the subdirectory of the sample of your choice and do `make`.
 
 ## Current State
 
+V1.6:
+
+* Uses Mbed TLS 2.16.8
+* Sample 06-webclient updated to access revision tables from www.raspberry.org.
+
+## Previous Releases
+
 V1.5:
 
 * Sample programs prepared for (optional) WLAN operation.
-
-## Previous Releases
 
 V1.4:
 
