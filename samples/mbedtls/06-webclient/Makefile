@@ -6,9 +6,9 @@ CIRCLE_STDLIB_DIR = ../../..
 
 OBJS	= main.o kernel.o htmlscanner.o
 
-EXTRACLEAN = *.pem
+EXTRACLEAN = *.crt
 
 include ../Rules.mk
 
 certs:
-	wget -q https://letsencrypt.org/certs/letsencryptauthorityx3.pem
+	wget -q http://cacerts.digicert.com/CloudflareIncECCCA-3.crt

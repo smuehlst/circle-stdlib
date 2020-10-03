@@ -10,14 +10,15 @@ For WLAN operation you have to change the NET_DEVICE_TYPE define in kernel.cpp
 to NetDeviceTypeWLAN. Please read the file libs/circle/addon/wlan/sample/README
 for further information on how to prepare your SD card for WLAN operation.
 
-The program fetches the document https://elinux.org/RPi_HardwareHistory and
-parses it to find and display a Raspberry Pi hardware revision table as a comma
-separated list. The revision entry of the board, on which the program is running
-on, is displayed highlighted, if such entry exists.
+The program fetches the document https://www.raspberrypi.org/documentation/...
+hardware/raspberrypi/revision-codes/README.md and parses it to find and display
+a Raspberry Pi hardware revision table as a comma separated list. The revision
+entry of the board, on which the program is running on, is displayed
+highlighted, if such entry exists.
 
 By default this program does not authenticate the server. If you want server
 authentication, just enter "make certs" to get the required certificate files
-and put the .pem file(s) in this directory into the root directory of the SD
+and put the .crt file(s) in this directory into the root directory of the SD
 card, which is used to start your Raspberry Pi.
 
 Please note that the HTML parser in this program may fail, if the document

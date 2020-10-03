@@ -43,8 +43,8 @@ static const u8 DNSServer[]      = {192, 168, 0, 1};
 
 // Server configuration
 static const boolean bUseSSL      = TRUE;
-static const char Server[]        = "elinux.org";
-static const char Document[]      = "/RPi_HardwareHistory";
+static const char Server[]        = "www.raspberrypi.org";
+static const char Document[]      = "/documentation/hardware/raspberrypi/revision-codes/README.md";
 static const unsigned nDocMaxSize = 200*1024;
 
 CKernel::CKernel (void)
@@ -135,24 +135,35 @@ boolean CKernel::ParseDocument (const char *pDocument)
 	{
 		switch (nState)
 		{
-		case 0:		// find a HTML table
-			static const char Pattern[] = "<table";
-			if (   Item == HtmlItemTag
-			    && strncmp (ItemText, Pattern, sizeof Pattern-1) == 0)
+		case 0:		// find header above table
+			if (   Item == HtmlItemText
+			    && (      !(nBoardRevision & (1 << 23))
+			           && ItemText.Compare ("Old-style revision codes") == 0
+			        ||    (nBoardRevision & (1 << 23))
+			           && ItemText.Compare ("New-style revision codes in use:") == 0))
 			{
 				nState = 1;
 			}
 			break;
 
-		case 1:		// is the first column header == "Revision"?
+		case 1:		// find a HTML table
+			static const char Pattern[] = "<table";
+			if (   Item == HtmlItemTag
+			    && strncmp (ItemText, Pattern, sizeof Pattern-1) == 0)
+			{
+				nState = 2;
+			}
+			break;
+
+		case 2:		// is the first column header == "Code"?
 			if (Item == HtmlItemText)
 			{
-				if (ItemText.Compare ("Revision") == 0)
+				if (ItemText.Compare ("Code") == 0)
 				{
 					// yes, start displaying the list
 					static const char Msg[] = "\n";
 					mScreen.Write (Msg, sizeof Msg-1);
-					nState = 2;
+					nState = 3;
 				}
 				else
 				{
@@ -168,8 +179,8 @@ boolean CKernel::ParseDocument (const char *pDocument)
 			}
 			// fall through
 
-		case 2:		// first column
-		case 3:		// other column
+		case 3:		// first column
+		case 4:		// other column
 			if (Item == HtmlItemTag)
 			{
 				if (ItemText.Compare ("</table>") == 0)
@@ -182,12 +193,12 @@ boolean CKernel::ParseDocument (const char *pDocument)
 					// reset highlighting and output newline
 					static const char Msg[] = "\x1b[0m\n";
 					mScreen.Write (Msg, sizeof Msg-1);
-					nState = 2;
+					nState = 3;
 				}
 			}
 			else if (Item == HtmlItemText)
 			{
-				if (nState == 2)
+				if (nState == 3)
 				{
 					// check for valid revision number and compare it with ours
 					char *pEnd;
@@ -211,7 +222,7 @@ boolean CKernel::ParseDocument (const char *pDocument)
 
 				mScreen.Write (ItemText, ItemText.GetLength ());
 
-				nState = 3;
+				nState = 4;
 			}
 			break;
 
