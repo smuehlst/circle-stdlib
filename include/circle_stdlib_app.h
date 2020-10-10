@@ -155,9 +155,13 @@ public:
                          const char *pPartitionName = CSTDLIBAPP_DEFAULT_PARTITION)
                 : CStdlibAppScreen (kernel),
                   mpPartitionName (pPartitionName),
-                  mUSBHCI (&mInterrupt, &mTimer),
+                  mUSBHCI (&mInterrupt, &mTimer, TRUE),
                   mEMMC (&mInterrupt, &mTimer, &mActLED),
+#if !defined(__aarch64__) || !defined(LEAVE_QEMU_ON_HALT)
+                  mConsole (0, TRUE)
+#else
                   mConsole (&mScreen)
+#endif
         {
         }
 
