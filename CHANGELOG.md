@@ -1,5 +1,10 @@
 # Release History
 
+## [v15.3](https://github.com/smuehlst/circle-stdlib/releases/tag/v15.3)
+
+* Synced with [Circle Step 43.1](https://github.com/rsta2/circle/releases/tag/Step43.1).
+* Updated mbedtls to [release 2.16.8](https://github.com/ARMmbed/mbedtls/releases/tag/mbedtls-2.16.8).
+
 ## [v15.2](https://github.com/smuehlst/circle-stdlib/releases/tag/v15.2)
 
 * Synced with [Circle Step 43](https://github.com/rsta2/circle/releases/tag/Step43).
