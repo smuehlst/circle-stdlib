@@ -30,7 +30,7 @@
 #include <wlan/hostap/wpa_supplicant/wpasupplicant.h>
 
 #include <circle_glue.h>
-#include <cstring>
+#include <string.h>
 
 /**
  * Basic Circle Stdlib application that supports GPIO access.
@@ -146,7 +146,7 @@ private:
         char const *mpPartitionName;
 
 public:
-        // TÒDO transform to constexpr
+        // TODO transform to constexpr
         // constexpr char static DefaultPartition[] = "emmc1-1";
 #define CSTDLIBAPP_LEGACY_DEFAULT_PARTITION "emmc1-1"
 #define CSTDLIBAPP_DEFAULT_PARTITION "SD:"
