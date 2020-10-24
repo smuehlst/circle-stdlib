@@ -53,16 +53,16 @@ jobs:
     - name: Select 32-bit QEMU
       if: matrix.config.raspi == '2'
       run: |
-        echo ::set-env name=CFG_QEMU_BIN::$(echo "$HOME/local/qemu-92e53233-32/bin/qemu-system-arm")
-        echo ::set-env name=CFG_QEMU_OPT::$(echo "-bios")
-        echo ::set-env name=CFG_QEMU_IMG::$(echo "kernel7.img")
+        echo "CFG_QEMU_BIN=$HOME/local/qemu-92e53233-32/bin/qemu-system-arm" >> $GITHUB_ENV
+        echo "CFG_QEMU_OPT=-bios" >> $GITHUB_ENV
+        echo "CFG_QEMU_IMG=kernel7.img" >> $GITHUB_ENV
 
     - name: Select 64-bit QEMU
       if: matrix.config.raspi == '3'
       run: |
-        echo ::set-env name=CFG_QEMU_BIN::$(echo "$HOME/local/qemu-4.2.0-64/bin/qemu-system-aarch64")
-        echo ::set-env name=CFG_QEMU_OPT::$(echo "-kernel")
-        echo ::set-env name=CFG_QEMU_IMG::$(echo "kernel8.img")
+        echo "CFG_QEMU_BIN=$HOME/local/qemu-4.2.0-64/bin/qemu-system-aarch64" >> $GITHUB_ENV
+        echo "CFG_QEMU_OPT=-kernel" >> $GITHUB_ENV
+        echo "CFG_QEMU_IMG=kernel8.img" >> $GITHUB_ENV
 
     - name: Checkout circle-stdlib
       uses: actions/checkout@v1
@@ -124,7 +124,7 @@ jobs:
         tar -x -f ${{ matrix.config.tarname }} -C ~/local
  
     - name: Set Compiler Path ${{ matrix.config.dirname }}
-      run: echo ::set-env name=PATH::$(echo "$HOME/local/${{ matrix.config.dirname }}/bin:$PATH")
+      run: echo "$HOME/local/${{ matrix.config.dirname }}/bin" >> $GITHUB_PATH
 
     - name: Update submodules
       run: git submodule update --init --recursive
