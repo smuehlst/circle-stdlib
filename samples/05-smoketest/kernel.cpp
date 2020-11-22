@@ -161,6 +161,16 @@ CKernel::IoTest (void)
 
     Report ("fclose () test succeeded");
 
+    // Test for issue #14
+    fp = fopen ("this file does not exist", "r");
+    if (fp != nullptr)
+    {
+        Report ("fopen () for non-existent file unexpectedly succeeded");
+        exit (1);
+    }
+    mLogger.Write (GetKernelName (), LogNotice,
+        "fopen () for non-existent file failed as expected with errno %d", errno);
+
     Report ("Test directory operations...");
 
     string const dirname = "subdir";

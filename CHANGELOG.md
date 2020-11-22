@@ -1,5 +1,10 @@
 # Release History
 
+## [v15.4](https://github.com/smuehlst/circle-stdlib/releases/tag/v15.4)
+
+* Fixed issue #14: fopen() returned non-NULL value when opening non-existent
+file for reading.
+
 ## [v15.3](https://github.com/smuehlst/circle-stdlib/releases/tag/v15.3)
 
 * Synced with [Circle Step 43.1](https://github.com/rsta2/circle/releases/tag/Step43.1).
