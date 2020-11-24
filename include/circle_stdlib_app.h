@@ -255,7 +255,7 @@ public:
         {
         }
 
-        virtual bool Initialize (void)
+        virtual bool Initialize (bool const bWaitForActivate = true)
         {
                 if (!CStdlibAppStdio::Initialize ())
                 {
@@ -283,7 +283,7 @@ public:
                         }
                 }
 
-                while (!mNet.IsRunning ())
+                while (bWaitForActivate && !mNet.IsRunning ())
                 {
                         mScheduler.Yield ();
                 }
