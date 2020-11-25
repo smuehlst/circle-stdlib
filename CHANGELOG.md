@@ -1,5 +1,10 @@
 # Release History
 
+## [v15.5](https://github.com/smuehlst/circle-stdlib/releases/tag/v15.5)
+
+* Synced with [Circle Step 43.2](https://github.com/rsta2/circle/releases/tag/Step43.2).
+* Added boolean parameter bWaitForActivate for CStdlibAppNetwork::Initialize() (issue #15).
+
 ## [v15.4](https://github.com/smuehlst/circle-stdlib/releases/tag/v15.4)
 
 * Fixed issue #14: fopen() returned non-NULL value when opening non-existent
