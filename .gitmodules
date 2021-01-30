@@ -3,7 +3,7 @@
 	url = https://github.com/rsta2/circle.git
 [submodule "libs/circle-newlib"]
 	path = libs/circle-newlib
-	url = https://github.com/smuehlst/circle-newlib
+	url = https://github.com/smuehlst/circle-newlib.git
 	branch = circle-newlib
 [submodule "libs/mbedtls"]
 	path = libs/mbedtls
