@@ -20,11 +20,20 @@ Circle (call configure with `--opt-tls`, see also the
 
 ### Prerequisites
 
-* Linux or Windows 10 Subsystem for Linux (WSL).
-* gcc ARM toolchain from [Arm Developer GNU-A Downloads](https://developer.arm.com/open-source/gnu-toolchain/gnu-a/downloads) on the path. Successfully tested with:
-  * gcc 10.2-2020.11 [32-bit](https://developer.arm.com/-/media/Files/downloads/gnu-a/10.2-2020.11/binrel/gcc-arm-10.2-2020.11-x86_64-arm-none-eabi.tar.xz)/[64-bit](https://developer.arm.com/-/media/Files/downloads/gnu-a/10.2-2020.11/binrel/gcc-arm-10.2-2020.11-x86_64-aarch64-none-elf.tar.xz).
+A toolchain from [Arm Developer GNU-A Downloads](https://developer.arm.com/open-source/gnu-toolchain/gnu-a/downloads):
+
+* Hosted on Intel Linux or Windows 10 Subsystem for Linux (WSL) (build is tested with [GitHub Action](https://github.com/smuehlst/circle-stdlib/actions)):
+  * gcc 10.2-2020.11
+    * [AArch32 bare-metal target (arm-none-eabi)](https://developer.arm.com/-/media/Files/downloads/gnu-a/10.2-2020.11/binrel/gcc-arm-10.2-2020.11-x86_64-arm-none-eabi.tar.xz)
+    * [AArch64 ELF bare-metal target (aarch64-none-elf)](https://developer.arm.com/-/media/Files/downloads/gnu-a/10.2-2020.11/binrel/gcc-arm-10.2-2020.11-x86_64-aarch64-none-elf.tar.xz)
+* Hosted on 64-bit Linux on Raspberry Pi (not tested, but reported to work):
+  * gcc 10.2-2020.11
+    * [AArch32 bare-metal target (arm-none-eabi)](https://developer.arm.com/-/media/Files/downloads/gnu-a/10.2-2020.11/binrel/gcc-arm-10.2-2020.11-aarch64-arm-none-eabi.tar.xz)
+    * [AArch64 ELF bare-metal target (aarch64-none-elf)](https://developer.arm.com/-/media/Files/downloads/gnu-a/10.2-2020.11/binrel/gcc-arm-10.2-2020.11-x86_64-aarch64-none-elf.tar.xz)
 
 ### Building the Libraries
+
+Add the toolchain to the path, then:
 
 ```bash
 git clone --recursive https://github.com/smuehlst/circle-stdlib.git
