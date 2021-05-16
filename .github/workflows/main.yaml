@@ -92,7 +92,7 @@ jobs:
         git submodule update --init dtc
         echo Run configure --help
         ./configure --help
-        # ./configure --prefix=$HOME/local/qemu-92e53233-32 --target-list=arm-softmmu
+        # ./configure --python=/usr/bin/python2 --prefix=$HOME/local/qemu-92e53233-32 --target-list=arm-softmmu
         # make -j
         # make install
 
