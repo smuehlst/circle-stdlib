@@ -140,7 +140,7 @@ boolean CKernel::ParseDocument (const char *pDocument)
 			    && (      !(nBoardRevision & (1 << 23))
 			           && ItemText.Compare ("Old-style revision codes") == 0
 			        ||    (nBoardRevision & (1 << 23))
-			           && ItemText.Compare ("New-style revision codes in use:") == 0))
+			           && ItemText.Compare ("New-style revision codes in use.") == 0))
 			{
 				nState = 1;
 			}

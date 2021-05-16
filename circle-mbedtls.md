@@ -2,8 +2,8 @@
 
 ## Overview
 
-circle-mbedtls uses the [mbed TLS](https://tls.mbed.org/) library to provide
-SSL/TLS support for the Raspberry Pi bare metal environment
+circle-mbedtls uses the [Mbed TLS](https://www.trustedfirmware.org/projects/mbed-tls/)
+library to provide SSL/TLS support for the Raspberry Pi bare metal environment
 [Circle](https://github.com/rsta2/circle).
 
 circle-mbedtls is part of the circle-stdlib project, because it needs the
@@ -28,12 +28,17 @@ subdirectory. Go to the subdirectory of the sample of your choice and do `make`.
 
 ## Current State
 
+V1.7:
+
+* Uses Mbed TLS 2.16.10
+* Sample 06-webclient sync'ed with changes on www.raspberry.org.
+
+## Previous Releases
+
 V1.6:
 
 * Uses Mbed TLS 2.16.8
 * Sample 06-webclient updated to access revision tables from www.raspberry.org.
-
-## Previous Releases
 
 V1.5:
 
@@ -72,4 +77,4 @@ Version 3 - see the [LICENSE](LICENSE) file for details
 
 * Stephan Muehlstrasser for circle-stdlib, for advise
   and for opening his repository for the circle-mbedtls development.
-* The mbed TLS team for [mbed TLS](https://tls.mbed.org/).
+* The Mbed TLS team for [Mbed TLS](https://www.trustedfirmware.org/projects/mbed-tls/).
