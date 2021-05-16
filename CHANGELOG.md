@@ -1,5 +1,9 @@
 # Release History
 
+## [v15.7](https://github.com/smuehlst/circle-stdlib/releases/tag/v15.7)
+
+* Synced with [Circle Step 44](https://github.com/rsta2/circle/releases/tag/Step44).
+
 ## [v15.6](https://github.com/smuehlst/circle-stdlib/releases/tag/v15.6)
 
 * Synced with [Circle Step 43.3](https://github.com/rsta2/circle/releases/tag/Step43.3).
