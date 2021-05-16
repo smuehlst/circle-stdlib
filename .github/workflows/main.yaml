@@ -47,23 +47,23 @@ jobs:
     - name: Checkout circle-stdlib
       uses: actions/checkout@v1
 
-    # - name: Cache QEMU 64-bit
-    #   id: qemu-4_2_0-64-cache-id
-    #   uses: actions/cache@v1
-    #   with:
-    #     path: ~/local/qemu-4.2.0-64
-    #     key: ${{ runner.os }}-qemu-4_2_0-64
+    - name: Cache QEMU 64-bit
+      id: qemu-4_2_0-64-cache-id
+      uses: actions/cache@v1
+      with:
+        path: ~/local/qemu-4.2.0-64
+        key: ${{ runner.os }}-qemu-4_2_0-64
 
-    # - name: Install QEMU 64-bit
-    #   if: steps.qemu-4_2_0-64-cache-id.outputs.cache-hit != 'true'
-    #   run: |
-    #     cd
-    #     wget -nv https://download.qemu.org/qemu-4.2.0.tar.xz
-    #     tar xf qemu-4.2.0.tar.xz
-    #     cd qemu-4.2.0
-    #     ./configure --prefix=$HOME/local/qemu-4.2.0-64 --target-list=aarch64-softmmu
-    #     make -j
-    #     make install
+    - name: Install QEMU 64-bit
+      if: steps.qemu-4_2_0-64-cache-id.outputs.cache-hit != 'true'
+      run: |
+        cd
+        wget -nv https://download.qemu.org/qemu-4.2.0.tar.xz
+        tar xf qemu-4.2.0.tar.xz
+        cd qemu-4.2.0
+        ./configure --prefix=$HOME/local/qemu-4.2.0-64 --target-list=aarch64-softmmu
+        make -j
+        make install
 
     - name: Cache QEMU 32-bit
       id: qemu-92e53233-32-cache-id
@@ -83,54 +83,48 @@ jobs:
     - name: Build QEMU 32-bit     
       if: steps.qemu-92e53233-32-cache-id.outputs.cache-hit != 'true'
       run: |
-        set -x
-        uname -a
-        sudo apt install python2
-        python2 -V
-        which python2
+        sudo apt-get install python2
         cd $GITHUB_WORKSPACE/qemu-32
         git submodule update --init dtc
-        echo Run configure --help
-        ./configure --python=/usr/bin/python2 --help
         ./configure --python=/usr/bin/python2 --prefix=$HOME/local/qemu-92e53233-32 --target-list=arm-softmmu
-        # make -j
-        # make install
+        make -j
+        make install
 
-    # - name: Cache Compiler ${{ matrix.config.dirname }}
-    #   id: compiler-cache-id
-    #   uses: actions/cache@v1
-    #   with:
-    #     path: ~/local/${{ matrix.config.dirname }}
-    #     key: ${{ runner.os }}-compiler-${{ matrix.config.dirname }}
+    - name: Cache Compiler ${{ matrix.config.dirname }}
+      id: compiler-cache-id
+      uses: actions/cache@v1
+      with:
+        path: ~/local/${{ matrix.config.dirname }}
+        key: ${{ runner.os }}-compiler-${{ matrix.config.dirname }}
 
-    # - name: Install Compiler ${{ matrix.config.dirname }}
-    #   if: steps.compiler-cache-id.outputs.cache-hit != 'true'
-    #   run: |
-    #     cd
-    #     wget -nv -O ${{ matrix.config.tarname }} ${{ matrix.config.url }}
-    #     tar -x -f ${{ matrix.config.tarname }} -C ~/local
+    - name: Install Compiler ${{ matrix.config.dirname }}
+      if: steps.compiler-cache-id.outputs.cache-hit != 'true'
+      run: |
+        cd
+        wget -nv -O ${{ matrix.config.tarname }} ${{ matrix.config.url }}
+        tar -x -f ${{ matrix.config.tarname }} -C ~/local
  
-    # - name: Set Compiler Path ${{ matrix.config.dirname }}
-    #   run: echo "$HOME/local/${{ matrix.config.dirname }}/bin" >> $GITHUB_PATH
+    - name: Set Compiler Path ${{ matrix.config.dirname }}
+      run: echo "$HOME/local/${{ matrix.config.dirname }}/bin" >> $GITHUB_PATH
 
-    # - name: Update submodules
-    #   run: git submodule update --init --recursive
+    - name: Update submodules
+      run: git submodule update --init --recursive
                 
-    # - name: Configure circle-stdlib with QEMU support
-    #   run: ./configure -p ${{ matrix.config.prefix }} -r ${{ matrix.config.raspi }} --qemu
+    - name: Configure circle-stdlib with QEMU support
+      run: ./configure -p ${{ matrix.config.prefix }} -r ${{ matrix.config.raspi }} --qemu
         
-    # - name: Build libraries
-    #   run: make -j
+    - name: Build libraries
+      run: make -j
 
-    # - name: Build samples
-    #   run: make build-samples
+    - name: Build samples
+      run: make build-samples
       
-    # - name: Run smoke test with QEMU
-    #   run: |
-    #     make -C samples/05-smoketest
-    #     # Extract blank SD card image
-    #     rm -f samples/05-smoketest/sdcard.img
-    #     unzip -d samples/05-smoketest samples/05-smoketest/sdcard.img.zip
-    #     # Guard against endless loop in QEMU run (120 CPU secs)
-    #     ulimit -t 120
-    #     $CFG_QEMU_BIN -M raspi${{ matrix.config.raspi }} $CFG_QEMU_OPT samples/05-smoketest/$CFG_QEMU_IMG -display none -nographic -semihosting -sd samples/05-smoketest/sdcard.img
+    - name: Run smoke test with QEMU
+      run: |
+        make -C samples/05-smoketest
+        # Extract blank SD card image
+        rm -f samples/05-smoketest/sdcard.img
+        unzip -d samples/05-smoketest samples/05-smoketest/sdcard.img.zip
+        # Guard against endless loop in QEMU run (120 CPU secs)
+        ulimit -t 120
+        $CFG_QEMU_BIN -M raspi${{ matrix.config.raspi }} $CFG_QEMU_OPT samples/05-smoketest/$CFG_QEMU_IMG -display none -nographic -semihosting -sd samples/05-smoketest/sdcard.img
