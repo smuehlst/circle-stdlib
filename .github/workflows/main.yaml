@@ -83,13 +83,14 @@ jobs:
     - name: Build QEMU 32-bit     
       if: steps.qemu-92e53233-32-cache-id.outputs.cache-hit != 'true'
       run: |
+        set -x
         uname -a
         sudo apt install python2
         python2 -V
         which python2
-        ./configure --help
         cd $GITHUB_WORKSPACE/qemu-32
         git submodule update --init dtc
+        echo Run configure --help
         ./configure --help
         # ./configure --prefix=$HOME/local/qemu-92e53233-32 --target-list=arm-softmmu
         # make -j
