@@ -83,6 +83,7 @@ jobs:
     - name: Build QEMU 32-bit     
       if: steps.qemu-92e53233-32-cache-id.outputs.cache-hit != 'true'
       run: |
+        # Later needed under Ubuntu 20
         # sudo apt-get install python2
         cd $GITHUB_WORKSPACE/qemu-32
         git submodule update --init dtc
