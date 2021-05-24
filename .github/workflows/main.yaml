@@ -33,61 +33,43 @@ jobs:
     - name: Select 32-bit QEMU
       if: matrix.config.raspi == '2'
       run: |
-        echo "CFG_QEMU_BIN=$HOME/local/qemu-92e53233-32/bin/qemu-system-arm" >> $GITHUB_ENV
+        echo "CFG_QEMU_BIN=$HOME/local/qemu-6.0.0/bin/qemu-system-arm" >> $GITHUB_ENV
         echo "CFG_QEMU_OPT=-bios" >> $GITHUB_ENV
         echo "CFG_QEMU_IMG=kernel7.img" >> $GITHUB_ENV
 
     - name: Select 64-bit QEMU
       if: matrix.config.raspi == '3'
       run: |
-        echo "CFG_QEMU_BIN=$HOME/local/qemu-4.2.0-64/bin/qemu-system-aarch64" >> $GITHUB_ENV
+        echo "CFG_QEMU_BIN=$HOME/local/qemu-6.0.0/bin/qemu-system-aarch64" >> $GITHUB_ENV
         echo "CFG_QEMU_OPT=-kernel" >> $GITHUB_ENV
         echo "CFG_QEMU_IMG=kernel8.img" >> $GITHUB_ENV
 
     - name: Checkout circle-stdlib
       uses: actions/checkout@v1
 
-    - name: Cache QEMU 64-bit
-      id: qemu-4_2_0-64-cache-id
+    - name: Cache QEMU
+      id: qemu-6_0_0-cache-id
       uses: actions/cache@v1
       with:
-        path: ~/local/qemu-4.2.0-64
-        key: ${{ runner.os }}-qemu-4_2_0-64
+        path: ~/local/qemu-6.0.0
+        key: ${{ runner.os }}-qemu-6_0_0
 
-    - name: Install QEMU 64-bit
-      if: steps.qemu-4_2_0-64-cache-id.outputs.cache-hit != 'true'
-      run: |
-        cd
-        wget -nv https://download.qemu.org/qemu-4.2.0.tar.xz
-        tar xf qemu-4.2.0.tar.xz
-        cd qemu-4.2.0
-        ./configure --prefix=$HOME/local/qemu-4.2.0-64 --target-list=aarch64-softmmu
-        make -j
-        make install
-
-    - name: Cache QEMU 32-bit
-      id: qemu-92e53233-32-cache-id
-      uses: actions/cache@v1
-      with:
-        path: ~/local/qemu-92e53233-32
-        key: ${{ runner.os }}-qemu-92e53233-32
-
-    - name: Clone QEMU 32-bit Repository
-      if: steps.qemu-92e53233-32-cache-id.outputs.cache-hit != 'true'
+    - name: Clone QEMU Repository
+      if: steps.qemu-6_0_0-cache-id.outputs.cache-hit != 'true'
       uses: actions/checkout@v2
       with:
-        repository: rsta2/qemu
-        ref: 92e53233035e6bef24ce79e9cebd45d670de3902
-        path: qemu-32
+        repository: smuehlst/qemu
+        ref: 2568d421e0e6855b3b45f455bbc90b41b50cb8df
+        path: qemu
 
-    - name: Build QEMU 32-bit     
-      if: steps.qemu-92e53233-32-cache-id.outputs.cache-hit != 'true'
+    - name: Build QEMU   
+      if: steps.qemu-6_0_0-cache-id.outputs.cache-hit != 'true'
       run: |
-        # Later needed under Ubuntu 20
-        # sudo apt-get install python2
-        cd $GITHUB_WORKSPACE/qemu-32
-        git submodule update --init dtc
-        ./configure --python=/usr/bin/python2 --prefix=$HOME/local/qemu-92e53233-32 --target-list=arm-softmmu
+        cd $GITHUB_WORKSPACE/qemu
+        git submodule update --init --recursive
+        mkdir -p $GITHUB_WORKSPACE/qemu-build
+        cd $GITHUB_WORKSPACE/qemu-build
+        ../qemu/configure --prefix=$HOME/local/qemu-6.0.0 --target-list=arm-softmmu,aarch64-softmmu
         make -j
         make install
 
