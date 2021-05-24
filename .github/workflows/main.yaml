@@ -22,23 +22,25 @@ jobs:
             tarname:  "gcc-arm-10.2-2020.11-x86_64-arm-none-eabi.tar.xz",
             dirname:  "gcc-arm-10.2-2020.11-x86_64-arm-none-eabi",
             prefix:   "arm-none-eabi-",
-            raspi:    "2" }
+            circle-machine: "1",
+            qemu-machine: "raspi0" }
         - { url:      "https://developer.arm.com/-/media/Files/downloads/gnu-a/10.2-2020.11/binrel/gcc-arm-10.2-2020.11-x86_64-aarch64-none-elf.tar.xz",
             tarname:  "gcc-arm-10.2-2020.11-x86_64-aarch64-none-elf.tar.xz",
             dirname:  "gcc-arm-10.2-2020.11-x86_64-aarch64-none-elf",
             prefix:   "aarch64-none-elf-",
-            raspi:    "3" }
+            circle-machine: "3",
+            qemu-machine: "raspi3" }
 
     steps:
     - name: Select 32-bit QEMU
-      if: matrix.config.raspi == '2'
+      if: matrix.config.circle-machine == '1'
       run: |
         echo "CFG_QEMU_BIN=$HOME/local/qemu-6.0.0/bin/qemu-system-arm" >> $GITHUB_ENV
         echo "CFG_QEMU_OPT=-bios" >> $GITHUB_ENV
-        echo "CFG_QEMU_IMG=kernel7.img" >> $GITHUB_ENV
+        echo "CFG_QEMU_IMG=kernel.img" >> $GITHUB_ENV
 
     - name: Select 64-bit QEMU
-      if: matrix.config.raspi == '3'
+      if: matrix.config.circle-machine == '3'
       run: |
         echo "CFG_QEMU_BIN=$HOME/local/qemu-6.0.0/bin/qemu-system-aarch64" >> $GITHUB_ENV
         echo "CFG_QEMU_OPT=-kernel" >> $GITHUB_ENV
@@ -102,7 +104,7 @@ jobs:
     - name: Configure circle-stdlib with QEMU support
       run:  |
         cd $GITHUB_WORKSPACE/circle-stdlib
-        ./configure -p ${{ matrix.config.prefix }} -r ${{ matrix.config.raspi }} --qemu
+        ./configure -p ${{ matrix.config.prefix }} -r ${{ matrix.config.circle-machine }} --qemu
         
     - name: Build libraries
       run: make -j -C $GITHUB_WORKSPACE/circle-stdlib
@@ -118,4 +120,4 @@ jobs:
         unzip sdcard.img.zip
         # Guard against endless loop in QEMU run (120 CPU secs)
         ulimit -t 120
-        $CFG_QEMU_BIN -M raspi${{ matrix.config.raspi }} $CFG_QEMU_OPT $CFG_QEMU_IMG -display none -nographic -semihosting -sd sdcard.img
+        $CFG_QEMU_BIN -M ${{ matrix.config.qemu-machine }} $CFG_QEMU_OPT $CFG_QEMU_IMG -display none -nographic -semihosting -sd sdcard.img
