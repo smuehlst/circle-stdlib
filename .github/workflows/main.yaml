@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
 
     name: ${{ matrix.config.dirname }}
 
@@ -45,7 +45,10 @@ jobs:
         echo "CFG_QEMU_IMG=kernel8.img" >> $GITHUB_ENV
 
     - name: Checkout circle-stdlib
-      uses: actions/checkout@v1
+      uses: actions/checkout@v2
+      with:
+        repository: smuehlst/circle-stdlib
+        path: circle-stdlib
 
     - name: Cache QEMU
       id: qemu-6_0_0-cache-id
@@ -91,23 +94,28 @@ jobs:
       run: echo "$HOME/local/${{ matrix.config.dirname }}/bin" >> $GITHUB_PATH
 
     - name: Update submodules
-      run: git submodule update --init --recursive
+      run: |
+        cd $GITHUB_WORKSPACE/circle-stdlib
+        git submodule update --init --recursive
                 
     - name: Configure circle-stdlib with QEMU support
-      run: ./configure -p ${{ matrix.config.prefix }} -r ${{ matrix.config.raspi }} --qemu
+      run:  |
+        cd $GITHUB_WORKSPACE/circle-stdlib
+        ./configure -p ${{ matrix.config.prefix }} -r ${{ matrix.config.raspi }} --qemu
         
     - name: Build libraries
-      run: make -j
+      run: make -j -C $GITHUB_WORKSPACE/circle-stdlib
 
     - name: Build samples
-      run: make build-samples
+      run: make -C $GITHUB_WORKSPACE/circle-stdlib build-samples
       
     - name: Run smoke test with QEMU
       run: |
-        make -C samples/05-smoketest
+        cd $GITHUB_WORKSPACE/circle-stdlib/samples/05-smoketest
+        make
         # Extract blank SD card image
-        rm -f samples/05-smoketest/sdcard.img
-        unzip -d samples/05-smoketest samples/05-smoketest/sdcard.img.zip
+        rm -f sdcard.img
+        unzip sdcard.img.zip
         # Guard against endless loop in QEMU run (120 CPU secs)
         ulimit -t 120
-        $CFG_QEMU_BIN -M raspi${{ matrix.config.raspi }} $CFG_QEMU_OPT samples/05-smoketest/$CFG_QEMU_IMG -display none -nographic -semihosting -sd samples/05-smoketest/sdcard.img
+        $CFG_QEMU_BIN -M raspi${{ matrix.config.raspi }} $CFG_QEMU_OPT $CFG_QEMU_IMG -display none -nographic -semihosting -sd sdcard.img
