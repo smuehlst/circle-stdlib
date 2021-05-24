@@ -68,6 +68,7 @@ jobs:
     - name: Build QEMU   
       if: steps.qemu-6_0_0-cache-id.outputs.cache-hit != 'true'
       run: |
+        sudo apt-get install ninja-build
         cd $GITHUB_WORKSPACE/qemu
         git submodule update --init --recursive
         mkdir -p $GITHUB_WORKSPACE/qemu-build
