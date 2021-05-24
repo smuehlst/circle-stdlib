@@ -113,7 +113,6 @@ jobs:
     - name: Run smoke test with QEMU
       run: |
         cd $GITHUB_WORKSPACE/circle-stdlib/samples/05-smoketest
-        make
         # Extract blank SD card image
         rm -f sdcard.img
         unzip sdcard.img.zip
