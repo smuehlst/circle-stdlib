@@ -284,6 +284,26 @@ CKernel::IoTest (void)
     }
 
     Report ("unlink () test succeeded");
+
+    // Test fix for issue #22
+    // https://github.com/smuehlst/circle-stdlib/issues/22
+    #define SIZE_A 10
+
+    uint32_t referenceArray[SIZE_A];
+	auto const testArray = (uint32_t *) malloc(sizeof(uint32_t) * (SIZE_A + 1));
+	for (int i = 0; i < SIZE_A; i++) {
+		testArray[i] = i;
+	}
+    memcpy(referenceArray, testArray, sizeof(referenceArray));
+	memmove(&testArray[1], &testArray[0], sizeof(uint32_t) * SIZE_A);
+
+    if (memcmp(referenceArray, testArray + 1, sizeof(referenceArray)) != 0)
+    {
+        PErrorExit ("Fix for issue #22 is broken");
+    }
+    free(testArray);
+
+    Report ("Fix for issue #22 works as expected");
 }
 
 void
