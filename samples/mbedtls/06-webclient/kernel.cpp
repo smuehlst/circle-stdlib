@@ -2,7 +2,7 @@
 // kernel.cpp
 //
 // Circle - A C++ bare metal environment for Raspberry Pi
-// Copyright (C) 2015-2020  R. Stange <rsta2@o2online.de>
+// Copyright (C) 2015-2021  R. Stange <rsta2@o2online.de>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -43,9 +43,9 @@ static const u8 DNSServer[]      = {192, 168, 0, 1};
 
 // Server configuration
 static const boolean bUseSSL      = TRUE;
-static const char Server[]        = "www.raspberrypi.org";
-static const char Document[]      = "/documentation/hardware/raspberrypi/revision-codes/README.md";
-static const unsigned nDocMaxSize = 200*1024;
+static const char Server[]        = "www.raspberrypi.com";
+static const char Document[]      = "/documentation/computers/raspberry-pi.html";
+static const unsigned nDocMaxSize = 2048*1024;
 
 CKernel::CKernel (void)
         : CStdlibAppNetwork ("webclient", CSTDLIBAPP_DEFAULT_PARTITION
@@ -135,27 +135,35 @@ boolean CKernel::ParseDocument (const char *pDocument)
 	{
 		switch (nState)
 		{
-		case 0:		// find header above table
-			if (   Item == HtmlItemText
-			    && (      !(nBoardRevision & (1 << 23))
-			           && ItemText.Compare ("Old-style revision codes") == 0
-			        ||    (nBoardRevision & (1 << 23))
-			           && ItemText.Compare ("New-style revision codes in use.") == 0))
+		case 0:		// find start of content
+			if (   Item == HtmlItemTag
+			    && strcmp (ItemText, "<section id=\"content\">") == 0)
 			{
 				nState = 1;
 			}
 			break;
 
-		case 1:		// find a HTML table
-			static const char Pattern[] = "<table";
-			if (   Item == HtmlItemTag
-			    && strncmp (ItemText, Pattern, sizeof Pattern-1) == 0)
+		case 1:		// find header above table
+			if (   Item == HtmlItemText
+			    && (      !(nBoardRevision & (1 << 23))
+			           && ItemText.Compare ("Old-style Revision Codes") == 0
+			        ||    (nBoardRevision & (1 << 23))
+			           && ItemText.Compare ("New-style Revision Codes in Use") == 0))
 			{
 				nState = 2;
 			}
 			break;
 
-		case 2:		// is the first column header == "Code"?
+		case 2:		// find a HTML table
+			static const char Pattern[] = "<table";
+			if (   Item == HtmlItemTag
+			    && strncmp (ItemText, Pattern, sizeof Pattern-1) == 0)
+			{
+				nState = 3;
+			}
+			break;
+
+		case 3:		// is the first column header == "Code"?
 			if (Item == HtmlItemText)
 			{
 				if (ItemText.Compare ("Code") == 0)
@@ -163,12 +171,12 @@ boolean CKernel::ParseDocument (const char *pDocument)
 					// yes, start displaying the list
 					static const char Msg[] = "\n";
 					mScreen.Write (Msg, sizeof Msg-1);
-					nState = 3;
+					nState = 4;
 				}
 				else
 				{
 					// no, find next table
-					nState = 0;
+					nState = 2;
 					break;
 				}
 			}
@@ -179,8 +187,8 @@ boolean CKernel::ParseDocument (const char *pDocument)
 			}
 			// fall through
 
-		case 3:		// first column
-		case 4:		// other column
+		case 4:		// first column
+		case 5:		// other column
 			if (Item == HtmlItemTag)
 			{
 				if (ItemText.Compare ("</table>") == 0)
@@ -193,12 +201,12 @@ boolean CKernel::ParseDocument (const char *pDocument)
 					// reset highlighting and output newline
 					static const char Msg[] = "\x1b[0m\n";
 					mScreen.Write (Msg, sizeof Msg-1);
-					nState = 3;
+					nState = 4;
 				}
 			}
 			else if (Item == HtmlItemText)
 			{
-				if (nState == 3)
+				if (nState == 4)
 				{
 					// check for valid revision number and compare it with ours
 					char *pEnd;
@@ -222,7 +230,7 @@ boolean CKernel::ParseDocument (const char *pDocument)
 
 				mScreen.Write (ItemText, ItemText.GetLength ());
 
-				nState = 4;
+				nState = 5;
 			}
 			break;
 
