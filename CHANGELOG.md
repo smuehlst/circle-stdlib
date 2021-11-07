@@ -1,10 +1,15 @@
 # Release History
 
-## [v15.8](https://github.com/smuehlst/circle-stdlib/releases/tag/v15.8)
+## [v15.9](https://github.com/smuehlst/circle-stdlib/releases/tag/v15.9)
 
 * Synced with [Circle Step 44.2](https://github.com/rsta2/circle/releases/tag/Step44.2).
 * Aligned toolchain version with Circle (gcc 10.3-2021.07).
 * Updated Mbed TLS to version 2.16.11.
+
+## [v15.8](https://github.com/smuehlst/circle-stdlib/releases/tag/v15.8)
+
+* Synced with [Circle Step 44.1](https://github.com/rsta2/circle/releases/tag/Step44.1).
+* Fixed issue #22 "Bad memmove behavior". This issue was only reproducible with the AArch64 build.
 
 ## [v15.7](https://github.com/smuehlst/circle-stdlib/releases/tag/v15.7)
 
