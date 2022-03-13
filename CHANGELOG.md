@@ -1,5 +1,12 @@
 # Release History
 
+## [v15.11](https://github.com/smuehlst/circle-stdlib/releases/tag/v15.11)
+
+* Synced with [Circle Step 44.4.1](https://github.com/rsta2/circle/releases/tag/Step44.4.1).
+* Updated mbed TLS to [release v2.16.12](https://github.com/ARMmbed/mbedtls/releases/tag/v2.16.12).
+* New `configure` command line option `--option` for specifying additional preprocessor defines
+  consistently across all libraries.
+
 ## [v15.10](https://github.com/smuehlst/circle-stdlib/releases/tag/v15.10)
 
 * Synced with [Circle Step 44.3](https://github.com/rsta2/circle/releases/tag/Step44.3).
@@ -8,7 +15,7 @@
 
 * Synced with [Circle Step 44.2](https://github.com/rsta2/circle/releases/tag/Step44.2).
 * Aligned toolchain version with Circle (gcc 10.3-2021.07).
-* Updated Mbed TLS to version 2.16.11.
+* Updated mbed TLS to [release 2.16.11](https://github.com/ARMmbed/mbedtls/releases/tag/v2.16.11).
 
 ## [v15.8](https://github.com/smuehlst/circle-stdlib/releases/tag/v15.8)
 
