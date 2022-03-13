@@ -10,6 +10,7 @@ function usage() {
     echo "  -d, --debug                    build with debug information, without optimizer"
     echo "  -h, --help                     show usage message"
     echo "  -n, --no-cpp                   do not support C++ standard library"
+    echo "  -o, --option <name>[=<value>]  define system option (optionally with value)"
     echo "  --opt-tls                      build with mbed TLS support"
     echo "  -p <string>, --prefix <string> prefix of the toolchain commands (default: arm-none-eabi-)"
     echo "  --qemu                         build for running under QEMU in semihosting mode"
@@ -25,7 +26,7 @@ function usage() {
 cd "${BASH_SOURCE%/*}" || exit 1
 TOPDIR="$PWD"
 
-TEMP=$(getopt -o dhnp:r:s: --long debug,help,no-circle-build,no-cpp,opt-tls,qemu,prefix:,raspberrypi:,script-debug,softfp,stddefpath: \
+TEMP=$(getopt -o dhno:p:r:s: --long debug,help,no-circle-build,no-cpp,option:,opt-tls,qemu,prefix:,raspberrypi:,script-debug,softfp,stddefpath: \
      -n 'build.bash' -- "$@")
 
 if [ $? != 0 ] ; then echo usage; exit 1 ; fi
@@ -42,6 +43,7 @@ NEWLIB_BUILD=1
 TOOLPREFIX=arm-none-eabi-
 STDDEF_INCPATH=""
 STDLIB_SUPPORT=3
+OPTIONS=""
 FLOAT_ABI=hard
 OPTTLS=0
 SIXTY_FOUR_BIT=0
@@ -55,6 +57,7 @@ while true ; do
 	-d|--debug) DEBUG=1 ; shift;;
 	-h|--help) usage ; exit 0;;
 	-n|--no-cpp) STDLIB_SUPPORT=2 ; shift;;
+	-o|--option) OPTIONS="$OPTIONS -D$2" ; shift 2;;
 	--opt-tls) OPTTLS=1 ; shift;;
 	--qemu) CIRCLE_QEMU=1 ; shift;;
 	-p|--prefix) TOOLPREFIX="$2" ; shift 2;;
@@ -75,6 +78,7 @@ echo "FLOAT_ABI=$FLOAT_ABI"
 echo "NEWLIB_BUILD=$NEWLIB_BUILD"
 echo "RASPBERRYPI=$RASPBERRYPI"
 echo "STDLIB_SUPPORT=$STDLIB_SUPPORT"
+echo "OPTIONS=$OPTIONS"
 echo "NEWLIB_INSTALL_DIR=$NEWLIB_INSTALL_DIR"
 echo "NEWLIB_BUILD_DIR=$NEWLIB_BUILD_DIR"
 echo "DEBUG=$DEBUG"
@@ -160,6 +164,10 @@ fi
     echo "STDLIB_SUPPORT = $STDLIB_SUPPORT"
     echo "STDDEF_INCPATH = \"$STDDEF_INCPATH\""
     echo "CFLAGS = -Wno-parentheses $CIRCLE_CFLAGS"
+    if [ "$OPTIONS" != "" ]
+    then
+        echo "DEFINE += $OPTIONS"
+    fi
     if [ $DEBUG -eq 1 ]
     then
         echo "OPTIMIZE = -O0 -g"
@@ -189,9 +197,9 @@ export \
 
 if [ $DEBUG -eq 1 ]
 then
-    CFLAGS_FOR_TARGET="$ARCH -O0 -g -Wno-parentheses"
+    CFLAGS_FOR_TARGET="$ARCH -DRASPPI=$RASPBERRYPI $OPTIONS -O0 -g -Wno-parentheses"
 else
-    CFLAGS_FOR_TARGET="$ARCH -Wno-parentheses"
+    CFLAGS_FOR_TARGET="$ARCH -DRASPPI=$RASPBERRYPI $OPTIONS -Wno-parentheses"
 fi
 export CFLAGS_FOR_TARGET
 
