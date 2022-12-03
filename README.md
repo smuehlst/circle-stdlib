@@ -1,7 +1,7 @@
 # circle-stdlib
 
-![Status badge for master branch](https://github.com/smuehlst/circle-stdlib/workflows/branch%20%22master%22/badge.svg)
-![Status badge for develop branch](https://github.com/smuehlst/circle-stdlib/workflows/branch%20%22develop%22/badge.svg)
+![Status badge for master branch](https://github.com/smuehlst/circle-stdlib/workflows/main.yaml/badge.svg?branch=master)
+![Status badge for develop branch](https://github.com/smuehlst/circle-stdlib/workflows/main.yaml/badge.svg?branch=develop)
 
 ## Overview
 
