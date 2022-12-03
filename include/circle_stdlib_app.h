@@ -157,11 +157,7 @@ public:
                   mpPartitionName (pPartitionName),
                   mUSBHCI (&mInterrupt, &mTimer, TRUE),
                   mEMMC (&mInterrupt, &mTimer, &mActLED),
-#if !defined(__aarch64__) || !defined(LEAVE_QEMU_ON_HALT)
                   mConsole (0, TRUE)
-#else
-                  mConsole (&mScreen)
-#endif
         {
         }
 
@@ -193,15 +189,10 @@ public:
                         return false;
                 }
 
-#if !defined(__aarch64__) || !defined(LEAVE_QEMU_ON_HALT)
-                // The USB driver is not supported under 64-bit QEMU, so
-                // the initialization must be skipped in this case, or an
-                // exit happens here under 64-bit QEMU.
                 if (!mUSBHCI.Initialize ())
                 {
                         return false;
                 }
-#endif
 
                 if (!mConsole.Initialize ())
                 {
