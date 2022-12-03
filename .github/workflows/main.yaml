@@ -47,21 +47,21 @@ jobs:
         echo "CFG_QEMU_IMG=kernel8.img" >> $GITHUB_ENV
 
     - name: Checkout circle-stdlib
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         repository: smuehlst/circle-stdlib
         path: circle-stdlib
 
     - name: Cache QEMU
       id: qemu-6_0_0-cache-id
-      uses: actions/cache@v1
+      uses: actions/cache@v3
       with:
         path: ~/local/qemu-6.0.0
         key: ${{ runner.os }}-qemu-6_0_0
 
     - name: Clone QEMU Repository
       if: steps.qemu-6_0_0-cache-id.outputs.cache-hit != 'true'
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         repository: smuehlst/qemu
         ref: 2568d421e0e6855b3b45f455bbc90b41b50cb8df
@@ -81,7 +81,7 @@ jobs:
 
     - name: Cache Compiler ${{ matrix.config.dirname }}
       id: compiler-cache-id
-      uses: actions/cache@v1
+      uses: actions/cache@v3
       with:
         path: ~/local/${{ matrix.config.dirname }}
         key: ${{ runner.os }}-compiler-${{ matrix.config.dirname }}
