@@ -20,16 +20,14 @@ Circle (call configure with `--opt-tls`, see also the
 
 ### Prerequisites
 
-A toolchain from [Arm Developer GNU-A Downloads](https://developer.arm.com/open-source/gnu-toolchain/gnu-a/downloads):
+A toolchain from [Arm GNU Toolchain Downloads](https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads):
 
-* Hosted on Intel Linux or Windows 10 Subsystem for Linux (WSL) (build is tested with [GitHub Action](https://github.com/smuehlst/circle-stdlib/actions)):
-  * gcc 10.3-2021.07
-    * [AArch32 bare-metal target (arm-none-eabi)](https://developer.arm.com/-/media/Files/downloads/gnu-a/10.3-2021.07/binrel/gcc-arm-10.3-2021.07-x86_64-arm-none-eabi.tar.xz)
-    * [AArch64 ELF bare-metal target (aarch64-none-elf)](https://developer.arm.com/-/media/Files/downloads/gnu-a/10.3-2021.07/binrel/gcc-arm-10.3-2021.07-x86_64-aarch64-none-elf.tar.xz)
-* Hosted on 64-bit Linux on Raspberry Pi (not tested, but reported to work):
-  * gcc 10.3-2021.07
-    * [AArch32 bare-metal target (arm-none-eabi)](https://developer.arm.com/-/media/Files/downloads/gnu-a/10.3-2021.07/binrel/gcc-arm-10.3-2021.07-aarch64-arm-none-eabi.tar.xz)
-    * [AArch64 ELF bare-metal target (aarch64-none-elf)](https://developer.arm.com/-/media/Files/downloads/gnu-a/10.3-2021.07/binrel/gcc-arm-10.3-2021.07-aarch64-aarch64-none-elf.tar.xz)
+* gcc 11.3.Rel1 hosted on Intel Linux or Windows 10 Subsystem for Linux (WSL) (build is tested with [GitHub Action](https://github.com/smuehlst/circle-stdlib/actions)):
+  * [AArch32 bare-metal target (arm-none-eabi)](https://developer.arm.com/-/media/Files/downloads/gnu/11.3.rel1/binrel/arm-gnu-toolchain-11.3.rel1-x86_64-arm-none-eabi.tar.xz)
+  * [AArch64 ELF bare-metal target (aarch64-none-elf)](https://developer.arm.com/-/media/Files/downloads/gnu/11.3.rel1/binrel/arm-gnu-toolchain-11.3.rel1-x86_64-aarch64-none-elf.tar.xz)
+* gcc 11.3.Rel1 hosted on 64-bit Linux on Raspberry Pi (not tested, but reported to work):
+  * [AArch32 bare-metal target (arm-none-eabi)](https://developer.arm.com/-/media/Files/downloads/gnu/11.3.rel1/binrel/arm-gnu-toolchain-11.3.rel1-aarch64-arm-none-eabi.tar.xz)
+  * [AArch64 ELF bare-metal target (aarch64-none-elf)](https://developer.arm.com/-/media/Files/downloads/gnu/11.3.rel1/binrel/arm-gnu-toolchain-11.3.rel1-aarch64-aarch64-none-elf.tar.xz)
 
 ### Building the Libraries
 
@@ -53,6 +51,8 @@ Options:
   -d, --debug                    build with debug information, without optimizer
   -h, --help                     show usage message
   -n, --no-cpp                   do not support C++ standard library
+  -o, --option <name>[=<value>]  additional preprocessor define (optionally with value)
+                                 can be repeated
   --opt-tls                      build with mbed TLS support
   -p <string>, --prefix <string> prefix of the toolchain commands (default: arm-none-eabi-)
   --qemu                         build for running under QEMU in semihosting mode
@@ -61,7 +61,7 @@ Options:
   --softfp                       use float ABI setting "softfp" instead of "hard"
   -s <path>, --stddefpath <path>
                                  path where stddef.h header is located (only necessary
-                                 if  script cannot determine it automatically)
+                                 if script cannot determine it automatically)
 ```
 
 To clean the project directory, the following commands can be used:

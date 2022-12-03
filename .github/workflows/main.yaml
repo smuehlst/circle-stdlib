@@ -18,15 +18,15 @@ jobs:
       fail-fast: false
       matrix:
         config:
-        - { url:      "https://developer.arm.com/-/media/Files/downloads/gnu-a/10.3-2021.07/binrel/gcc-arm-10.3-2021.07-x86_64-arm-none-eabi.tar.xz",
-            tarname:  "gcc-arm-10.3-2021.07-x86_64-arm-none-eabi.tar.xz",
-            dirname:  "gcc-arm-10.3-2021.07-x86_64-arm-none-eabi",
+        - { url:      "https://developer.arm.com/-/media/Files/downloads/gnu/11.3.rel1/binrel/arm-gnu-toolchain-11.3.rel1-x86_64-arm-none-eabi.tar.xz",
+            tarname:  "arm-gnu-toolchain-11.3.rel1-x86_64-arm-none-eabi.tar.xz",
+            dirname:  "arm-gnu-toolchain-11.3.rel1-x86_64-arm-none-eabi",
             prefix:   "arm-none-eabi-",
             circle-machine: "1",
             qemu-machine: "raspi0" }
-        - { url:      "https://developer.arm.com/-/media/Files/downloads/gnu-a/10.3-2021.07/binrel/gcc-arm-10.3-2021.07-x86_64-aarch64-none-elf.tar.xz",
-            tarname:  "gcc-arm-10.3-2021.07-x86_64-aarch64-none-elf.tar.xz",
-            dirname:  "gcc-arm-10.3-2021.07-x86_64-aarch64-none-elf",
+        - { url:      "https://developer.arm.com/-/media/Files/downloads/gnu/11.3.rel1/binrel/arm-gnu-toolchain-11.3.rel1-x86_64-aarch64-none-elf.tar.xz",
+            tarname:  "arm-gnu-toolchain-11.3.rel1-x86_64-aarch64-none-elf.tar.xz",
+            dirname:  "arm-gnu-toolchain-11.3.rel1-x86_64-aarch64-none-elf",
             prefix:   "aarch64-none-elf-",
             circle-machine: "3",
             qemu-machine: "raspi3" }

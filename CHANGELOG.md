@@ -1,5 +1,10 @@
 # Release History
 
+## [v15.14](https://github.com/smuehlst/circle-stdlib/releases/tag/v15.14)
+
+* Synced with [Circle Step 45](https://github.com/rsta2/circle/releases/tag/Step45).
+* Updated mbed TLS to [release v2.28.1](https://github.com/Mbed-TLS/mbedtls/releases/tag/v2.28.1).
+
 ## [v15.13](https://github.com/smuehlst/circle-stdlib/releases/tag/v15.13)
 
 * Synced with [Circle Step 44.5](https://github.com/rsta2/circle/releases/tag/Step44.5).
