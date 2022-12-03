@@ -10,7 +10,8 @@ function usage() {
     echo "  -d, --debug                    build with debug information, without optimizer"
     echo "  -h, --help                     show usage message"
     echo "  -n, --no-cpp                   do not support C++ standard library"
-    echo "  -o, --option <name>[=<value>]  define system option (optionally with value)"
+    echo "  -o, --option <name>[=<value>]  additional preprocessor define (optionally with value)"
+    echo "                                 can be repeated"
     echo "  --opt-tls                      build with mbed TLS support"
     echo "  -p <string>, --prefix <string> prefix of the toolchain commands (default: arm-none-eabi-)"
     echo "  --qemu                         build for running under QEMU in semihosting mode"
@@ -19,7 +20,7 @@ function usage() {
     echo "  --softfp                       use float ABI setting \"softfp\" instead of \"hard\""
     echo "  -s <path>, --stddefpath <path>"
     echo "                                 path where stddef.h header is located (only necessary"
-    echo "                                 if  script cannot determine it automatically)"
+    echo "                                 if script cannot determine it automatically)"
 }
 
 # From the bash FAQ: How to use pathnames relative to the script
