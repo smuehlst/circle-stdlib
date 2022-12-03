@@ -22,6 +22,7 @@
 
 #include <circle_stdlib_app.h>
 #include <qemu/qemuhostfile.h>
+#include <string>
 
 class CKernel : public CStdlibAppStdio
 {
@@ -32,13 +33,31 @@ public:
 
 private:
     void IoTest (void);
-    void PErrorExit (const char *s);
+    void CxxTest (void);
+    void PErrorExit [[ noreturn ]] (const char *s);
     void Report (const char *s);
+    void Report (const std::string &s);
 
     static void
     TimerHandler (TKernelTimerHandle hTimer, void *pParam, void *pContext);
 
     CQEMUHostFile m_LogFile;
+
+    struct ooops : std::exception
+    {
+        const char *what() const noexcept;
+    };
+
+    void barf(void);
+
+    struct a
+    {
+        a(CKernel &k);
+        a(const a &other);
+        ~a();
+        static size_t counter;
+        CKernel &kernel;
+    };
 };
 
 #endif

@@ -23,6 +23,12 @@
 #include <cstdlib>
 #include <cstring>
 #include <cerrno>
+#include <iostream>
+#include <fstream>
+#include <algorithm>
+#include <vector>
+#include <exception>
+#include <memory>
 #include <dirent.h>
 #include <string>
 #include <sys/stat.h>
@@ -72,6 +78,7 @@ CKernel::Run (void)
     }
 
     IoTest ();
+    CxxTest ();
 
     mLogger.Write (GetKernelName (), LogNotice, "Shutting down...");
 
@@ -85,10 +92,16 @@ CKernel::Report(const char *s)
 }
 
 void
+CKernel::Report(const std::string &s)
+{
+    Report(s.c_str());
+}
+
+void
 CKernel::PErrorExit(const char *s)
 {
     perror (s);
-    mLogger.Write (GetKernelName (), LogError, "error '%s', exiting with code 1...");
+    mLogger.Write (GetKernelName (), LogError, "error '%s', exiting with code 1...", s);
     exit (1);
 }
 
@@ -311,4 +324,97 @@ CKernel::TimerHandler (TKernelTimerHandle, void *pParam, void*)
 {
     bool *pTimerFired = static_cast<bool*> (pParam);
     *pTimerFired = true;
+}
+
+const char * CKernel::ooops::what() const noexcept
+{
+    return "Ooops!";
+}
+
+void CKernel::barf(void)
+{
+    Report("Throwing exception...");
+    throw ooops();
+}
+
+CKernel::a::a(CKernel &k) : kernel(k)
+{
+    counter += 1;
+}
+
+CKernel::a::a(const a &other) : kernel(other.kernel)
+{
+    counter += 1;
+}
+
+CKernel::a::~a()
+{
+    assert(counter > 0);
+    counter -= 1;
+    if (counter == 0)
+    {
+        kernel.Report("all 'struct a' instances cleaned up...");
+    }
+}
+
+size_t CKernel::a::counter = 0;
+
+void CKernel::CxxTest(void)
+{
+    std::vector<std::string> const v = {"vector entry 1", "vector entry 2"};
+
+    Report("Opening file via std::ofstream...");
+
+    std::ofstream ofs("test.txt", std::ofstream::out);
+    if (!ofs.is_open())
+    {
+        PErrorExit("Failed to open file 'test.txt'!");
+    }
+
+    try
+    {
+        barf();
+    }
+    catch (std::exception &e)
+    {
+        Report("Caught exception...");
+        ofs << "lorem ipsum" << std::endl
+            << e.what() << std::endl;
+
+        if (ofs.fail())
+        {
+            PErrorExit("Writing to file failed");
+        }
+    }
+
+    Report("Use <algorithm>...");
+    for_each(v.begin(), v.end(),
+                [&](std::string const &s)
+                { ofs << s.c_str() << std::endl; });
+
+    // Test out-of-memory condition
+    try
+    {
+        std::vector<std::unique_ptr<std::vector<a>>> ptrs;
+        while (true)
+        {
+            // provoke out-of-memory error, destructors of "a" and of the vector must be called
+            Report("Allocating large array of 'a' instances");
+            ptrs.emplace_back(new std::vector<a>(10000000U, a(*this)));
+        }
+    }
+    catch (std::bad_alloc &ba)
+    {
+        Report(std::string("bad_alloc caught: ") + ba.what());
+    }
+
+    ofs.close();
+    if (ofs.fail())
+    {
+        PErrorExit("Closing of file failed");
+    }
+
+    Report("File written via std::ofstream");
+
+    Report("C++ smoke tests successful");
 }
