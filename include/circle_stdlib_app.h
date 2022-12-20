@@ -199,8 +199,8 @@ public:
                         return false;
                 }
 
-                // Initialize newlib stdio with a reference to Circle's file system and console
-                CGlueStdioInit (mFileSystem, mConsole);
+                // Initialize newlib stdio with a reference to Circle's console
+                CGlueStdioInit (mConsole);
 
                 mLogger.Write (GetKernelName (), LogNotice, "Compile time: " __DATE__ " " __TIME__);
 
