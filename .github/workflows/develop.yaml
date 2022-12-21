@@ -1,0 +1,13 @@
+name: branch "develop"
+
+on:
+  push:
+    branches:
+      - develop
+    paths-ignore:
+      - '**.md'
+
+jobs:
+  build:
+    uses: ./.github/workflows/smoketest.yaml
+ 
