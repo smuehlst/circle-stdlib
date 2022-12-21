@@ -30,6 +30,7 @@
 #include <wlan/hostap/wpa_supplicant/wpasupplicant.h>
 
 #include <circle_glue.h>
+#include <wrap_fatfs.h>
 #include <string.h>
 
 /**
@@ -278,6 +279,10 @@ public:
                 {
                         mScheduler.Yield ();
                 }
+
+                // Initialize circle-newlib's network subsystem with a reference to Circle's
+                // network subsytem.
+                CGlueNetworkInit (mNet);
 
                 return true;
         }
