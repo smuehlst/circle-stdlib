@@ -1,4 +1,4 @@
-name: branch "master"
+name: branch "${{ github.ref_name }}"
 
 on:
   push:
