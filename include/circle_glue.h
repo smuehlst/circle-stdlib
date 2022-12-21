@@ -5,7 +5,7 @@
 #include <circle/input/console.h>
 
 /**
- * Initialize stdio only for console I/O  (stdin/stdout/stderr).
+ * Initialize stdio only for console I/O (stdin/stdout/stderr).
  * Must only be called once.
  */
 void CGlueStdioInit (CConsole& rConsole);
