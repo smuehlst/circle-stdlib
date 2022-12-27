@@ -181,8 +181,10 @@ fi
 ) > libs/circle/Config.mk
 
 # Retrieve the resulting compiler flags from Circle's top-level Makefile rules
-ARCH=$(make -n -p -f libs/circle/Rules.mk CIRCLEHOME=libs/circle | grep ^ARCH | \
-    sed -e "s/\$(FLOAT_ABI)/$FLOAT_ABI/" -e 's/ARCH = //')
+ARCHCPU=$(make -n -p -f libs/circle/Rules.mk CIRCLEHOME=libs/circle | grep '^ARCHCPU =' | \
+            sed -e "s/\$(FLOAT_ABI)/$FLOAT_ABI/" -e 's/ARCHCPU = //')
+ARCH=$(make -n -p -f libs/circle/Rules.mk CIRCLEHOME=libs/circle | grep '^ARCH ='| \
+    sed -e "s/\$(ARCHCPU)/$ARCHCPU/" -e 's/ARCH = //')
 
 export \
     CPPFLAGS_FOR_TARGET="-I\"$CIRCLEHOME/include\" -I\"$CIRCLEHOME/addon\" -I\"$TOPDIR/include\"" \
