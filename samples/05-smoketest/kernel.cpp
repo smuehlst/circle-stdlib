@@ -184,6 +184,51 @@ CKernel::IoTest (void)
     mLogger.Write (GetKernelName (), LogNotice,
         "fopen () for non-existent file failed as expected with errno %d", errno);
 
+    string const truncate_filename = "truncated.txt";
+
+    fp = fopen (truncate_filename.c_str (), "w");
+
+    if (fp == nullptr)
+    {
+        PErrorExit ("Cannot open file for writing with fopen ()");
+    }
+
+    for (unsigned int i = 0; i < 10000; i += 1)
+    {
+        if (fputc (1, fp) == EOF)
+        {
+            PErrorExit ("fputc () failed");
+        }
+    }
+
+    Report ("fputc () test succeeded");
+
+    errno = 0;
+    rewind (fp);
+    if (errno != 0)
+    {
+        PErrorExit ("rewind () failed");
+    }
+
+    Report ("rewind () test succeeded");
+
+    int const truncate_fildes = fileno (fp);
+    if (truncate_fildes == -1)
+    {
+        PErrorExit ("fileno () failed");
+    }
+
+    Report ("fileno () test succeeded");
+
+    if (ftruncate (truncate_fildes, 1111) == -1)
+    {
+        PErrorExit ("ftruncate () failed");
+    }
+
+    Report ("ftruncate () test succeeded");
+
+    fclose (fp);
+
     Report ("Test directory operations...");
 
     string const dirname = "subdir";
