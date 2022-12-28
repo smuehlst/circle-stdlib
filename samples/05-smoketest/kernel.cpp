@@ -235,6 +235,16 @@ CKernel::IoTest (void)
 
     Report ("ftruncate () test succeeded");
 
+    if (!(isatty(0) == 1
+        && isatty(1) == 1
+        && isatty(2) == 1
+        && isatty(fildes) == 0))
+    {
+        PErrorExit ("isatty () failed");
+    }
+
+    Report ("isatty () test succeeded");
+
     fclose (fp);
 
     struct stat statbuf;
