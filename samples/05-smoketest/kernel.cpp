@@ -236,18 +236,35 @@ CKernel::IoTest (void)
     Report ("ftruncate () test succeeded");
 
     if (!(isatty(0) == 1
-        && isatty(1) == 1
-        && isatty(2) == 1
-        && isatty(fildes) == 0))
+            && isatty(1) == 1
+            && isatty(2) == 1
+            && isatty(fildes) == 0))
     {
         PErrorExit ("isatty () failed");
     }
 
     Report ("isatty () test succeeded");
 
+    struct stat statbuf;
+
+    if (fstat (fildes, &statbuf) != 0)
+    {
+        PErrorExit ("fstat () failed");
+    }
+
+    if (statbuf.st_size != desired_file_size)
+    {
+        mLogger.Write (GetKernelName (), LogError,
+            "fstat () reports wrong file size (expected %d, got %d), exiting with code 1...",
+            static_cast<int>(desired_file_size), static_cast<int>(statbuf.st_size));
+        exit (1);
+    }
+
+    Report ("fstat () test succeeded");
+
     fclose (fp);
 
-    struct stat statbuf;
+    memset(&statbuf, 0, sizeof(statbuf));
 
     if (stat (truncate_filename.c_str(), &statbuf) != 0)
     {
@@ -473,6 +490,7 @@ void CKernel::CxxTest(void)
                 { ofs << s.c_str() << std::endl; });
 
     // Test out-of-memory condition
+    Report("Provoke out-of-memory condition...");
     try
     {
         std::vector<std::unique_ptr<std::vector<a>>> ptrs;
