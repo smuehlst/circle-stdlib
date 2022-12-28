@@ -203,6 +203,14 @@ CKernel::IoTest (void)
 
     Report ("fputc () test succeeded");
 
+    int const fildes = fileno (fp);
+    if (fsync (fildes) != 0)
+    {
+        PErrorExit ("fsync () failed");
+    }
+
+    Report ("fsync () test succeeded");
+
     errno = 0;
     rewind (fp);
     if (errno != 0)
@@ -212,15 +220,14 @@ CKernel::IoTest (void)
 
     Report ("rewind () test succeeded");
 
-    int const truncate_fildes = fileno (fp);
-    if (truncate_fildes == -1)
+    if (fildes == -1)
     {
         PErrorExit ("fileno () failed");
     }
 
     Report ("fileno () test succeeded");
 
-    if (ftruncate (truncate_fildes, 1111) == -1)
+    if (ftruncate (fildes, 1111) == -1)
     {
         PErrorExit ("ftruncate () failed");
     }
