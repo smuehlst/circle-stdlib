@@ -227,7 +227,8 @@ CKernel::IoTest (void)
 
     Report ("fileno () test succeeded");
 
-    if (ftruncate (fildes, 1111) == -1)
+    off_t const desired_file_size = 1111;
+    if (ftruncate (fildes, desired_file_size) == -1)
     {
         PErrorExit ("ftruncate () failed");
     }
@@ -235,6 +236,23 @@ CKernel::IoTest (void)
     Report ("ftruncate () test succeeded");
 
     fclose (fp);
+
+    struct stat statbuf;
+
+    if (stat (truncate_filename.c_str(), &statbuf) != 0)
+    {
+        PErrorExit ("stat () failed");
+    }
+
+    if (statbuf.st_size != desired_file_size)
+    {
+        mLogger.Write (GetKernelName (), LogError,
+            "stat () reports wrong file size (expected %d, got %d), exiting with code 1...",
+            static_cast<int>(desired_file_size), static_cast<int>(statbuf.st_size));
+        exit (1);
+    }
+
+    Report ("stat () test succeeded");
 
     Report ("Test directory operations...");
 
