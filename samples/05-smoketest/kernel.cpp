@@ -446,7 +446,7 @@ CKernel::IoTest (void)
 
     Report ("Fix for issue #22 works as expected");
 
-    Report ("Testing chdir()");
+    Report ("Testing chdir () and getcwd ()");
 
     {
         errno = 0;
@@ -468,6 +468,26 @@ CKernel::IoTest (void)
             PErrorExit ("chdir() failed unexpectedly");
         }
 
+        char wd_buf[100];
+        char *wd = getcwd (wd_buf, sizeof (wd_buf));
+        if (wd == nullptr)
+        {
+            PErrorExit ("getcwd () failed");
+        }
+
+        std::string const partition { GetPartitionName() };
+        mLogger.Write (GetKernelName (), LogNotice,
+            "getcwd () returned '%s'", wd);
+        {
+            std::string const expected_wd = partition + "/" + dirname;
+            if (expected_wd != wd)
+            {
+                mLogger.Write (GetKernelName (), LogError,
+                    "getcwd () returned unexpected path (expected '%s', got '%s'",
+                    expected_wd, wd);
+            }
+        }
+
         auto const subdir_fp = fopen (filename3.c_str (), "w");
         if (subdir_fp == nullptr)
         {
@@ -487,6 +507,24 @@ CKernel::IoTest (void)
         if (chdir ("..") != 0)
         {
             PErrorExit ("chdir(\"..\") failed unexpectedly");
+        }
+
+        wd = getcwd (wd_buf, sizeof (wd_buf));
+        if (wd == nullptr)
+        {
+            PErrorExit ("getcwd () failed");
+        }
+
+        mLogger.Write (GetKernelName (), LogNotice,
+            "getcwd () returned '%s'", wd);
+        {
+            std::string const expected_wd = partition + "/";
+            if (expected_wd != wd)
+            {
+                mLogger.Write (GetKernelName (), LogError,
+                    "getcwd () returned unexpected path (expected '%s', got '%s'",
+                    expected_wd, wd);
+            }
         }
 
         string const relative_path = dirname + "/" + filename3;
@@ -512,7 +550,7 @@ CKernel::IoTest (void)
         }
     }
 
-    Report ("chdir() test successful");
+    Report ("chdir () and getcwd () tests successful");
 
     Report ("Unimplemented functions");
 
