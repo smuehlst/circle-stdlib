@@ -119,8 +119,15 @@ CKernel::IoTest (void)
         PErrorExit ("Cannot open file for writing with fopen ()");
     }
 
-    fprintf (fp, "Opened file with (FILE *) %p\n", fp);
-    fclose (fp);
+    if (fprintf (fp, "Opened file with (FILE *) %p\n", fp) < 0)
+    {
+        PErrorExit ("fprintf () failed");
+    }
+
+    if (fclose (fp) != 0)
+    {
+        PErrorExit ("fclose () for original file pointer failed");
+    }
 
     fp = fopen (stdio_filename.c_str (), "r");
     if (fp == nullptr)
@@ -378,7 +385,7 @@ CKernel::IoTest (void)
         PErrorExit ("fopen () failed");
     }
 
-    if (fprintf (fp, "bla bla") < 0)
+    if (fprintf (fp, "fprintf() via file pointer\n") < 0)
     {
         PErrorExit ("fprintf () failed");
     }
@@ -568,6 +575,79 @@ CKernel::IoTest (void)
         }
 
         Report ("fork() is not implemented, fails as expected");
+    }
+
+    Report ("Redirect stdout");
+
+    FILE * const redirected_stdout = freopen ("redirected_stdout.txt", "w", stdout);
+    if (redirected_stdout == nullptr)
+    {
+        PErrorExit ("freopen () for stdout failed");
+    }
+
+    if (printf ("Writing output to file via redirected stdout\n") < 0)
+    {
+        PErrorExit ("printf () for stdout failed");
+    }
+
+    // Need to fflush the file buffer, otherwise the output via the
+    // duplicated file descriptor appears before the stdio output.
+    if (fflush(redirected_stdout) != 0)
+    {
+        PErrorExit ("fflush () for stdout failed");
+    }
+
+    {
+        Report ("dip () and dup2 () tests");
+
+        int const original_fd = fileno (redirected_stdout);
+
+        if (original_fd == -1)
+        {
+            PErrorExit ("fileno () failed");
+        }
+
+        int const fd_copy = dup (original_fd);
+
+        if (fd_copy == -1)
+        {
+            PErrorExit ("dup () failed");
+        }
+
+        const char dup_text[] = "Write via duplicated file descriptor\n";
+        if (write (fd_copy, dup_text, sizeof (dup_text) - 1) == -1)
+        {
+            PErrorExit ("write () via fd_copy failed");
+        }
+
+        int const fd_copy2 = dup2 (fd_copy, fd_copy + 1);
+
+        if (fd_copy2 == -1)
+        {
+            PErrorExit ("dup2 () failed");
+        }
+        
+        assert (fd_copy2 > fd_copy);
+
+        if (write (fd_copy2, dup_text, sizeof (dup_text) - 1) == -1)
+        {
+            PErrorExit ("write () via fd_copy2 failed");
+        }
+
+        if (close (fd_copy) < 0)
+        {
+            PErrorExit ("close (fd_copy) failed");
+        }
+        
+        if (close (fd_copy2) < 0)
+        {
+            PErrorExit ("close (fd_copy2) failed");
+        }
+    }
+
+    if (fclose (redirected_stdout) != 0)
+    {
+        PErrorExit ("fclose () for stdout failed");
     }
 }
 
