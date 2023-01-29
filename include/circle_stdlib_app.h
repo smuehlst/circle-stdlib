@@ -175,7 +175,7 @@ public:
 
                 char const *partitionName = mpPartitionName;
 
-                // Recognize the old default partion name
+                // Recognize the old default partition name
                 if (strcmp(partitionName, CSTDLIBAPP_LEGACY_DEFAULT_PARTITION) == 0)
                 {
                         partitionName = CSTDLIBAPP_DEFAULT_PARTITION;
