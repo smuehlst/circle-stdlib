@@ -59,8 +59,8 @@ CKernel::Run (void)
 
     bool volatile nTimerFired = false;
 
-    // start timer to elapse after 5 seconds
-    mTimer.StartKernelTimer (5 * HZ, TimerHandler,
+    // start timer to elapse after 3 seconds
+    mTimer.StartKernelTimer (3 * HZ, TimerHandler,
                               const_cast<bool*> (&nTimerFired));
 
     // generate a log message every second
@@ -175,12 +175,21 @@ CKernel::IoTest (void)
     Report ("fclose () test succeeded");
 
     // Test for issue #14
+    errno = 0;
     fp = fopen ("this file does not exist", "r");
     if (fp != nullptr)
     {
         Report ("fopen () for non-existent file unexpectedly succeeded");
         exit (1);
     }
+
+    if (errno != ENOENT)
+    {
+        mLogger.Write (GetKernelName (), LogError,
+        "fopen () for non-existent file fsets wrong errno %d", errno);
+        exit (1);
+    }
+    
     mLogger.Write (GetKernelName (), LogNotice,
         "fopen () for non-existent file failed as expected with errno %d", errno);
 
@@ -393,6 +402,28 @@ CKernel::IoTest (void)
         PErrorExit ("unlink () failed");
     }
 
+    {
+        int non_existing_unlink_result = unlink ("no such directory/no such file");
+
+        if (non_existing_unlink_result != -1 || errno != ENOTDIR)
+        {
+            mLogger.Write (GetKernelName (), LogError,
+                "unlink () of non-existing file with path: unexpected result "
+                "(result == %d, errno == %d)", non_existing_unlink_result, errno);
+            exit (1);
+        }
+
+        non_existing_unlink_result = unlink ("no such file");
+
+        if (non_existing_unlink_result != -1 || errno != ENOENT)
+        {
+            mLogger.Write (GetKernelName (), LogError,
+                "unlink () of non-existing file in current directory: unexpected result "
+                "(result == %d, errno == %d)", non_existing_unlink_result, errno);
+            exit (1);
+        }
+    }
+
     Report ("unlink () test succeeded");
 
     // Test fix for issue #22
@@ -414,6 +445,92 @@ CKernel::IoTest (void)
     free(testArray);
 
     Report ("Fix for issue #22 works as expected");
+
+    Report ("Testing chdir()");
+
+    {
+        errno = 0;
+        int const non_existing_dir_result = chdir ("no such directory");
+
+        if (non_existing_dir_result != -1 || errno != ENOENT)
+        {
+            mLogger.Write (GetKernelName (), LogError,
+                "chdir() to non-existing directory: unexpected result "
+                "(result == %d, errno == %d)", non_existing_dir_result, errno);
+            exit (1);
+        }
+    }
+
+    {
+        string const filename3 {"file3.txt"};
+        if (chdir (dirname.c_str()) != 0)
+        {
+            PErrorExit ("chdir() failed unexpectedly");
+        }
+
+        auto const subdir_fp = fopen (filename3.c_str (), "w");
+        if (subdir_fp == nullptr)
+        {
+            PErrorExit ("fopen() after chdir() failed unexpectedly");
+        }
+
+        if (fprintf (subdir_fp, "File created after chdir\n") < 0)
+        {
+            PErrorExit ("fprintf() failed unexpectedly");
+        }
+
+        if (fclose (subdir_fp) != 0)
+        {
+            PErrorExit ("fclose() failed unexpectedly");
+        }
+
+        if (chdir ("..") != 0)
+        {
+            PErrorExit ("chdir(\"..\") failed unexpectedly");
+        }
+
+        string const relative_path = dirname + "/" + filename3;
+        if (stat (relative_path.c_str(), &statbuf) != 0)
+        {
+            PErrorExit ("stat () with relative path for file in subdirectory failed");
+        }
+
+        string const absolute_path = "/" + relative_path;
+        if (stat (absolute_path.c_str(), &statbuf) != 0)
+        {
+            PErrorExit ("stat () with absolute path for file in subdirectory failed");
+        }
+
+        if (chdir ("/") != 0)
+        {
+            PErrorExit ("chdir(\"/\") failed unexpectedly");
+        }
+
+        if (stat (relative_path.c_str(), &statbuf) != 0)
+        {
+            PErrorExit ("stat () with relative path for file in subdirectory failed");
+        }
+    }
+
+    Report ("chdir() test successful");
+
+    Report ("Unimplemented functions");
+
+    {
+        errno = 0;
+
+        int const fork_result = fork();
+
+        if (fork_result != -1 || errno != ENOSYS)
+        {
+            mLogger.Write (GetKernelName (), LogError,
+                "fork(): unexpected result "
+                "(result == %d, errno == %d)", fork_result, errno);
+            exit (1);
+        }
+
+        Report ("fork() is not implemented, fails as expected");
+    }
 }
 
 void
