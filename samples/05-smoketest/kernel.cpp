@@ -597,7 +597,7 @@ CKernel::IoTest (void)
     }
 
     {
-        Report ("dip () and dup2 () tests");
+        Report ("dup () and dup2 () tests");
 
         int const original_fd = fileno (redirected_stdout);
 
