@@ -482,16 +482,15 @@ CKernel::IoTest (void)
             PErrorExit ("getcwd () failed");
         }
 
-        std::string const partition { GetPartitionName() };
         mLogger.Write (GetKernelName (), LogNotice,
             "getcwd () returned '%s'", wd);
         {
-            std::string const expected_wd = partition + "/" + dirname;
+            std::string const expected_wd { "/" + dirname };
             if (expected_wd != wd)
             {
                 mLogger.Write (GetKernelName (), LogError,
                     "getcwd () returned unexpected path (expected '%s', got '%s'",
-                    expected_wd, wd);
+                    expected_wd.c_str(), wd);
             }
         }
 
@@ -525,12 +524,12 @@ CKernel::IoTest (void)
         mLogger.Write (GetKernelName (), LogNotice,
             "getcwd () returned '%s'", wd);
         {
-            std::string const expected_wd = partition + "/";
+            std::string const expected_wd { "/" };
             if (expected_wd != wd)
             {
                 mLogger.Write (GetKernelName (), LogError,
                     "getcwd () returned unexpected path (expected '%s', got '%s'",
-                    expected_wd, wd);
+                    expected_wd.c_str(), wd);
             }
         }
 
