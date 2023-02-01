@@ -1,5 +1,16 @@
 # Release History
 
+## [v16](https://github.com/smuehlst/circle-stdlib/releases/tag/v16)
+
+* Synced with [Circle Step 45.1](https://github.com/rsta2/circle/releases/tag/Step45.1).
+* Implemented functions that previously returned an error code:
+  * `getcwd()` and `chdir()`
+  * `dup()`, `dup2()` and `fcntl(... F_DUPFD ...)` (Note: Only the F_DUPFD command is implemented for fcntl()!)
+  * `stat()` and `fstat()`
+  * `fsync()`
+  * `ftruncate()`
+  * `isatty()`
+
 ## [v15.14](https://github.com/smuehlst/circle-stdlib/releases/tag/v15.14)
 
 * Synced with [Circle Step 45](https://github.com/rsta2/circle/releases/tag/Step45).
