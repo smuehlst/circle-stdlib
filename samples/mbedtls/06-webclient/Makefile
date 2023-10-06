@@ -6,9 +6,9 @@ CIRCLE_STDLIB_DIR = ../../..
 
 OBJS	= main.o kernel.o htmlscanner.o
 
-EXTRACLEAN = *.crt *.der
+EXTRACLEAN = *.crt *.der *.pem
 
 include ../Rules.mk
 
 certs:
-	wget -q -O ISRG-Root-X1.der http://x1.i.lencr.org/
+	wget -q -O BaltimoreCyberTrustRoot.crt.pem https://cacerts.digicert.com/BaltimoreCyberTrustRoot.crt.pem
