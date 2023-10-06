@@ -28,11 +28,16 @@ subdirectory. Go to the subdirectory of the sample of your choice and do `make`.
 
 ## Current State
 
+V1.11:
+
+* Uses Mbed TLS 2.18.4
+* Update certificate for sample 06-webclient
+
+## Previous Releases
+
 V1.10:
 
 * Uses Mbed TLS 2.18.3
-
-## Previous Releases
 
 V1.9:
 
