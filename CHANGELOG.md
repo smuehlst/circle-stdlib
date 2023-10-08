@@ -1,9 +1,15 @@
 # Release History
 
-## [v16.1](https://github.com/smuehlst/circle-stdlib/releases/tag/v16)
+## [v16.2](https://github.com/smuehlst/circle-stdlib/releases/tag/v16.2)
 
 * Synced with [Circle Step 45.3.1](https://github.com/rsta2/circle/releases/tag/Step45.3.1).
-* Update to Mbed TLS v2.28.4.
+* Update Mbed TLS to [release v2.28.4](https://github.com/Mbed-TLS/mbedtls/releases/tag/v2.28.4).
+
+## [v16.1](https://github.com/smuehlst/circle-stdlib/releases/tag/v16.1)
+
+* Synced with [Circle Step 45.2](https://github.com/rsta2/circle/releases/tag/Step45.2).
+* Update mbed TLS to [release v2.28.3](https://github.com/Mbed-TLS/mbedtls/releases/tag/v2.28.3).
+* Aligned toolchain version with Circle (ARM Gnu toolchain 12.2.Rel1).
 
 ## [v16](https://github.com/smuehlst/circle-stdlib/releases/tag/v16)
 
