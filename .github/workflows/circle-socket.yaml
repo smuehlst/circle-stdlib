@@ -1,0 +1,13 @@
+name: branch "circle-socket"
+
+on:
+  push:
+    branches:
+      - circle-socket
+    paths-ignore:
+      - '**.md'
+
+jobs:
+  build:
+    uses: ./.github/workflows/smoketest.yaml
+ 
