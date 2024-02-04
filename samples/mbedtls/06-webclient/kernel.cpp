@@ -146,9 +146,9 @@ boolean CKernel::ParseDocument (const char *pDocument)
 		case 1:		// find header above table
 			if (   Item == HtmlItemText
 			    && (      !(nBoardRevision & (1 << 23))
-			           && ItemText.Compare ("Old-style Revision Codes") == 0
+			           && ItemText.Compare ("Old-style revision codes") == 0
 			        ||    (nBoardRevision & (1 << 23))
-			           && ItemText.Compare ("New-style Revision Codes in Use") == 0))
+			           && ItemText.Compare ("New-style revision codes in use") == 0))
 			{
 				nState = 2;
 			}

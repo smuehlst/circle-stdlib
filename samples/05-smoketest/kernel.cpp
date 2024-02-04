@@ -59,8 +59,8 @@ CKernel::Run (void)
 
     bool volatile nTimerFired = false;
 
-    // start timer to elapse after 5 seconds
-    mTimer.StartKernelTimer (5 * HZ, TimerHandler,
+    // start timer to elapse after 3 seconds
+    mTimer.StartKernelTimer (3 * HZ, TimerHandler,
                               const_cast<bool*> (&nTimerFired));
 
     // generate a log message every second
@@ -119,8 +119,15 @@ CKernel::IoTest (void)
         PErrorExit ("Cannot open file for writing with fopen ()");
     }
 
-    fprintf (fp, "Opened file with (FILE *) %p\n", fp);
-    fclose (fp);
+    if (fprintf (fp, "Opened file with (FILE *) %p\n", fp) < 0)
+    {
+        PErrorExit ("fprintf () failed");
+    }
+
+    if (fclose (fp) != 0)
+    {
+        PErrorExit ("fclose () for original file pointer failed");
+    }
 
     fp = fopen (stdio_filename.c_str (), "r");
     if (fp == nullptr)
@@ -175,14 +182,120 @@ CKernel::IoTest (void)
     Report ("fclose () test succeeded");
 
     // Test for issue #14
+    errno = 0;
     fp = fopen ("this file does not exist", "r");
     if (fp != nullptr)
     {
         Report ("fopen () for non-existent file unexpectedly succeeded");
         exit (1);
     }
+
+    if (errno != ENOENT)
+    {
+        mLogger.Write (GetKernelName (), LogError,
+        "fopen () for non-existent file fsets wrong errno %d", errno);
+        exit (1);
+    }
+    
     mLogger.Write (GetKernelName (), LogNotice,
         "fopen () for non-existent file failed as expected with errno %d", errno);
+
+    string const truncate_filename = "truncated.txt";
+
+    fp = fopen (truncate_filename.c_str (), "w");
+
+    if (fp == nullptr)
+    {
+        PErrorExit ("Cannot open file for writing with fopen ()");
+    }
+
+    for (unsigned int i = 0; i < 10000; i += 1)
+    {
+        if (fputc (1, fp) == EOF)
+        {
+            PErrorExit ("fputc () failed");
+        }
+    }
+
+    Report ("fputc () test succeeded");
+
+    int const fildes = fileno (fp);
+    if (fsync (fildes) != 0)
+    {
+        PErrorExit ("fsync () failed");
+    }
+
+    Report ("fsync () test succeeded");
+
+    errno = 0;
+    rewind (fp);
+    if (errno != 0)
+    {
+        PErrorExit ("rewind () failed");
+    }
+
+    Report ("rewind () test succeeded");
+
+    if (fildes == -1)
+    {
+        PErrorExit ("fileno () failed");
+    }
+
+    Report ("fileno () test succeeded");
+
+    off_t const desired_file_size = 1111;
+    if (ftruncate (fildes, desired_file_size) == -1)
+    {
+        PErrorExit ("ftruncate () failed");
+    }
+
+    Report ("ftruncate () test succeeded");
+
+    if (!(isatty(0) == 1
+            && isatty(1) == 1
+            && isatty(2) == 1
+            && isatty(fildes) == 0))
+    {
+        PErrorExit ("isatty () failed");
+    }
+
+    Report ("isatty () test succeeded");
+
+    struct stat statbuf;
+
+    if (fstat (fildes, &statbuf) != 0)
+    {
+        PErrorExit ("fstat () failed");
+    }
+
+    if (statbuf.st_size != desired_file_size)
+    {
+        mLogger.Write (GetKernelName (), LogError,
+            "fstat () reports wrong file size (expected %d, got %d), exiting with code 1...",
+            static_cast<int>(desired_file_size), static_cast<int>(statbuf.st_size));
+        exit (1);
+    }
+
+    Report ("fstat () test succeeded");
+
+    fclose (fp);
+
+    memset(&statbuf, 0, sizeof(statbuf));
+
+    if (stat (truncate_filename.c_str(), &statbuf) != 0)
+    {
+        PErrorExit ("stat () failed");
+    }
+
+    if (statbuf.st_size != desired_file_size)
+    {
+        mLogger.Write (GetKernelName (), LogError,
+            "stat () reports wrong file size (expected %d, got %d), exiting with code 1...",
+            static_cast<int>(desired_file_size), static_cast<int>(statbuf.st_size));
+        exit (1);
+    }
+
+    Report ("stat () test succeeded");
 
     Report ("Test directory operations...");
 
@@ -272,7 +385,7 @@ CKernel::IoTest (void)
         PErrorExit ("fopen () failed");
     }
 
-    if (fprintf (fp, "bla bla") < 0)
+    if (fprintf (fp, "fprintf() via file pointer\n") < 0)
     {
         PErrorExit ("fprintf () failed");
     }
@@ -296,6 +409,28 @@ CKernel::IoTest (void)
         PErrorExit ("unlink () failed");
     }
 
+    {
+        int non_existing_unlink_result = unlink ("no such directory/no such file");
+
+        if (non_existing_unlink_result != -1 || errno != ENOTDIR)
+        {
+            mLogger.Write (GetKernelName (), LogError,
+                "unlink () of non-existing file with path: unexpected result "
+                "(result == %d, errno == %d)", non_existing_unlink_result, errno);
+            exit (1);
+        }
+
+        non_existing_unlink_result = unlink ("no such file");
+
+        if (non_existing_unlink_result != -1 || errno != ENOENT)
+        {
+            mLogger.Write (GetKernelName (), LogError,
+                "unlink () of non-existing file in current directory: unexpected result "
+                "(result == %d, errno == %d)", non_existing_unlink_result, errno);
+            exit (1);
+        }
+    }
+
     Report ("unlink () test succeeded");
 
     // Test fix for issue #22
@@ -317,6 +452,202 @@ CKernel::IoTest (void)
     free(testArray);
 
     Report ("Fix for issue #22 works as expected");
+
+    Report ("Testing chdir () and getcwd ()");
+
+    {
+        errno = 0;
+        int const non_existing_dir_result = chdir ("no such directory");
+
+        if (non_existing_dir_result != -1 || errno != ENOENT)
+        {
+            mLogger.Write (GetKernelName (), LogError,
+                "chdir() to non-existing directory: unexpected result "
+                "(result == %d, errno == %d)", non_existing_dir_result, errno);
+            exit (1);
+        }
+    }
+
+    {
+        string const filename3 {"file3.txt"};
+        if (chdir (dirname.c_str()) != 0)
+        {
+            PErrorExit ("chdir() failed unexpectedly");
+        }
+
+        char wd_buf[100];
+        char *wd = getcwd (wd_buf, sizeof (wd_buf));
+        if (wd == nullptr)
+        {
+            PErrorExit ("getcwd () failed");
+        }
+
+        mLogger.Write (GetKernelName (), LogNotice,
+            "getcwd () returned '%s'", wd);
+        {
+            std::string const expected_wd { "/" + dirname };
+            if (expected_wd != wd)
+            {
+                mLogger.Write (GetKernelName (), LogError,
+                    "getcwd () returned unexpected path (expected '%s', got '%s'",
+                    expected_wd.c_str(), wd);
+            }
+        }
+
+        auto const subdir_fp = fopen (filename3.c_str (), "w");
+        if (subdir_fp == nullptr)
+        {
+            PErrorExit ("fopen() after chdir() failed unexpectedly");
+        }
+
+        if (fprintf (subdir_fp, "File created after chdir\n") < 0)
+        {
+            PErrorExit ("fprintf() failed unexpectedly");
+        }
+
+        if (fclose (subdir_fp) != 0)
+        {
+            PErrorExit ("fclose() failed unexpectedly");
+        }
+
+        if (chdir ("..") != 0)
+        {
+            PErrorExit ("chdir(\"..\") failed unexpectedly");
+        }
+
+        wd = getcwd (wd_buf, sizeof (wd_buf));
+        if (wd == nullptr)
+        {
+            PErrorExit ("getcwd () failed");
+        }
+
+        mLogger.Write (GetKernelName (), LogNotice,
+            "getcwd () returned '%s'", wd);
+        {
+            std::string const expected_wd { "/" };
+            if (expected_wd != wd)
+            {
+                mLogger.Write (GetKernelName (), LogError,
+                    "getcwd () returned unexpected path (expected '%s', got '%s'",
+                    expected_wd.c_str(), wd);
+            }
+        }
+
+        string const relative_path = dirname + "/" + filename3;
+        if (stat (relative_path.c_str(), &statbuf) != 0)
+        {
+            PErrorExit ("stat () with relative path for file in subdirectory failed");
+        }
+
+        string const absolute_path = "/" + relative_path;
+        if (stat (absolute_path.c_str(), &statbuf) != 0)
+        {
+            PErrorExit ("stat () with absolute path for file in subdirectory failed");
+        }
+
+        if (chdir ("/") != 0)
+        {
+            PErrorExit ("chdir(\"/\") failed unexpectedly");
+        }
+
+        if (stat (relative_path.c_str(), &statbuf) != 0)
+        {
+            PErrorExit ("stat () with relative path for file in subdirectory failed");
+        }
+    }
+
+    Report ("chdir () and getcwd () tests successful");
+
+    Report ("Unimplemented functions");
+
+    {
+        errno = 0;
+
+        int const fork_result = fork();
+
+        if (fork_result != -1 || errno != ENOSYS)
+        {
+            mLogger.Write (GetKernelName (), LogError,
+                "fork(): unexpected result "
+                "(result == %d, errno == %d)", fork_result, errno);
+            exit (1);
+        }
+
+        Report ("fork() is not implemented, fails as expected");
+    }
+
+    Report ("Redirect stdout");
+
+    FILE * const redirected_stdout = freopen ("redirected_stdout.txt", "w", stdout);
+    if (redirected_stdout == nullptr)
+    {
+        PErrorExit ("freopen () for stdout failed");
+    }
+
+    if (printf ("Writing output to file via redirected stdout\n") < 0)
+    {
+        PErrorExit ("printf () for stdout failed");
+    }
+
+    // Need to fflush the file buffer, otherwise the output via the
+    // duplicated file descriptor appears before the stdio output.
+    if (fflush(redirected_stdout) != 0)
+    {
+        PErrorExit ("fflush () for stdout failed");
+    }
+
+    {
+        Report ("dup () and dup2 () tests");
+
+        int const original_fd = fileno (redirected_stdout);
+
+        if (original_fd == -1)
+        {
+            PErrorExit ("fileno () failed");
+        }
+
+        int const fd_copy = dup (original_fd);
+
+        if (fd_copy == -1)
+        {
+            PErrorExit ("dup () failed");
+        }
+
+        const char dup_text[] = "Write via duplicated file descriptor\n";
+        if (write (fd_copy, dup_text, sizeof (dup_text) - 1) == -1)
+        {
+            PErrorExit ("write () via fd_copy failed");
+        }
+
+        int const fd_copy2 = dup2 (fd_copy, fd_copy + 1);
+
+        if (fd_copy2 == -1)
+        {
+            PErrorExit ("dup2 () failed");
+        }
+        
+        assert (fd_copy2 > fd_copy);
+
+        if (write (fd_copy2, dup_text, sizeof (dup_text) - 1) == -1)
+        {
+            PErrorExit ("write () via fd_copy2 failed");
+        }
+
+        if (close (fd_copy) < 0)
+        {
+            PErrorExit ("close (fd_copy) failed");
+        }
+        
+        if (close (fd_copy2) < 0)
+        {
+            PErrorExit ("close (fd_copy2) failed");
+        }
+    }
+
+    if (fclose (redirected_stdout) != 0)
+    {
+        PErrorExit ("fclose () for stdout failed");
+    }
 }
 
 void
@@ -393,6 +724,7 @@ void CKernel::CxxTest(void)
                 { ofs << s.c_str() << std::endl; });
 
     // Test out-of-memory condition
+    Report("Provoke out-of-memory condition...");
     try
     {
         std::vector<std::unique_ptr<std::vector<a>>> ptrs;

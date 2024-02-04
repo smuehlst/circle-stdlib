@@ -1,5 +1,27 @@
 # Release History
 
+## [v16.2](https://github.com/smuehlst/circle-stdlib/releases/tag/v16.2)
+
+* Synced with [Circle Step 45.3.1](https://github.com/rsta2/circle/releases/tag/Step45.3.1).
+* Update Mbed TLS to [release v2.28.4](https://github.com/Mbed-TLS/mbedtls/releases/tag/v2.28.4).
+
+## [v16.1](https://github.com/smuehlst/circle-stdlib/releases/tag/v16.1)
+
+* Synced with [Circle Step 45.2](https://github.com/rsta2/circle/releases/tag/Step45.2).
+* Update mbed TLS to [release v2.28.3](https://github.com/Mbed-TLS/mbedtls/releases/tag/v2.28.3).
+* Aligned toolchain version with Circle (ARM Gnu toolchain 12.2.Rel1).
+
+## [v16](https://github.com/smuehlst/circle-stdlib/releases/tag/v16)
+
+* Synced with [Circle Step 45.1](https://github.com/rsta2/circle/releases/tag/Step45.1).
+* Implemented functions that previously returned an error code:
+  * `getcwd()` and `chdir()`
+  * `dup()`, `dup2()` and `fcntl(... F_DUPFD ...)` (Note: Only the F_DUPFD command is implemented for fcntl()!)
+  * `stat()` and `fstat()`
+  * `fsync()`
+  * `ftruncate()`
+  * `isatty()`
+
 ## [v15.14](https://github.com/smuehlst/circle-stdlib/releases/tag/v15.14)
 
 * Synced with [Circle Step 45](https://github.com/rsta2/circle/releases/tag/Step45).
