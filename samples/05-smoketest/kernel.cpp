@@ -23,6 +23,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <cerrno>
+#include <cstdarg>
 #include <iostream>
 #include <fstream>
 #include <algorithm>
@@ -33,6 +34,8 @@
 #include <string>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 
 using namespace std;
 
@@ -51,9 +54,15 @@ CStdlibApp::TShutdownMode
 CKernel::Run (void)
 {
     mLogger.Initialize (&m_LogFile);
+    m_Net.Initialize ();
+
+    CGlueNetworkInit (m_Net);
 
     mLogger.Write (GetKernelName (), LogNotice,
                     "Compile time: " __DATE__ " " __TIME__);
+
+    // TODO move to the end later
+    SocketTest ();
 
     mLogger.Write (GetKernelName (), LogNotice, "A timer will stop the loop");
 
@@ -86,15 +95,20 @@ CKernel::Run (void)
 }
 
 void
-CKernel::Report(const char *s)
-{
-    mLogger.Write (GetKernelName (), LogNotice, "%s", s);
-}
-
-void
 CKernel::Report(const std::string &s)
 {
     Report(s.c_str());
+}
+
+void
+CKernel::Report(const char *s, ...)
+{
+    va_list var;
+	va_start (var, s);
+
+    mLogger.WriteV(GetKernelName (), LogNotice, s, var);
+
+    va_end (var);
 }
 
 void
@@ -749,4 +763,66 @@ void CKernel::CxxTest(void)
     Report("File written via std::ofstream");
 
     Report("C++ smoke tests successful");
+}
+
+void CKernel::SocketTest(void)
+{
+    Report("Test socket operations...");
+
+    struct basic_socket_test
+    {
+        basic_socket_test(int d, int t, int p, bool s) : domain(d), type(t), protocol(p), expect_success(s)
+        {
+        }
+
+        int domain;
+        int type;
+        int protocol;
+        bool expect_success;
+    };
+
+    basic_socket_test const basic_socket_tests[] =
+    {
+        { AF_INET, SOCK_DGRAM, IPPROTO_UDP, true },
+        { AF_INET, SOCK_DGRAM, 0, true },
+        { AF_INET, SOCK_STREAM, IPPROTO_TCP, true },
+        { AF_INET, SOCK_STREAM, 0, true },
+        { AF_INET, SOCK_DGRAM, IPPROTO_IP, false },
+        { AF_INET, SOCK_STREAM, IPPROTO_UDP, false },
+        { AF_UNIX, SOCK_STREAM, IPPROTO_TCP, false }
+    };
+
+    auto const socket_creation_test = [&](basic_socket_test const &t)
+    {
+        int const fd = socket(t.domain, t.type, t.protocol);
+        unsigned int const testnum = &t - basic_socket_tests;
+
+        if (t.expect_success)
+        {
+            if (fd == -1)
+            {
+                Report("error in basic socket test %u", testnum);
+                PErrorExit("socket() failed");
+            }
+
+            if (close(fd) < 0)
+            {
+                PErrorExit("close (fd) failed");
+            }
+        }
+        else
+        {
+            if (fd != -1)
+            {
+                PErrorExit("socket() succeeded unexpectedly");
+            }
+        }
+    };
+
+    for (auto const& t: basic_socket_tests)
+    {
+        socket_creation_test(t);
+    }
+
+    Report("Basic socket() tests successful");
 }
