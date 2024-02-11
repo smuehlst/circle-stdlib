@@ -36,6 +36,7 @@
 #include <unistd.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 
 using namespace std;
 
@@ -782,15 +783,14 @@ void CKernel::SocketTest(void)
     };
 
     basic_socket_test const basic_socket_tests[] =
-    {
-        { AF_INET, SOCK_DGRAM, IPPROTO_UDP, true },
-        { AF_INET, SOCK_DGRAM, 0, true },
-        { AF_INET, SOCK_STREAM, IPPROTO_TCP, true },
-        { AF_INET, SOCK_STREAM, 0, true },
-        { AF_INET, SOCK_DGRAM, IPPROTO_IP, false },
-        { AF_INET, SOCK_STREAM, IPPROTO_UDP, false },
-        { AF_UNIX, SOCK_STREAM, IPPROTO_TCP, false }
-    };
+        {
+            {AF_INET, SOCK_DGRAM, IPPROTO_UDP, true},
+            {AF_INET, SOCK_DGRAM, 0, true},
+            {AF_INET, SOCK_STREAM, IPPROTO_TCP, true},
+            {AF_INET, SOCK_STREAM, 0, true},
+            {AF_INET, SOCK_DGRAM, IPPROTO_IP, false},
+            {AF_INET, SOCK_STREAM, IPPROTO_UDP, false},
+            {AF_UNIX, SOCK_STREAM, IPPROTO_TCP, false}};
 
     auto const socket_creation_test = [&](basic_socket_test const &t)
     {
@@ -814,15 +814,49 @@ void CKernel::SocketTest(void)
         {
             if (fd != -1)
             {
-                PErrorExit("socket() succeeded unexpectedly");
+                Report("socket() succeeded unexpectedly");
+                exit(1);
             }
         }
     };
 
-    for (auto const& t: basic_socket_tests)
+    for (auto const &t : basic_socket_tests)
     {
         socket_creation_test(t);
     }
 
     Report("Basic socket() tests successful");
+
+    Report("Basic bind() test");
+
+    {
+        int const fd = socket(AF_INET, SOCK_STREAM, 0);
+
+        if (fd == -1)
+        {
+            PErrorExit("socket() failed");
+        }
+
+        struct sockaddr_in server_address;
+
+        server_address.sin_family = AF_INET;
+        server_address.sin_addr.s_addr = htonl(INADDR_ANY);
+        server_address.sin_port = htons(1234);
+
+        int const bind_result = bind(fd, reinterpret_cast<struct sockaddr *>(&server_address), sizeof(server_address));
+
+        if (bind_result == -1)
+        {
+            PErrorExit("bind() failed");
+        }
+
+        Report("bind() on file descriptor %d succeeded", fd);
+
+        if (close(fd) < 0)
+        {
+            PErrorExit("close (fd) failed");
+        }
+    }
+
+    Report("Basic bind() test successful");
 }
