@@ -827,7 +827,7 @@ void CKernel::SocketTest(void)
 
     Report("Basic socket() tests successful");
 
-    Report("Basic bind() test");
+    Report("Basic socket lifecycle test");
 
     {
         int const fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -852,11 +852,20 @@ void CKernel::SocketTest(void)
 
         Report("bind() on file descriptor %d succeeded", fd);
 
+        int const listen_result = listen(fd, 3);
+
+        if (listen_result == -1)
+        {
+            PErrorExit("listen() failed");
+        }
+
+        Report("listen() on file descriptor %d succeeded", fd);
+
         if (close(fd) < 0)
         {
             PErrorExit("close (fd) failed");
         }
     }
 
-    Report("Basic bind() test successful");
+    Report("Basic socket lifecycle test successful");
 }
