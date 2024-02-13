@@ -861,6 +861,23 @@ void CKernel::SocketTest(void)
 
         Report("listen() on file descriptor %d succeeded", fd);
 
+#if 0
+        // TODO this currently hangs even when a connection attempt is made.
+        int connected_fd = accept(fd, nullptr, nullptr);
+
+        if (connected_fd == -1)
+        {
+            PErrorExit("accept (fd) failed");
+        }
+
+        Report("accept() on file descriptor %d returned %d", fd, connected_fd);
+
+        if (close(connected_fd) < 0)
+        {
+            PErrorExit("close (connected_fd) failed");
+        }
+#endif
+
         if (close(fd) < 0)
         {
             PErrorExit("close (fd) failed");
