@@ -111,6 +111,8 @@ jobs:
         # Extract blank SD card image
         rm -f sdcard.img
         unzip sdcard.img.zip
+        # Script that interacts with the socket in the smoke test
+        ./socket_test.sh &
         # Guard against endless loop in QEMU run (120 CPU secs)
         ulimit -t 120
-        $CFG_QEMU_BIN -M ${{ matrix.config.qemu-machine }} $CFG_QEMU_OPT $CFG_QEMU_IMG -display none -nographic -semihosting -sd sdcard.img
+        $CFG_QEMU_BIN -M ${{ matrix.config.qemu-machine }} $CFG_QEMU_OPT $CFG_QEMU_IMG -display none -nographic -semihosting -sd sdcard.img -netdev user,id=net0,hostfwd=tcp::5000-:5000 -device usb-net,netdev=net0

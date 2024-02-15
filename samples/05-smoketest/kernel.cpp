@@ -839,9 +839,10 @@ void CKernel::SocketTest(void)
 
         struct sockaddr_in server_address;
 
+        /* The sin_port and sin_addr members shall be in network byte order. */
         server_address.sin_family = AF_INET;
         server_address.sin_addr.s_addr = htonl(INADDR_ANY);
-        server_address.sin_port = htons(1234);
+        server_address.sin_port = htons(5000);
 
         int const bind_result = bind(fd, reinterpret_cast<struct sockaddr *>(&server_address), sizeof(server_address));
 
@@ -861,8 +862,6 @@ void CKernel::SocketTest(void)
 
         Report("listen() on file descriptor %d succeeded", fd);
 
-#if 0
-        // TODO this currently hangs even when a connection attempt is made.
         int connected_fd = accept(fd, nullptr, nullptr);
 
         if (connected_fd == -1)
@@ -872,11 +871,40 @@ void CKernel::SocketTest(void)
 
         Report("accept() on file descriptor %d returned %d", fd, connected_fd);
 
+        char buffer[100];
+        size_t const bufsiz = sizeof(buffer);
+        auto read_result = read(connected_fd, buffer, bufsiz);
+        if (read_result < 0)
+        {
+            PErrorExit("read (connected_fd) failed");
+        }
+
+        // Terminate string, strip newline if present
+        if (read_result == bufsiz)
+        {
+            read_result -= 1;
+        }
+        if (read_result > 0 && buffer[read_result - 1] == '\n')
+        {
+            read_result -= 1;
+        }       
+        buffer[read_result] = 0;
+
+        Report("Read from socket succeeded: \"%s\"\n", buffer);
+
+        strcpy(buffer, "Response from server");
+        auto const write_result = write(connected_fd, buffer, strlen(buffer));
+        if (write_result < 0)
+        {
+            PErrorExit("write (connected_fd) failed");
+        }
+
+        Report("Write of %d bytes to socket succeeded\n", static_cast<int>(write_result));
+
         if (close(connected_fd) < 0)
         {
             PErrorExit("close (connected_fd) failed");
         }
-#endif
 
         if (close(fd) < 0)
         {
