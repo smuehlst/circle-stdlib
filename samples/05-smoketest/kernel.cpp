@@ -892,7 +892,7 @@ void CKernel::SocketTest(void)
 
         Report("Read from socket succeeded: \"%s\"\n", buffer);
 
-        strcpy(buffer, "Response from server");
+        strcpy(buffer, "Response from server\n");
         auto const write_result = write(connected_fd, buffer, strlen(buffer));
         if (write_result < 0)
         {
