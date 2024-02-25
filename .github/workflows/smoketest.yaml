@@ -111,7 +111,7 @@ jobs:
         # Extract blank SD card image
         rm -f sdcard.img
         unzip sdcard.img.zip
-        # Script that interacts with the socket in the smoke test
+        # Script that interacts with the sockets in the smoke test
         ./socket_test.sh &
         # Guard against endless loop in QEMU run (120 CPU secs)
         ulimit -t 120
