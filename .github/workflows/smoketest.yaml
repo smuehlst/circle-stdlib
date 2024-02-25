@@ -116,5 +116,4 @@ jobs:
         # Guard against endless loop in QEMU run (120 CPU secs)
         ulimit -t 120
         # Run QEMU with simulated network
-        set -x
         $CFG_QEMU_BIN -M ${{ matrix.config.qemu-machine }} $CFG_QEMU_OPT $CFG_QEMU_IMG -display none -nographic -semihosting -sd sdcard.img -netdev "user,id=net0,hostfwd=tcp::5000-:5000,guestfwd=tcp:10.0.2.100:5001-cmd:yes simulated server" -device usb-net,netdev=net0
