@@ -908,8 +908,6 @@ void CKernel::SocketTest(void)
             PErrorExit("close (fd) failed");
         }
 
-#if 0
-        // TODO this attempt to use connect() hangs.
         fd = socket(AF_INET, SOCK_STREAM, 0);
 
         if (fd == -1)
@@ -936,7 +934,7 @@ void CKernel::SocketTest(void)
         read_result = read(fd, buffer, sizeof(buffer));
         if (read_result < 0)
         {
-            PErrorExit("connect() failed");
+            PErrorExit("read() failed after connect");
         }
 
         Report("Read %d bytes from server", read_result);
@@ -944,9 +942,11 @@ void CKernel::SocketTest(void)
         char const expected_data[] = "simulated server";
         if (strncmp(buffer, expected_data, sizeof(expected_data) - 1) != 0)
         {
-            Report("read() from socket returned unexpeted data");
+            Report("read() from socket returned unexpected data");
             exit(1);
         }
+
+        Report("Received expected data from server");
 
         if (close(fd) < 0)
         {
@@ -954,7 +954,6 @@ void CKernel::SocketTest(void)
         }
 
         Report("Read from client connection successful");
-#endif
     }
 
     Report("Basic socket lifecycle test successful");
