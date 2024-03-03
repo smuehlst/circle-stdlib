@@ -11,4 +11,4 @@ EXTRACLEAN = *.crt *.der *.pem
 include ../Rules.mk
 
 certs:
-	wget -q -O BaltimoreCyberTrustRoot.crt.pem https://cacerts.digicert.com/BaltimoreCyberTrustRoot.crt.pem
+	wget -q https://letsencrypt.org/certs/letsencryptauthorityx3.pem

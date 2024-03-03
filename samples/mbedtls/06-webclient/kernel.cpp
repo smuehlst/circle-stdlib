@@ -43,8 +43,8 @@ static const u8 DNSServer[]      = {192, 168, 0, 1};
 
 // Server configuration
 static const boolean bUseSSL      = TRUE;
-static const char Server[]        = "www.raspberrypi.com";
-static const char Document[]      = "/documentation/computers/raspberry-pi.html";
+static const char Server[]        = "elinux.org";
+static const char Document[]      = "/RPi_HardwareHistory";
 static const unsigned nDocMaxSize = 2048*1024;
 
 CKernel::CKernel (void)
@@ -137,7 +137,7 @@ boolean CKernel::ParseDocument (const char *pDocument)
 		{
 		case 0:		// find start of content
 			if (   Item == HtmlItemTag
-			    && strcmp (ItemText, "<section id=\"content\">") == 0)
+			    && strncmp (ItemText, "<body", 5) == 0)
 			{
 				nState = 1;
 			}
@@ -145,10 +145,7 @@ boolean CKernel::ParseDocument (const char *pDocument)
 
 		case 1:		// find header above table
 			if (   Item == HtmlItemText
-			    && (      !(nBoardRevision & (1 << 23))
-			           && ItemText.Compare ("Old-style revision codes") == 0
-			        ||    (nBoardRevision & (1 << 23))
-			           && ItemText.Compare ("New-style revision codes in use") == 0))
+			    && ItemText.Compare ("Board Revision History") == 0)
 			{
 				nState = 2;
 			}
@@ -166,7 +163,7 @@ boolean CKernel::ParseDocument (const char *pDocument)
 		case 3:		// is the first column header == "Code"?
 			if (Item == HtmlItemText)
 			{
-				if (ItemText.Compare ("Code") == 0)
+				if (ItemText.Compare ("Revision") == 0)
 				{
 					// yes, start displaying the list
 					static const char Msg[] = "\n";
