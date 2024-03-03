@@ -1,5 +1,10 @@
 # Release History
 
+## [v16.3](https://github.com/smuehlst/circle-stdlib/releases/tag/v16.3)
+
+* Synced with [Circle Step 46](https://github.com/rsta2/circle/releases/tag/Step46).
+* Fixed duplicate definition of fcntl().
+
 ## [v16.2](https://github.com/smuehlst/circle-stdlib/releases/tag/v16.2)
 
 * Synced with [Circle Step 45.3.1](https://github.com/rsta2/circle/releases/tag/Step45.3.1).
