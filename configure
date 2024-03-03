@@ -16,7 +16,7 @@ function usage() {
     echo "  -p <string>, --prefix <string> prefix of the toolchain commands (default: arm-none-eabi-)"
     echo "  --qemu                         build for running under QEMU in semihosting mode"
     echo "  -r <number>, --raspberrypi <number>"
-    echo "                                 Circle Raspberry Pi model number (1, 2, 3, 4, default: 1)"
+    echo "                                 Circle Raspberry Pi model number (1, 2, 3, 4, 5, default: 1)"
     echo "  --softfp                       use float ABI setting \"softfp\" instead of \"hard\""
     echo "  -s <path>, --stddefpath <path>"
     echo "                                 path where stddef.h header is located (only necessary"
@@ -120,7 +120,7 @@ fi
 echo "STDDEF_INCPATH=$STDDEF_INCPATH"
 
 case "$RASPBERRYPI" in
-    1|2|3|4) ;;
+    1|2|3|4|5) ;;
     *) echo "Unknown Raspberry Pi target" >&2; exit 1;;
 esac
 
