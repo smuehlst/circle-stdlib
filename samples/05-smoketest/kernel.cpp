@@ -577,6 +577,18 @@ CKernel::IoTest (void)
         Report ("fork() is not implemented, fails as expected");
     }
 
+    // Check fix for issue #35.
+    Report ("File descriptors 0, 1, 2 are character special files");
+
+    for (int fd = 0; fd < 3; fd += 1)
+    {
+        struct stat statbuf;
+        if (fstat(fd, &statbuf) == -1 || !S_ISCHR(statbuf.st_mode))
+        {
+            PErrorExit ("Check for S_ISCHR() on stdin/stdout/stderr failed");
+        }
+    };
+
     Report ("Redirect stdout");
 
     FILE * const redirected_stdout = freopen ("redirected_stdout.txt", "w", stdout);
