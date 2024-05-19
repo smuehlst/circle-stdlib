@@ -1,5 +1,9 @@
 # Release History
 
+## [v16.4](https://github.com/smuehlst/circle-stdlib/releases/tag/v16.4)
+
+* Fixed issue #35 "No output from printf() in samples/02-stdio-hello with v16.3".
+
 ## [v16.3](https://github.com/smuehlst/circle-stdlib/releases/tag/v16.3)
 
 * Synced with [Circle Step 46](https://github.com/rsta2/circle/releases/tag/Step46).
