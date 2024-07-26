@@ -63,7 +63,7 @@ int CTLSSocket::SetHostname (const char *pHostname)
 	return mbedtls_ssl_set_hostname (&m_Context, pHostname);
 }
 
-int CTLSSocket::Connect (CIPAddress &rForeignIP, u16 nForeignPort)
+int CTLSSocket::Connect (const CIPAddress &rForeignIP, u16 nForeignPort)
 {
 	if (m_pSocket == 0)
 	{

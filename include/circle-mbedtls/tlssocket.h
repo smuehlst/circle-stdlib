@@ -48,7 +48,7 @@ public:
 	/// \param rForeignIP IP address of host to be connected
 	/// \param nOwnPort   Number of port to be connected
 	/// \return Status (0 success, < 0 on error)
-	int Connect (CIPAddress &rForeignIP, u16 nForeignPort);
+	int Connect (const CIPAddress &rForeignIP, u16 nForeignPort);
 
 	/// \brief Connect to foreign host/port (TCP), setup foreign host/port address (UDP)
 	/// \param pHost Hostname or IP address string of host to be connected

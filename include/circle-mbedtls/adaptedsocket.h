@@ -35,7 +35,7 @@ public:
 	CAdaptedSocket (CNetSubSystem *pNetSubSystem, CSocket *pSocket);
 	~CAdaptedSocket (void);
 
-	int Connect (CIPAddress &rForeignIP, u16 nForeignPort);
+	int Connect (const CIPAddress &rForeignIP, u16 nForeignPort);
 	int Connect (const char *pHost, const char *pPort);
 
 	int Bind (const char *pPort);

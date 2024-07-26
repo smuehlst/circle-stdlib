@@ -64,7 +64,7 @@ CAdaptedSocket::~CAdaptedSocket (void)
 	m_pSocket = 0;
 }
 
-int CAdaptedSocket::Connect (CIPAddress &rForeignIP, u16 nForeignPort)
+int CAdaptedSocket::Connect (const CIPAddress &rForeignIP, u16 nForeignPort)
 {
 	assert (m_pSocket != 0);
 	if (m_pSocket->Connect (rForeignIP, nForeignPort) < 0)
