@@ -30,8 +30,8 @@
 #include <wlan/hostap/wpa_supplicant/wpasupplicant.h>
 
 #include <circle_glue.h>
-#include <cstring>
-#include <stdexcept>
+#include <string.h>
+#include <assert.h>
 
 /**
  * Basic Circle Stdlib application that supports GPIO access.
@@ -49,10 +49,7 @@ public:
         CStdlibApp (const char *kernel) :
                 FromKernel (kernel)
         {
-                if (FromKernel == nullptr)
-                {
-                        throw std::invalid_argument ("CStdlibApp: kernel name must not be nullptr");
-                }
+                assert (FromKernel != nullptr);
         }
 
         virtual ~CStdlibApp (void)
@@ -164,10 +161,7 @@ public:
                   mEMMC (&mInterrupt, &mTimer, &mActLED),
                   mConsole (0, TRUE)
         {
-                if (mpPartitionName == nullptr)
-                {
-                        throw std::invalid_argument ("CStdlibAppStdio: pPartitionName must not be nullptr");
-                }
+                assert (mpPartitionName != nullptr);
         }
 
         virtual bool Initialize (void)
@@ -260,7 +254,7 @@ public:
         {
         }
 
-        virtual bool Initialize (bool const bWaitForActivate = true)
+        virtual bool InitializeNoWaitForActivate (void)
         {
                 if (!CStdlibAppStdio::Initialize ())
                 {
@@ -288,7 +282,17 @@ public:
                         }
                 }
 
-                while (bWaitForActivate && !mNet.IsRunning ())
+                return true;
+        }
+
+        virtual bool Initialize (void)
+        {
+                if (!InitializeNoWaitForActivate ())
+                {
+                        return false;
+                }
+
+                while (!mNet.IsRunning ())
                 {
                         mScheduler.Yield ();
                 }
