@@ -1,5 +1,11 @@
 # Release History
 
+## [v16.5](https://github.com/smuehlst/circle-stdlib/releases/tag/v16.5)
+
+* Synced with [Circle Step 47](https://github.com/rsta2/circle/releases/tag/Step47).
+* Update Mbed TLS to [release v2.28.8](https://github.com/Mbed-TLS/mbedtls/releases/tag/v2.28.8).
+* Aligned toolchain version with Circle (ARM Gnu toolchain 13.2.Rel1).
+
 ## [v16.4](https://github.com/smuehlst/circle-stdlib/releases/tag/v16.4)
 
 * Fixed issue #35 "No output from printf() in samples/02-stdio-hello with v16.3".
