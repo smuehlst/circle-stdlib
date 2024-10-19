@@ -501,11 +501,12 @@ void CMQTTClient::Receiver (void)
 			}
 
 			const u8 *pPayload = m_ReceivePacket.GetData (nPayloadLength);
-			m_ReceivePacket.Complete ();
 
 			if (uchQoS == MQTT_QOS_AT_MOST_ONCE)
 			{
 				OnMessage (m_pTopicBuffer, pPayload, nPayloadLength, bRetain);
+
+				m_ReceivePacket.Complete ();
 			}
 			else if (uchQoS == MQTT_QOS_AT_LEAST_ONCE)
 			{
@@ -514,12 +515,16 @@ void CMQTTClient::Receiver (void)
 
 				if (!SendPacket (&Packet))
 				{
+					m_ReceivePacket.Complete ();
+
 					CloseConnection (MQTTDisconnectSendFailed);
 
 					break;
 				}
 
 				OnMessage (m_pTopicBuffer, pPayload, nPayloadLength, bRetain);
+
+				m_ReceivePacket.Complete ();
 			}
 			else if (uchQoS == MQTT_QOS_EXACTLY_ONCE)
 			{
@@ -528,6 +533,8 @@ void CMQTTClient::Receiver (void)
 
 				if (!SendPacket (&Packet))
 				{
+					m_ReceivePacket.Complete ();
+
 					CloseConnection (MQTTDisconnectSendFailed);
 
 					break;
@@ -539,6 +546,8 @@ void CMQTTClient::Receiver (void)
 
 					OnMessage (m_pTopicBuffer, pPayload, nPayloadLength, bRetain);
 				}
+
+				m_ReceivePacket.Complete ();
 			}
 			} break;
 
