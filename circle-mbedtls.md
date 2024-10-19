@@ -28,11 +28,17 @@ subdirectory. Go to the subdirectory of the sample of your choice and do `make`.
 
 ## Current State
 
+V1.13:
+
+* Uses Mbed TLS 2.28.9
+* Fix issue in mqttclient.cpp, which caused an invalid payload delivered,
+  when multiple publish messages arrived at once.
+
+## Previous Releases
+
 V1.12:
 
 * Uses Mbed TLS 2.28.8
-
-## Previous Releases
 
 V1.11:
 
