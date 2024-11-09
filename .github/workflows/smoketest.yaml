@@ -22,53 +22,51 @@ jobs:
             dirname:  "arm-gnu-toolchain-13.2.Rel1-x86_64-aarch64-none-elf",
             prefix:   "aarch64-none-elf-",
             circle-machine: "3",
-            qemu-machine: "raspi3" }
+            qemu-machine: "raspi3b" }
 
     steps:
     - name: Select 32-bit QEMU
       if: matrix.config.circle-machine == '1'
       run: |
-        echo "CFG_QEMU_BIN=$HOME/local/qemu-6.0.0/bin/qemu-system-arm" >> $GITHUB_ENV
+        echo "CFG_QEMU_BIN=$HOME/local/qemu-9.1.1/bin/qemu-system-arm" >> $GITHUB_ENV
         echo "CFG_QEMU_OPT=-bios" >> $GITHUB_ENV
         echo "CFG_QEMU_IMG=kernel.img" >> $GITHUB_ENV
 
     - name: Select 64-bit QEMU
       if: matrix.config.circle-machine == '3'
       run: |
-        echo "CFG_QEMU_BIN=$HOME/local/qemu-6.0.0/bin/qemu-system-aarch64" >> $GITHUB_ENV
+        echo "CFG_QEMU_BIN=$HOME/local/qemu-9.1.1/bin/qemu-system-aarch64" >> $GITHUB_ENV
         echo "CFG_QEMU_OPT=-kernel" >> $GITHUB_ENV
         echo "CFG_QEMU_IMG=kernel8.img" >> $GITHUB_ENV
 
     - name: Checkout circle-stdlib
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         repository: smuehlst/circle-stdlib
         path: circle-stdlib
 
     - name: Cache QEMU
-      id: qemu-6_0_0-cache-id
+      id: qemu-9_1_1-cache-id
       uses: actions/cache@v3
       with:
-        path: ~/local/qemu-6.0.0
-        key: ${{ runner.os }}-qemu-6_0_0
+        path: ~/local/qemu-9.1.1
+        key: ${{ runner.os }}-qemu-9_1_1
 
     - name: Clone QEMU Repository
-      if: steps.qemu-6_0_0-cache-id.outputs.cache-hit != 'true'
-      uses: actions/checkout@v3
+      if: steps.qemu-9_1_1-cache-id.outputs.cache-hit != 'true'
+      uses: actions/checkout@v4
       with:
         repository: smuehlst/qemu
-        ref: 2568d421e0e6855b3b45f455bbc90b41b50cb8df
+        ref: circle-hcd-dwc2-9.1.1
         path: qemu
 
     - name: Build QEMU   
-      if: steps.qemu-6_0_0-cache-id.outputs.cache-hit != 'true'
+      if: steps.qemu-9_1_1-cache-id.outputs.cache-hit != 'true'
       run: |
         sudo apt-get install ninja-build
-        cd $GITHUB_WORKSPACE/qemu
-        git submodule update --init --recursive
         mkdir -p $GITHUB_WORKSPACE/qemu-build
         cd $GITHUB_WORKSPACE/qemu-build
-        ../qemu/configure --prefix=$HOME/local/qemu-6.0.0 --target-list=arm-softmmu,aarch64-softmmu
+        ../qemu/configure --without-default-features --prefix=$HOME/local/qemu-9.1.1 --target-list=arm-softmmu,aarch64-softmmu
         make -j
         make install
 
