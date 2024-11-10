@@ -1,5 +1,12 @@
 # Release History
 
+## [v16.6](https://github.com/smuehlst/circle-stdlib/releases/tag/v16.6)
+
+* Synced with [Circle Step 48](https://github.com/rsta2/circle/releases/tag/Step48).
+* Update Mbed TLS to [release v2.28.9](https://github.com/Mbed-TLS/mbedtls/releases/tag/mbedtls-2.28.9).
+* Fixed invalid payload in MQTT client.
+* Fixed broken GitHub action caused by missing dependencies of the old QEMU 6.0.0 release. 
+
 ## [v16.5](https://github.com/smuehlst/circle-stdlib/releases/tag/v16.5)
 
 * Synced with [Circle Step 47](https://github.com/rsta2/circle/releases/tag/Step47).
