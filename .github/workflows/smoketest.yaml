@@ -63,7 +63,7 @@ jobs:
     - name: Build QEMU   
       if: steps.qemu-9_1_1-cache-id.outputs.cache-hit != 'true'
       run: |
-        sudo apt-get install ninja-build
+        sudo apt-get install ninja-build libglib2.0-dev
         mkdir -p $GITHUB_WORKSPACE/qemu-build
         cd $GITHUB_WORKSPACE/qemu-build
         ../qemu/configure --without-default-features --prefix=$HOME/local/qemu-9.1.1 --target-list=arm-softmmu,aarch64-softmmu
