@@ -1,5 +1,10 @@
 # Release History
 
+## [v16.7](https://github.com/smuehlst/circle-stdlib/releases/tag/v16.7)
+
+* Synced with [Circle Step 49](https://github.com/rsta2/circle/releases/tag/Step49).
+* Fixed a crash in the MQTT client.
+
 ## [v16.6](https://github.com/smuehlst/circle-stdlib/releases/tag/v16.6)
 
 * Synced with [Circle Step 48](https://github.com/rsta2/circle/releases/tag/Step48).
