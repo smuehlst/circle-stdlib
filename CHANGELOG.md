@@ -1,5 +1,10 @@
 # Release History
 
+## Next release
+
+* Fixed issue #44: The Circle library was not built in parallel mode if the top-level make 
+was invoked with `-j`.
+
 ## [v16.7](https://github.com/smuehlst/circle-stdlib/releases/tag/v16.7)
 
 * Synced with [Circle Step 49](https://github.com/rsta2/circle/releases/tag/Step49).
