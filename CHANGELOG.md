@@ -2,7 +2,7 @@
 
 ## Next release
 
-* Fixed issue #44: The Circle library was not built in parallel mode if the top-level make 
+* Fixed issue #45: The Circle library was not built in parallel mode if the top-level make 
 was invoked with `-j`.
 
 ## [v16.7](https://github.com/smuehlst/circle-stdlib/releases/tag/v16.7)
