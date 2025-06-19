@@ -28,12 +28,18 @@ subdirectory. Go to the subdirectory of the sample of your choice and do `make`.
 
 ## Current State
 
+V1.15:
+
+* Uses Mbed TLS 2.28.10
+* Enable threading support
+* CThreadingModule must be instantiated early in the app, if CTLSSimpleSupport is not.
+
+## Previous Releases
+
 V1.14:
 
 * Fix issue in mqttclient.cpp, which caused a system crash, when a disconnect
   message was received from peer.
-
-## Previous Releases
 
 V1.13:
 
