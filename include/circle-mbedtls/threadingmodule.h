@@ -1,5 +1,7 @@
 //
-// kernel.h
+// threadingmodule.h
+//
+// Copyright (C) 2025  R. Stange <rsta2@gmx.net>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -14,23 +16,30 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-#ifndef _kernel_h
-#define _kernel_h
+#ifndef _circle_mbedtls_threadingmodule_h
+#define _circle_mbedtls_threadingmodule_h
 
-#include <circle_stdlib_app.h>
-#include <circle-mbedtls/threadingmodule.h>
-#include <circle-mbedtls/entropymodule.h>
+#include <threading_alt.h>
 
-class CKernel : public CStdlibAppNetwork
+namespace CircleMbedTLS {
+
+class CThreadingModule		// Support MBEDTLS_THREADING_C with MBEDTLS_THREADING_ALT
 {
 public:
-	CKernel (void);
-
-	TShutdownMode Run (void);
+	CThreadingModule (void);
+	~CThreadingModule (void);
 
 private:
-	CircleMbedTLS::CThreadingModule m_ThreadingModule;
-	CircleMbedTLS::CEntropyModule m_EntropyModule;
+	static void mutex_init (mbedtls_threading_mutex_t *mutex);
+	static void mutex_free (mbedtls_threading_mutex_t *mutex);
+
+	static int mutex_lock (mbedtls_threading_mutex_t *mutex);
+	static int mutex_unlock (mbedtls_threading_mutex_t *mutex);
+
+private:
+	static int m_nUseCount;
 };
+
+}
 
 #endif

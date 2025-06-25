@@ -18,6 +18,7 @@
 #define _kernel_h
 
 #include <circle_stdlib_app.h>
+#include <circle-mbedtls/threadingmodule.h>
 #include <circle-mbedtls/entropymodule.h>
 
 class CKernel : public CStdlibAppNetwork
@@ -28,6 +29,7 @@ public:
 	TShutdownMode Run (void);
 
 private:
+	CircleMbedTLS::CThreadingModule m_ThreadingModule;
 	CircleMbedTLS::CEntropyModule m_EntropyModule;
 };
 

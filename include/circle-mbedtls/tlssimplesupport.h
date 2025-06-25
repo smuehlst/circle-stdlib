@@ -1,7 +1,7 @@
 //
 // tlssimplesupport.h
 //
-// Copyright (C) 2018  R. Stange <rsta2@o2online.de>
+// Copyright (C) 2018-2025  R. Stange <rsta2@gmx.net>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 #define _circle_mbedtls_tlssimplesupport_h
 
 #include <circle/net/netsubsystem.h>
+#include <circle-mbedtls/threadingmodule.h>
 #include <circle-mbedtls/entropymodule.h>
 #include <circle-mbedtls/x509certprofile.h>
 #include <mbedtls/debug.h>
@@ -56,6 +57,7 @@ public:
 public:
 	CNetSubSystem *m_pNetSubSystem;
 
+	CThreadingModule	m_ThreadingModule;
 	CEntropyModule		m_EntropyModule;
 	CX509CertificateProfile	m_CertProfile;
 };

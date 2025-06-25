@@ -12,7 +12,7 @@ CIRCLEHOME  ?= $(CIRCLE_STDLIB_DIR)/libs/circle
 
 OBJS	= httpclient.o mqttclient.o mqttreceivepacket.o mqttsendpacket.o \
 	  tlssocket.o tlssimpleclientsocket.o adaptedsocket.o net_sockets.o \
-	  x509certchain.o entropymodule.o
+	  x509certchain.o entropymodule.o threadingmodule.o
 
 libcircle-mbedtls.a: $(OBJS)
 	rm -f $@
