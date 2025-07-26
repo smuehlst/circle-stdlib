@@ -97,11 +97,13 @@ then
 fi
 
 # Try to determine 64-bit build from Target: output of gcc
+AARCH="32"
 if [ "$($CC -v 2>&1 | grep '^Target:.*64')" != "" ]
 then
     echo "64-bit compiler detected"
     SIXTY_FOUR_BIT=1
     NEWLIB_ARCH="aarch64-none-circle"
+    AARCH="64"
 fi
 
 if [ "$STDDEF_INCPATH" = "" ]
@@ -187,7 +189,7 @@ ARCH=$(make -n -p -f libs/circle/Rules.mk CIRCLEHOME=libs/circle | grep '^ARCH =
     sed -e "s/\$(ARCHCPU)/$ARCHCPU/" -e 's/ARCH = //')
 
 export \
-    CPPFLAGS_FOR_TARGET="-I\"$CIRCLEHOME/include\" -I\"$CIRCLEHOME/addon\" -I\"$TOPDIR/include\"" \
+    CPPFLAGS_FOR_TARGET="-I\"$CIRCLEHOME/include\" -I\"$CIRCLEHOME/addon\" -I\"$TOPDIR/include\" -DAARCH=$AARCH" \
     CC_FOR_TARGET=${TOOLPREFIX}gcc \
     CXX_FOR_TARGET=${TOOLPREFIX}g++ \
     GCC_FOR_TARGET=${TOOLPREFIX}gcc \
