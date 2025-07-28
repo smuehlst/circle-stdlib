@@ -187,7 +187,7 @@ ARCH=$(make -n -p -f libs/circle/Rules.mk CIRCLEHOME=libs/circle | grep '^ARCH =
     sed -e "s/\$(ARCHCPU)/$ARCHCPU/" -e 's/ARCH = //')
 
 export \
-    CPPFLAGS_FOR_TARGET="-I\"$CIRCLEHOME/include\" -I\"$CIRCLEHOME/addon\" -I\"$TOPDIR/include\"" \
+    CPPFLAGS_FOR_TARGET="-isystem \"$CIRCLEHOME/include\" -isystem \"$CIRCLEHOME/addon\" -isystem \"$TOPDIR/include\"" \
     CC_FOR_TARGET=${TOOLPREFIX}gcc \
     CXX_FOR_TARGET=${TOOLPREFIX}g++ \
     GCC_FOR_TARGET=${TOOLPREFIX}gcc \
