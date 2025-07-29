@@ -1,5 +1,12 @@
 # Release History
 
+## [v16.8](https://github.com/smuehlst/circle-stdlib/releases/tag/v16.8)
+
+* Fixed issue #45: The Circle library was not built in parallel mode if the top-level make 
+was invoked with `-j`.
+* Synced with [Circle Step 49.0.1](https://github.com/rsta2/circle/releases/tag/Step49.0.1).
+* Update Mbed TLS to [release v2.28.10](https://github.com/Mbed-TLS/mbedtls/releases/tag/mbedtls-2.28.10).
+
 ## [v16.7](https://github.com/smuehlst/circle-stdlib/releases/tag/v16.7)
 
 * Synced with [Circle Step 49](https://github.com/rsta2/circle/releases/tag/Step49).
