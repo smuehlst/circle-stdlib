@@ -77,6 +77,16 @@ make mrproper   # removes the configuration too
 make build-samples
 ```
 
+### Running and Debugging the Programs
+
+The resulting executables are normal Circle bare-metal applications. Circle's
+standard [installation](https://github.com/rsta2/circle#installation) 
+and [debugging](https://github.com/rsta2/circle/blob/master/doc/debug.txt)
+instructions apply.
+
+For running the programs under QEMU see Circle's corresponding
+[notes on QEMU](https://github.com/rsta2/circle/blob/master/doc/qemu.txt).
+
 ## Release History
 
 See [CHANGELOG.md](CHANGELOG.md).
