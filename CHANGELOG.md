@@ -3,7 +3,7 @@
 ## [v17](https://github.com/smuehlst/circle-stdlib/releases/tag/v17)
 
 * Synced with [Circle Step 50](https://github.com/rsta2/circle/releases/tag/Step50).
-* Updated [circle-stdlib's copy](libs/circle-newlib/) of Newlib to version 4.5.0.
+* Updated circle-stdlib's copy of Newlib to version 4.5.0.
 * Aligned supported toolchain version with Circle (ARM GNU toolchain 14.3.Rel1).
 
 ## [v16.8](https://github.com/smuehlst/circle-stdlib/releases/tag/v16.8)
