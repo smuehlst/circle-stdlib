@@ -1,5 +1,9 @@
 # Release History
 
+## [v17.1](https://github.com/smuehlst/circle-stdlib/releases/tag/v17.1)
+
+* AArch64 Linux is now a supported build environment.
+
 ## [v17](https://github.com/smuehlst/circle-stdlib/releases/tag/v17)
 
 * Synced with [Circle Step 50](https://github.com/rsta2/circle/releases/tag/Step50).
