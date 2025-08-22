@@ -22,10 +22,10 @@ Circle (call configure with `--opt-tls`, see also the
 
 A toolchain from [Arm GNU Toolchain Downloads](https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads):
 
-* gcc 14.3.Rel1 hosted on Intel Linux or Windows Subsystem for Linux (WSL/WSL2) (build is tested with [GitHub Action](https://github.com/smuehlst/circle-stdlib/actions)):
+* gcc 14.3.Rel1 hosted on Intel Linux or Windows Subsystem for Linux (WSL/WSL2):
   * [AArch32 bare-metal target (arm-none-eabi)](https://developer.arm.com/-/media/Files/downloads/gnu/14.3.rel1/binrel/arm-gnu-toolchain-14.3.rel1-x86_64-arm-none-eabi.tar.xz)
   * [AArch64 ELF bare-metal target (aarch64-none-elf)](https://developer.arm.com/-/media/Files/downloads/gnu/14.3.rel1/binrel/arm-gnu-toolchain-14.3.rel1-x86_64-aarch64-none-elf.tar.xz)
-* gcc 14.3.Rel1 hosted on 64-bit Linux on Raspberry Pi (not tested, but reported to work):
+* gcc 14.3.Rel1 hosted on AArch64 Linux:
   * [AArch32 bare-metal target (arm-none-eabi)](https://developer.arm.com/-/media/Files/downloads/gnu/14.3.rel1/binrel/arm-gnu-toolchain-14.3.rel1-aarch64-arm-none-eabi.tar.xz)
   * [AArch64 ELF bare-metal target (aarch64-none-elf)](https://developer.arm.com/-/media/Files/downloads/gnu/14.3.rel1/binrel/arm-gnu-toolchain-14.3.rel1-aarch64-aarch64-none-elf.tar.xz)
 
@@ -39,6 +39,8 @@ cd circle-stdlib
 ./configure
 make
 ```
+
+This configures the build for the default 32-bit toolchain with the `arm-none-eabi-` prefix.
 
 The `configure` script has the following options:
 
