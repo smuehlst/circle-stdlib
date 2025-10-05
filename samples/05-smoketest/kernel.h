@@ -3,7 +3,7 @@
 //
 // Circle - A C++ bare metal environment for Raspberry Pi
 // Copyright (C) 2014-2020  R. Stange <rsta2@o2online.de>
-// 
+//
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
@@ -27,19 +27,20 @@
 class CKernel : public CStdlibAppStdio
 {
 public:
-    CKernel (void);
+    CKernel(void);
 
-    TShutdownMode Run (void);
+    TShutdownMode Run(void);
 
 private:
-    void IoTest (void);
-    void CxxTest (void);
-    void PErrorExit [[ noreturn ]] (const char *s);
-    void Report (const char *s);
-    void Report (const std::string &s);
+    void IoTest(void);
+    void CxxTest(void);
+    void SocketTest(void);
+    void PErrorExit [[noreturn]] (const char *s);
+    void Report(const std::string &s);
+    void Report(const char *s, ...);
 
     static void
-    TimerHandler (TKernelTimerHandle hTimer, void *pParam, void *pContext);
+    TimerHandler(TKernelTimerHandle hTimer, void *pParam, void *pContext);
 
     CQEMUHostFile m_LogFile;
 
@@ -58,6 +59,9 @@ private:
         static size_t counter;
         CKernel &kernel;
     };
+
+    CScheduler m_Scheduler;
+    CNetSubSystem m_Net;
 };
 
 #endif

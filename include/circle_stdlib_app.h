@@ -30,8 +30,10 @@
 #include <wlan/hostap/wpa_supplicant/wpasupplicant.h>
 
 #include <circle_glue.h>
-#include <string.h>
-#include <assert.h>
+#include <cassert>
+#include <wrap_fatfs.h>
+#include <cstring>
+#include <stdexcept>
 
 /**
  * Basic Circle Stdlib application that supports GPIO access.
@@ -296,6 +298,10 @@ public:
                 {
                         mScheduler.Yield ();
                 }
+
+                // Initialize circle-newlib's network subsystem with a reference to Circle's
+                // network subsytem.
+                CGlueNetworkInit (mNet);
 
                 return true;
         }
