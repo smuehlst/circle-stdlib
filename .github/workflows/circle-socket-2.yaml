@@ -1,9 +1,9 @@
-name: branch "circle-socket"
+name: branch "circle-socket-2"
 
 on:
   push:
     branches:
-      - circle-socket
+      - circle-socket-2
     paths-ignore:
       - '**.md'
 
