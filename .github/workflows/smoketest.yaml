@@ -94,10 +94,10 @@ jobs:
       if: steps.qemu-9_1_1-cache-id.outputs.cache-hit != 'true'
       run: |
         sudo apt update
-        sudo apt install -y ninja-build libglib2.0-dev
+        sudo apt install -y ninja-build libglib2.0-dev libslirp-dev
         mkdir -p $GITHUB_WORKSPACE/qemu-build
         cd $GITHUB_WORKSPACE/qemu-build
-        ../qemu/configure --without-default-features --prefix=$HOME/local/qemu-9.1.1 --target-list=arm-softmmu,aarch64-softmmu
+        ../qemu/configure --without-default-features --enable-slirp --prefix=$HOME/local/qemu-9.1.1 --target-list=arm-softmmu,aarch64-softmmu
         make -j
         make install
 
