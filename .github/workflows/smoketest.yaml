@@ -139,7 +139,18 @@ jobs:
         cd $GITHUB_WORKSPACE/circle-stdlib/samples/05-smoketest
         # Extract blank SD card image
         rm -f sdcard.img
-        unzip sdcard.img.zip
+        unzip ../../testdata/sdcard.img.zip
+        # Guard against endless loop in QEMU run (120 CPU secs)
+        ulimit -t 120
+        # Run QEMU with simulated network
+        $CFG_QEMU_BIN -M ${{ matrix.config.qemu-machine }} $CFG_QEMU_OPT $CFG_QEMU_IMG -display none -nographic -semihosting -sd sdcard.img
+
+    - name: Run socket test with QEMU
+      run: |
+        cd $GITHUB_WORKSPACE/circle-stdlib/samples/06-socket
+        # Extract blank SD card image
+        rm -f sdcard.img
+        unzip ../../testdata/sdcard.img.zip
         # Script that interacts with the sockets in the smoke test
         ./socket_test.sh &
         # Guard against endless loop in QEMU run (120 CPU secs)

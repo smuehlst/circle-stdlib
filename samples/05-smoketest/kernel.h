@@ -34,7 +34,6 @@ public:
 private:
     void IoTest(void);
     void CxxTest(void);
-    void SocketTest(void);
     void PErrorExit [[noreturn]] (const char *s);
     void Report(const std::string &s);
     void Report(const char *s, ...);
