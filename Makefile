@@ -33,6 +33,7 @@ build-stdlib-samples:
 	$(MAKE) -C samples/03-stdio-fatfs
 	$(MAKE) -C samples/04-std
 	$(MAKE) -C samples/05-smoketest
+	$(MAKE) -C samples/06-socket
 
 clean-stdlib-samples:
 	-$(MAKE) -C samples/01-nosys clean
@@ -40,6 +41,7 @@ clean-stdlib-samples:
 	-$(MAKE) -C samples/03-stdio-fatfs clean
 	-$(MAKE) -C samples/04-std clean
 	-$(MAKE) -C samples/05-smoketest clean
+	-$(MAKE) -C samples/06-socket clean
 	
 MBEDTLS_INCLUDE = -I../../../include -I../../circle/include
 MBED_DEFINE = -DMBEDTLS_CONFIG_FILE='<circle-mbedtls/config-circle-mbedtls.h>'
