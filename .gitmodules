@@ -8,3 +8,6 @@
 [submodule "libs/mbedtls"]
 	path = libs/mbedtls
 	url = https://github.com/ARMmbed/mbedtls.git
+[submodule "libs/doctest"]
+	path = libs/doctest
+	url = https://github.com/doctest/doctest.git

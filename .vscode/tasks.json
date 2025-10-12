@@ -4,7 +4,7 @@
         {
             "label": "Full build",
             "type": "shell",
-            "command": "make",
+            "command": "make -j8",
             "options": {
                 "cwd": "${workspaceFolder}"
             },
@@ -27,9 +27,33 @@
             "problemMatcher": ["$gcc"]
         },
         {
+            "label": "Build 05-smoketest sample",
+            "type": "shell",
+            "command": "make -C samples/05-smoketest",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": {
+                "kind": "build"
+            },
+            "problemMatcher": ["$gcc"]
+        },
+        {
+            "label": "Build 06-socket sample",
+            "type": "shell",
+            "command": "make -C samples/06-socket",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": {
+                "kind": "build"
+            },
+            "problemMatcher": ["$gcc"]
+        },
+        {
             "label": "Configure AArch64 QEMU Build",
             "type": "shell",
-            "command": "make mrproper; ./configure -p aarch64-none-elf- -r 3 --qemu",
+            "command": "make mrproper; ./configure -p aarch64-none-elf- -r 3 --qemu --debug",
             "options": {
                 "cwd": "${workspaceFolder}"
             },
