@@ -143,7 +143,6 @@ jobs:
     - name: Build test library
       run: |
         make -C $GITHUB_WORKSPACE/circle-stdlib/tests/lib
-        make
 
     - name: Run basic socket test with QEMU
       run: |
