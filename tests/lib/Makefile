@@ -25,9 +25,8 @@ OBJS	= doctest.o doctest_logger.o
 INCLUDE = -I ../../libs/doctest
 
 libdoctest.a: $(OBJS)
-	@echo "  AR    $@"
-	@rm -f $@
-	@$(AR) cr $@ $(OBJS)
+	rm -f $@
+	$(AR) cr $@ $(OBJS)
 
 include $(CIRCLEHOME)/Rules.mk
 

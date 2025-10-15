@@ -15,4 +15,4 @@ $CFG_QEMU_BIN -M $CFG_QEMU_MACHINE $CFG_QEMU_OPT $CFG_QEMU_IMG \
     -netdev "user,id=net0,hostfwd=tcp::5000-:5000,guestfwd=tcp:10.0.2.100:5001-cmd:yes simulated server" \
     -device usb-net,netdev=net0
 
-kill $server_pid
+kill $server_pid 2>/dev/null || true
