@@ -14,42 +14,36 @@ jobs:
             dirname:  "arm-gnu-toolchain-13.2.Rel1-x86_64-arm-none-eabi",
             prefix:   "arm-none-eabi-",
             circle-machine: "1",
-            qemu-machine: "raspi0",
             runner: "ubuntu-latest" }
         - { url:      "https://developer.arm.com/-/media/Files/downloads/gnu/13.2.rel1/binrel/arm-gnu-toolchain-13.2.rel1-x86_64-aarch64-none-elf.tar.xz",
             tarname:  "arm-gnu-toolchain-13.2.rel1-x86_64-aarch64-none-elf.tar.xz",
             dirname:  "arm-gnu-toolchain-13.2.Rel1-x86_64-aarch64-none-elf",
             prefix:   "aarch64-none-elf-",
             circle-machine: "3",
-            qemu-machine: "raspi3b",
             runner: "ubuntu-latest" }
         - { url:      "https://developer.arm.com/-/media/Files/downloads/gnu/14.3.rel1/binrel/arm-gnu-toolchain-14.3.rel1-x86_64-arm-none-eabi.tar.xz",
             tarname:  "arm-gnu-toolchain-14.3.rel1-x86_64-arm-none-eabi.tar.xz",
             dirname:  "arm-gnu-toolchain-14.3.rel1-x86_64-arm-none-eabi",
             prefix:   "arm-none-eabi-",
             circle-machine: "1",
-            qemu-machine: "raspi0",
             runner: "ubuntu-latest" }
         - { url:      "https://developer.arm.com/-/media/Files/downloads/gnu/14.3.rel1/binrel/arm-gnu-toolchain-14.3.rel1-x86_64-aarch64-none-elf.tar.xz",
             tarname:  "arm-gnu-toolchain-14.3.rel1-x86_64-aarch64-none-elf.tar.xz",
             dirname:  "arm-gnu-toolchain-14.3.rel1-x86_64-aarch64-none-elf",
             prefix:   "aarch64-none-elf-",
             circle-machine: "3",
-            qemu-machine: "raspi3b",
             runner: "ubuntu-latest" }
         - { url:      "https://developer.arm.com/-/media/Files/downloads/gnu/14.3.rel1/binrel/arm-gnu-toolchain-14.3.rel1-aarch64-arm-none-eabi.tar.xz",
             tarname:  "arm-gnu-toolchain-14.3.rel1-aarch64-arm-none-eabi.tar.xz",
             dirname:  "arm-gnu-toolchain-14.3.rel1-aarch64-arm-none-eabi",
             prefix:   "arm-none-eabi-",
             circle-machine: "1",
-            qemu-machine: "raspi0",
             runner: "ubuntu-24.04-arm" }
         - { url:      "https://developer.arm.com/-/media/Files/downloads/gnu/14.3.rel1/binrel/arm-gnu-toolchain-14.3.rel1-aarch64-aarch64-none-elf.tar.xz",
             tarname:  "arm-gnu-toolchain-14.3.rel1-aarch64-aarch64-none-elf.tar.xz",
             dirname:  "arm-gnu-toolchain-14.3.rel1-aarch64-aarch64-none-elf",
             prefix:   "aarch64-none-elf-",
             circle-machine: "3",
-            qemu-machine: "raspi3b",
             runner: "ubuntu-24.04-arm" }
   
     runs-on: ${{ matrix.config.runner }}
@@ -58,16 +52,18 @@ jobs:
     - name: Select 32-bit QEMU
       if: matrix.config.circle-machine == '1'
       run: |
-        echo "CFG_QEMU_BIN=$HOME/local/qemu-9.1.1/bin/qemu-system-arm" >> $GITHUB_ENV
-        echo "CFG_QEMU_OPT=-bios" >> $GITHUB_ENV
-        echo "CFG_QEMU_IMG=kernel.img" >> $GITHUB_ENV
+        echo "CFG_QEMU_BIN=$HOME/local/qemu-9.1.1/bin/qemu-system-arm" >> "$GITHUB_ENV"
+        echo "CFG_QEMU_OPT=-bios" >> "$GITHUB_ENV"
+        echo "CFG_QEMU_IMG=kernel.img" >> "$GITHUB_ENV"
+        echo "CFG_QEMU_MACHINE=raspi0" >> "$GITHUB_ENV"
 
     - name: Select 64-bit QEMU
       if: matrix.config.circle-machine == '3'
       run: |
-        echo "CFG_QEMU_BIN=$HOME/local/qemu-9.1.1/bin/qemu-system-aarch64" >> $GITHUB_ENV
-        echo "CFG_QEMU_OPT=-kernel" >> $GITHUB_ENV
-        echo "CFG_QEMU_IMG=kernel8.img" >> $GITHUB_ENV
+        echo "CFG_QEMU_BIN=$HOME/local/qemu-9.1.1/bin/qemu-system-aarch64" >> "$GITHUB_ENV"
+        echo "CFG_QEMU_OPT=-kernel" >> "$GITHUB_ENV"
+        echo "CFG_QEMU_IMG=kernel8.img" >> "$GITHUB_ENV"
+        echo "CFG_QEMU_MACHINE=raspi3b" >> "$GITHUB_ENV"
 
     - name: Checkout circle-stdlib
       uses: actions/checkout@v4
@@ -138,22 +134,18 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE/circle-stdlib/samples/05-smoketest
         # Extract blank SD card image
-        rm -f sdcard.img
-        unzip ../../testdata/sdcard.img.zip
+        ../../testdata/setup-sd.sh
         # Guard against endless loop in QEMU run (120 CPU secs)
         ulimit -t 120
         # Run QEMU with simulated network
-        $CFG_QEMU_BIN -M ${{ matrix.config.qemu-machine }} $CFG_QEMU_OPT $CFG_QEMU_IMG -display none -nographic -semihosting -sd sdcard.img
+        $CFG_QEMU_BIN -M $CFG_QEMU_MACHINE $CFG_QEMU_OPT $CFG_QEMU_IMG -display none -nographic -semihosting -sd sdcard.img
 
-    - name: Run socket test with QEMU
+    - name: Build test library
       run: |
-        cd $GITHUB_WORKSPACE/circle-stdlib/samples/06-socket
-        # Extract blank SD card image
-        rm -f sdcard.img
-        unzip ../../testdata/sdcard.img.zip
-        # Script that interacts with the sockets in the smoke test
-        ./socket_test.sh &
-        # Guard against endless loop in QEMU run (120 CPU secs)
-        ulimit -t 120
-        # Run QEMU with simulated network
-        $CFG_QEMU_BIN -M ${{ matrix.config.qemu-machine }} $CFG_QEMU_OPT $CFG_QEMU_IMG -display none -nographic -semihosting -sd sdcard.img -netdev "user,id=net0,hostfwd=tcp::5000-:5000,guestfwd=tcp:10.0.2.100:5001-cmd:/bin/echo simulated server" -device usb-net,netdev=net0
+        make -C $GITHUB_WORKSPACE/circle-stdlib/tests/lib
+        make
+
+    - name: Run basic socket test with QEMU
+      run: |
+        cd $GITHUB_WORKSPACE/circle-stdlib/tests/01-basic-socket
+        ./run_test.sh
