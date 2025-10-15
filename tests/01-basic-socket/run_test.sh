@@ -2,6 +2,9 @@
 set -e
 # set -x
 
+../../testdata/setup-sd.sh
+make
+
 ulimit -t 120
 
 ./socket_test.sh &
