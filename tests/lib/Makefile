@@ -18,16 +18,25 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-CIRCLEHOME = ../../libs/circle
+TOPDIR = ../..
+
+include $(TOPDIR)/Config.mk
+
+CIRCLEHOME = $(TOPDIR)/libs/circle
+NEWLIBDIR = $(TOPDIR)/install/$(NEWLIB_ARCH)
 
 OBJS	= doctest.o doctest_logger.o
-
-INCLUDE = -I ../../libs/doctest
 
 libdoctest.a: $(OBJS)
 	rm -f $@
 	$(AR) cr $@ $(OBJS)
 
 include $(CIRCLEHOME)/Rules.mk
+
+# Important: Extend INCLUDE after including Rules.mk so that the Circle include
+# paths come before the newlib include path. Otherwise there are problems
+# with Circle's assert macros.
+INCLUDE += -I "$(NEWLIBDIR)/include" -I $(STDDEF_INCPATH) -I$(TOPDIR)/libs/doctest
+DEFINE	+= -D_POSIX_C_SOURCE=200112L
 
 -include $(DEPS)

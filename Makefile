@@ -67,8 +67,11 @@ clean-mbedtls-samples:
 	$(MAKE) -C samples/mbedtls/05-https-client3 clean
 	$(MAKE) -C samples/mbedtls/06-webclient clean
 	$(MAKE) -C samples/mbedtls/07-mqttclient clean
+
+clean-tests:
+	-$(MAKE) -C tests/lib clean
 	
-clean: clean-stdlib-samples clean-mbedtls-samples
+clean: clean-stdlib-samples clean-mbedtls-samples clean-tests
 	-cd libs/circle && ./makeall --nosample PREFIX=$(TOOLPREFIX) clean
 	-$(MAKE) -C libs/circle/addon/SDCard PREFIX=$(TOOLPREFIX) clean
 	-$(MAKE) -C libs/circle/addon/fatfs PREFIX=$(TOOLPREFIX) clean
