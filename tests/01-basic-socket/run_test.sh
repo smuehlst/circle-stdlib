@@ -5,7 +5,7 @@ set -e
 ../../testdata/setup-sd.sh
 make
 
-ulimit -t 240
+ulimit -t 120
 
 ./socket_test.sh &
 server_pid=$!
