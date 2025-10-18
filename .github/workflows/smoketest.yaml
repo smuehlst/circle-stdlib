@@ -156,3 +156,8 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE/circle-stdlib/tests/01-basic-socket
           ./run_test.sh
+
+      - name: Run basic socket select() test with QEMU
+        run: |
+          cd $GITHUB_WORKSPACE/circle-stdlib/tests/02-socket-select
+          ./run_test.sh
