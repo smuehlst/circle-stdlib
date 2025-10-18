@@ -9,42 +9,42 @@ jobs:
       fail-fast: false
       matrix:
         config:
-        - { url:      "https://developer.arm.com/-/media/Files/downloads/gnu/13.2.rel1/binrel/arm-gnu-toolchain-13.2.rel1-x86_64-arm-none-eabi.tar.xz",
-            tarname:  "arm-gnu-toolchain-13.2.rel1-x86_64-arm-none-eabi.tar.xz",
-            dirname:  "arm-gnu-toolchain-13.2.Rel1-x86_64-arm-none-eabi",
-            prefix:   "arm-none-eabi-",
-            circle-machine: "1",
-            runner: "ubuntu-latest" }
-        - { url:      "https://developer.arm.com/-/media/Files/downloads/gnu/13.2.rel1/binrel/arm-gnu-toolchain-13.2.rel1-x86_64-aarch64-none-elf.tar.xz",
-            tarname:  "arm-gnu-toolchain-13.2.rel1-x86_64-aarch64-none-elf.tar.xz",
-            dirname:  "arm-gnu-toolchain-13.2.Rel1-x86_64-aarch64-none-elf",
-            prefix:   "aarch64-none-elf-",
-            circle-machine: "3",
-            runner: "ubuntu-latest" }
+        # - { url:      "https://developer.arm.com/-/media/Files/downloads/gnu/13.2.rel1/binrel/arm-gnu-toolchain-13.2.rel1-x86_64-arm-none-eabi.tar.xz",
+        #     tarname:  "arm-gnu-toolchain-13.2.rel1-x86_64-arm-none-eabi.tar.xz",
+        #     dirname:  "arm-gnu-toolchain-13.2.Rel1-x86_64-arm-none-eabi",
+        #     prefix:   "arm-none-eabi-",
+        #     circle-machine: "1",
+        #     runner: "ubuntu-latest" }
+        # - { url:      "https://developer.arm.com/-/media/Files/downloads/gnu/13.2.rel1/binrel/arm-gnu-toolchain-13.2.rel1-x86_64-aarch64-none-elf.tar.xz",
+        #     tarname:  "arm-gnu-toolchain-13.2.rel1-x86_64-aarch64-none-elf.tar.xz",
+        #     dirname:  "arm-gnu-toolchain-13.2.Rel1-x86_64-aarch64-none-elf",
+        #     prefix:   "aarch64-none-elf-",
+        #     circle-machine: "3",
+        #     runner: "ubuntu-latest" }
         - { url:      "https://developer.arm.com/-/media/Files/downloads/gnu/14.3.rel1/binrel/arm-gnu-toolchain-14.3.rel1-x86_64-arm-none-eabi.tar.xz",
             tarname:  "arm-gnu-toolchain-14.3.rel1-x86_64-arm-none-eabi.tar.xz",
             dirname:  "arm-gnu-toolchain-14.3.rel1-x86_64-arm-none-eabi",
             prefix:   "arm-none-eabi-",
             circle-machine: "1",
             runner: "ubuntu-latest" }
-        - { url:      "https://developer.arm.com/-/media/Files/downloads/gnu/14.3.rel1/binrel/arm-gnu-toolchain-14.3.rel1-x86_64-aarch64-none-elf.tar.xz",
-            tarname:  "arm-gnu-toolchain-14.3.rel1-x86_64-aarch64-none-elf.tar.xz",
-            dirname:  "arm-gnu-toolchain-14.3.rel1-x86_64-aarch64-none-elf",
-            prefix:   "aarch64-none-elf-",
-            circle-machine: "3",
-            runner: "ubuntu-latest" }
+        # - { url:      "https://developer.arm.com/-/media/Files/downloads/gnu/14.3.rel1/binrel/arm-gnu-toolchain-14.3.rel1-x86_64-aarch64-none-elf.tar.xz",
+        #     tarname:  "arm-gnu-toolchain-14.3.rel1-x86_64-aarch64-none-elf.tar.xz",
+        #     dirname:  "arm-gnu-toolchain-14.3.rel1-x86_64-aarch64-none-elf",
+        #     prefix:   "aarch64-none-elf-",
+        #     circle-machine: "3",
+        #     runner: "ubuntu-latest" }
         - { url:      "https://developer.arm.com/-/media/Files/downloads/gnu/14.3.rel1/binrel/arm-gnu-toolchain-14.3.rel1-aarch64-arm-none-eabi.tar.xz",
             tarname:  "arm-gnu-toolchain-14.3.rel1-aarch64-arm-none-eabi.tar.xz",
             dirname:  "arm-gnu-toolchain-14.3.rel1-aarch64-arm-none-eabi",
             prefix:   "arm-none-eabi-",
             circle-machine: "1",
             runner: "ubuntu-24.04-arm" }
-        - { url:      "https://developer.arm.com/-/media/Files/downloads/gnu/14.3.rel1/binrel/arm-gnu-toolchain-14.3.rel1-aarch64-aarch64-none-elf.tar.xz",
-            tarname:  "arm-gnu-toolchain-14.3.rel1-aarch64-aarch64-none-elf.tar.xz",
-            dirname:  "arm-gnu-toolchain-14.3.rel1-aarch64-aarch64-none-elf",
-            prefix:   "aarch64-none-elf-",
-            circle-machine: "3",
-            runner: "ubuntu-24.04-arm" }
+        # - { url:      "https://developer.arm.com/-/media/Files/downloads/gnu/14.3.rel1/binrel/arm-gnu-toolchain-14.3.rel1-aarch64-aarch64-none-elf.tar.xz",
+        #     tarname:  "arm-gnu-toolchain-14.3.rel1-aarch64-aarch64-none-elf.tar.xz",
+        #     dirname:  "arm-gnu-toolchain-14.3.rel1-aarch64-aarch64-none-elf",
+        #     prefix:   "aarch64-none-elf-",
+        #     circle-machine: "3",
+        #     runner: "ubuntu-24.04-arm" }
   
     runs-on: ${{ matrix.config.runner }}
 

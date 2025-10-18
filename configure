@@ -39,7 +39,7 @@ DEBUG=0
 RASPBERRYPI=1
 CIRCLE_BUILD=1
 CIRCLE_QEMU=0
-CIRCLE_CFLAGS=""
+CIRCLE_CFLAGS="-DTCP_DEBUG"
 NEWLIB_BUILD=1
 TOOLPREFIX=arm-none-eabi-
 STDDEF_INCPATH=""
@@ -167,7 +167,7 @@ fi
     echo "CFLAGS = -Wno-parentheses $CIRCLE_CFLAGS"
     if [ "$OPTIONS" != "" ]
     then
-        echo "DEFINE += $OPTIONS"
+        echo "DEFINE += $OPTIONS"TCP_DEBUG
     fi
     if [ $DEBUG -eq 1 ]
     then
