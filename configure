@@ -167,7 +167,7 @@ fi
     echo "CFLAGS = -Wno-parentheses $CIRCLE_CFLAGS"
     if [ "$OPTIONS" != "" ]
     then
-        echo "DEFINE += $OPTIONS"TCP_DEBUG
+        echo "DEFINE += $OPTIONS"
     fi
     if [ $DEBUG -eq 1 ]
     then
