@@ -85,7 +85,7 @@ CKernel::Run(void)
 
     struct mg_mgr mgr; // Mongoose event manager. Holds all connections
     mg_mgr_init(&mgr); // Initialise event manager
-    mg_http_listen(&mgr, "http://0.0.0.0:8000", ev_handler, NULL);
+    mg_http_listen(&mgr, "http://0.0.0.0:80", ev_handler, NULL);
     for (;;)
     {
         mg_mgr_poll(&mgr, 1000); // Infinite event loop
