@@ -63,13 +63,38 @@ namespace
             }
         }
     }
-
 }
 
 CKernel::CKernel(void)
-    : CStdlibAppStdio("05-smoketest")
+    : CStdlibAppStdio("06-socket")
 {
-    mActLED.Blink(5); // show we are alive
+    // mActLED.Blink(5); // show we are alive
+}
+
+namespace {
+    struct MongooseLogger
+    {
+        MongooseLogger(CLogger& logger) : logger(logger) {}
+        std::string buffer;
+        CLogger& logger;
+    };
+
+    extern "C" {
+        void mongoose_log_fn(char c, void* user_data)
+        {
+            MongooseLogger* const mg_logger = static_cast<MongooseLogger*>(user_data);
+
+            if (c == '\n')
+            {
+                mg_logger->logger.Write("Mongoose", LogDebug, "%s", mg_logger->buffer.c_str());
+                mg_logger->buffer.clear();
+            }
+            else
+            {
+                mg_logger->buffer += c;
+            }
+        }
+    }
 }
 
 CStdlibApp::TShutdownMode
@@ -82,7 +107,12 @@ CKernel::Run(void)
 
     mLogger.Write(GetKernelName(), LogNotice,
                   "Compile time: " __DATE__ " " __TIME__);
+    
+    MongooseLogger moongoose_logger(mLogger);
+    mg_log_set_fn(mongoose_log_fn, &moongoose_logger);
 
+    mg_log_set(MG_LL_VERBOSE);
+    
     struct mg_mgr mgr; // Mongoose event manager. Holds all connections
     mg_mgr_init(&mgr); // Initialise event manager
     mg_http_listen(&mgr, "http://0.0.0.0:80", ev_handler, NULL);
