@@ -107,7 +107,7 @@ CKernel::Run(void)
     MongooseLogger moongoose_logger(mLogger);
     mg_log_set_fn(mongoose_log_fn, &moongoose_logger);
 
-    mg_log_set(MG_LL_VERBOSE);
+    // mg_log_set(MG_LL_VERBOSE);
     
     struct mg_mgr mgr; // Mongoose event manager. Holds all connections
     mg_mgr_init(&mgr); // Initialise event manager
