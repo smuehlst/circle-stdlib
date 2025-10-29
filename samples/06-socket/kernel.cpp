@@ -40,12 +40,8 @@
 #include <arpa/inet.h>
 #include "mongoose.h"
 
-using namespace std;
-
 namespace
 {
-    const char FromKernel[] = "Smoke Test";
-
     // Connection event handler function
     void ev_handler(struct mg_connection *c, int ev, void *ev_data)
     {
@@ -68,7 +64,7 @@ namespace
 CKernel::CKernel(void)
     : CStdlibAppStdio("06-socket")
 {
-    // mActLED.Blink(5); // show we are alive
+    mActLED.Blink(5); // show we are alive
 }
 
 namespace {
