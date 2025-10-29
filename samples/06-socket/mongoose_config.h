@@ -20,3 +20,7 @@
 #define MG_ENABLE_POSIX_FS 1
 
 #define MG_CUSTOM_NONBLOCK(fd) do { printf("Ignoring nonblock for fd %d\n", fd); } while (0)
+
+#ifndef MG_IO_SIZE
+#define MG_IO_SIZE 16384
+#endif
