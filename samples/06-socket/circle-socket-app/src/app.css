@@ -1,2 +1,33 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/typography';
+
+/* Sidebar-specific tweaks */
+/* Ensure content doesn't appear under the fixed sidebar on md+ screens */
+@media (min-width: 768px) {
+	main {
+		/* left margin equals sidebar width (16rem = 64) */
+		margin-left: 16rem;
+	}
+}
+
+/* Smooth rotate transition for the arrow SVG (works with Tailwind rotate utilities too) */
+.sidebar svg {
+	transition: transform 150ms ease-in-out;
+}
+
+/* Submenu link tweaks */
+.sidebar a {
+	-webkit-tap-highlight-color: transparent;
+}
+
+/* Mobile header spacing: ensure main content isn't hidden under fixed mobile header */
+@media (max-width: 767px) {
+	main {
+		padding-top: 3rem; /* height of the mobile header (h-12) */
+	}
+}
+
+/* Overlay/backdrop tweaks */
+.bg-black\/40 {
+	background-color: rgba(0,0,0,0.4);
+}
