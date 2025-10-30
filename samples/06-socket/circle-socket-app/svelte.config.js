@@ -6,14 +6,18 @@ const config = {
 	// Consult https://svelte.dev/docs/kit/integrations
 	// for more information about preprocessors
 	preprocess: vitePreprocess({
-        // Pass compiler options to the Svelte preprocessor
-        compilerOptions: {
-            // This forces runes mode project-wide and disables legacy syntax 
-            // for all *your application's* Svelte components.
-            runes: true 
-        }
-    }),
-	kit: { adapter: adapter() }
+		// Pass compiler options to the Svelte preprocessor
+		compilerOptions: {
+			// This forces runes mode project-wide and disables legacy syntax 
+			// for all *your application's* Svelte components.
+			runes: true
+		}
+	}),
+	kit: {
+		adapter: adapter({
+			fallback: '200.html',
+		})
+	}
 };
 
 export default config;

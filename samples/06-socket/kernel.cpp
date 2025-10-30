@@ -42,6 +42,11 @@
 
 namespace
 {
+#define SVELTE_BUILD_DIR "circle-socket-app"
+#define SVELTE_FALLBACK_FILE SVELTE_BUILD_DIR "/200.html"
+
+    struct mg_http_serve_opts const mg_opts = {.root_dir = SVELTE_BUILD_DIR};
+              
     // Connection event handler function
     void ev_handler(struct mg_connection *c, int ev, void *ev_data)
     {
@@ -51,12 +56,44 @@ namespace
             if (mg_match(hm->uri, mg_str("/api/hello"), NULL))
             {                                                                // REST API call?
                 mg_http_reply(c, 200, "", "{%m:%d}\n", MG_ESC("status"), 1); // Yes. Respond JSON
+                return;
             }
-            else
+
+            // Check whether file exists. If not, server the fallback file
+            std::string const uri_path(hm->uri.buf, hm->uri.len);
+            std::string file_path = std::string(SVELTE_BUILD_DIR) + uri_path;
+
+            struct stat buffer;
+            boolean file_found = false;
+            if (stat(file_path.c_str(), &buffer) == 0)
             {
-                struct mg_http_serve_opts opts = {.root_dir = ".", .fs = &mg_fs_posix};
-                mg_http_serve_dir(c, hm, &opts); // For all other URLs, Serve static files
+                if (S_ISDIR(buffer.st_mode))
+                {
+                    if ((file_path.back() != '/'))
+                    {
+                        file_path += '/';
+                    }
+                    // If it's a directory, serve index.html
+                    file_path += "index.html";
+                    file_found = stat(file_path.c_str(), &buffer) == 0
+                        && S_ISREG(buffer.st_mode);
+                }
+                else
+                {
+                    file_found = S_ISREG(buffer.st_mode);
+                }
+
+                if (file_found)
+                {
+                    // File exists, serve it        
+                    mg_http_serve_file(c, hm, file_path.c_str(), &mg_opts);
+                    return;
+                }
             }
+            
+            // File does not exist, serve the fallback file.
+            // Implement 200.html SPA Fallback for SvelteKit.
+            mg_http_serve_file(c, hm, SVELTE_FALLBACK_FILE, &mg_opts);
         }
     }
 }
@@ -67,18 +104,20 @@ CKernel::CKernel(void)
     mActLED.Blink(5); // show we are alive
 }
 
-namespace {
+namespace
+{
     struct MongooseLogger
     {
-        MongooseLogger(CLogger& logger) : logger(logger) {}
+        MongooseLogger(CLogger &logger) : logger(logger) {}
         std::string buffer;
-        CLogger& logger;
+        CLogger &logger;
     };
 
-    extern "C" {
-        void mongoose_log_fn(char c, void* user_data)
+    extern "C"
+    {
+        void mongoose_log_fn(char c, void *user_data)
         {
-            MongooseLogger* const mg_logger = static_cast<MongooseLogger*>(user_data);
+            MongooseLogger *const mg_logger = static_cast<MongooseLogger *>(user_data);
 
             if (c == '\n')
             {
@@ -103,12 +142,12 @@ CKernel::Run(void)
 
     mLogger.Write(GetKernelName(), LogNotice,
                   "Compile time: " __DATE__ " " __TIME__);
-    
+
     MongooseLogger moongoose_logger(mLogger);
     mg_log_set_fn(mongoose_log_fn, &moongoose_logger);
 
     // mg_log_set(MG_LL_VERBOSE);
-    
+
     struct mg_mgr mgr; // Mongoose event manager. Holds all connections
     mg_mgr_init(&mgr); // Initialise event manager
     mg_http_listen(&mgr, "http://0.0.0.0:80", ev_handler, NULL);
