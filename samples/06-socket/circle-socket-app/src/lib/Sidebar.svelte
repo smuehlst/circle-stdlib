@@ -4,22 +4,14 @@
     type NavItem = { title: string; href?: string; children?: NavChild[] };
 
     const nav: NavItem[] = [
-        { title: 'Overview', href: '/' },
+        { title: 'Home', href: '/' },
         {
-            title: 'Repositories',
+            title: 'Examples',
             children: [
-                { title: 'List repositories', href: '/repos' },
-                { title: 'Create repository', href: '/repos/new' }
+                { title: 'REST API', href: '/examples/rest-api' },
+                { title: 'WebSocket', href: '/examples/websocket' }
             ]
-        },
-        {
-            title: 'Issues',
-            children: [
-                { title: 'List issues', href: '/issues' },
-                { title: 'Create issue', href: '/issues/new' }
-            ]
-        },
-        { title: 'Users', href: '/users' }
+        }
     ];
 
     // Track open menus by index. We use a Set and reassign to trigger reactivity.
@@ -45,7 +37,7 @@
 
 <nav class="sidebar hidden md:block md:w-64 fixed left-0 top-0 h-full bg-white border-r border-gray-200 overflow-auto">
     <div class="px-4 py-6">
-        <h2 class="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-4">Documentation</h2>
+        <h2 class="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-4">Raspberry Pi</h2>
 
         <ul class="space-y-1">
             {#each nav as item, i}

@@ -5,9 +5,9 @@ set -e
 npm run build
 
 imgfile="sdcard.img"
-dd if=/dev/zero of=${imgfile} bs=1M count=16
+dd if=/dev/zero of="${imgfile}" bs=1M count=16
 mkfs.vfat sdcard.img
-loopback_device=$(sudo losetup -f --show ${imgfile})
+loopback_device=$(sudo losetup -f --show "${imgfile}")
 tmpdir=$(mktemp -d)
 sudo mount "$loopback_device" "$tmpdir"
 sudo cp -r build "${tmpdir}/circle-socket-app"
