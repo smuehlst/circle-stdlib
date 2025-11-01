@@ -13,7 +13,7 @@ OBJS	= main.o kernel.o mongoose.o
 
 include $(CIRCLEHOME)/Rules.mk
 
-INCLUDE += -I "$(NEWLIBDIR)/include" -I $(STDDEF_INCPATH) -I $(TOPDIR)/include -I $(TOPDIR)/libs//json/single_include
+INCLUDE += -I "$(NEWLIBDIR)/include" -I $(STDDEF_INCPATH) -I $(TOPDIR)/include -I $(TOPDIR)/libs/json/single_include
 
 CFLAGS += -D_POSIX_C_SOURCE=200112L -DMG_ARCH=0
 
