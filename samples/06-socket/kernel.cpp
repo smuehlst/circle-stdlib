@@ -174,7 +174,9 @@ namespace
 CStdlibApp::TShutdownMode
 CKernel::Run(void)
 {
+#ifdef CIRCLE_QEMU
     mLogger.Initialize(&m_LogFile);
+#endif
     m_Net.Initialize();
 
     CGlueNetworkInit(m_Net);

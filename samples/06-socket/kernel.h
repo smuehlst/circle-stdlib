@@ -33,7 +33,9 @@ public:
     CKernelOptions const& GetOptions() const { return mOptions; }
 
 private:
+#ifdef CIRCLE_QEMU
     CQEMUHostFile m_LogFile;
+#endif
     CScheduler m_Scheduler;
     CNetSubSystem m_Net;
 };
