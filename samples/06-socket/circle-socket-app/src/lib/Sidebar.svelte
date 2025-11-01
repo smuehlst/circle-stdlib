@@ -33,11 +33,13 @@
     function closeMobile() {
         mobileOpen = false;
     }
+
+    let title: string = 'Raspberry Pi with Circle and circle-stdlib';
 </script>
 
 <nav class="sidebar hidden md:block md:w-64 fixed left-0 top-0 h-full bg-white border-r border-gray-200 overflow-auto">
     <div class="px-4 py-6">
-        <h2 class="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-4">Raspberry Pi</h2>
+        <h2 class="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-4">{title}</h2>
 
         <ul class="space-y-1">
             {#each nav as item, i}
@@ -98,7 +100,7 @@
         </svg>
     </button>
 
-    <div class="font-semibold text-sm">Documentation</div>
+    <div class="font-semibold text-sm">{title}</div>
 
     <div style="width:32px;" aria-hidden="true"></div>
 </div>
@@ -108,7 +110,7 @@
     <div class="fixed inset-0 z-50 flex">
         <div class="w-64 bg-white border-r border-gray-200 overflow-auto">
             <div class="px-4 py-4 flex items-center justify-between border-b">
-                <div class="font-semibold text-sm">Documentation</div>
+                <div class="font-semibold text-sm">{title}</div>
                 <button class="p-2 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500" aria-label="Close navigation" on:click={closeMobile}>
                     <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <path d="M6 18L18 6M6 6l12 12" />
@@ -170,10 +172,3 @@
         ></div>
     </div>
 {/if}
-
-<style>
-    /* The rotate-180 class is provided by Tailwind if configured; add a fallback for environments without it */
-    .rotate-180 {
-        transform: rotate(180deg);
-    }
-</style>

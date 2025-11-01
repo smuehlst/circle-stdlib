@@ -31,3 +31,19 @@
 .bg-black\/40 {
 	background-color: rgba(0,0,0,0.4);
 }
+
+/* Global base styles using Tailwind's layer so we can leverage @apply */
+@layer base {
+  a {
+	@apply underline text-indigo-600 hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-300;
+  }
+
+  h1 { @apply text-3xl font-bold mt-6 mb-3 leading-tight; }
+  h2 { @apply text-2xl font-semibold mt-6 mb-2 leading-snug; }
+  h3 { @apply text-xl font-semibold mt-5 mb-2; }
+  h4 { @apply text-lg font-medium mt-4 mb-1.5; }
+  h5 { @apply text-base font-medium mt-3 mb-1; }
+  h6 { @apply text-sm font-medium mt-2 mb-1; }
+
+  p { @apply text-base leading-relaxed mb-4; }
+}

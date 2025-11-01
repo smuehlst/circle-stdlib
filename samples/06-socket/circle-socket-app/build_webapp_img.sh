@@ -16,5 +16,6 @@ sudo losetup -d "$loopback_device"
 rmdir "$tmpdir"
 
 echo "Webapp image built: ${imgfile}"
+rm -f "${imgfile}.zip"
 zip "${imgfile}.zip" "${imgfile}"
 echo "Zipped image: ${imgfile}.zip"

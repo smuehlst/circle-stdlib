@@ -30,6 +30,7 @@ public:
     CKernel(void);
 
     TShutdownMode Run(void);
+    CKernelOptions const& GetOptions() const { return mOptions; }
 
 private:
     CQEMUHostFile m_LogFile;
