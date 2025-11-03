@@ -21,8 +21,13 @@
 #define _kernel_h
 
 #include <circle_stdlib_app.h>
-#include <qemu/qemuhostfile.h>
 #include <string>
+#include <circle/gpiomanager.h>
+#include "buttontask.h"
+
+#ifdef CIRCLE_QEMU
+#include <qemu/qemuhostfile.h>
+#endif
 
 class CKernel : public CStdlibAppStdio
 {
@@ -38,6 +43,9 @@ private:
 #endif
     CScheduler m_Scheduler;
     CNetSubSystem m_Net;
+    CGPIOManager m_GPIOManager;
+
+    static void ButtonPressedHandler(unsigned nGPIOPin, void *pParam);
 };
 
 #endif

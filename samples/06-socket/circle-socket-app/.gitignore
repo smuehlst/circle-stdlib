@@ -9,6 +9,7 @@ node_modules
 /build
 /sdcard.img
 /sdcard.img.zip
+/06-socket-webapp.tar.gz
 
 # OS
 .DS_Store

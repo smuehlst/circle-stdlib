@@ -9,7 +9,7 @@ include $(TOPDIR)/Config.mk
 CIRCLEHOME = $(TOPDIR)/libs/circle
 NEWLIBDIR = $(TOPDIR)/install/$(NEWLIB_ARCH)
 
-OBJS	= main.o kernel.o mongoose.o
+OBJS	= main.o kernel.o mongoose.o buttontask.o
 
 include $(CIRCLEHOME)/Rules.mk
 

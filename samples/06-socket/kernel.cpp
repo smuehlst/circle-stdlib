@@ -19,30 +19,46 @@
 //
 #include "kernel.h"
 
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <cerrno>
-#include <cstdarg>
-#include <iostream>
-#include <fstream>
-#include <algorithm>
-#include <vector>
-#include <exception>
-#include <memory>
-#include <dirent.h>
 #include <string>
 #include <sys/stat.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
 #include "mongoose.h"
 #include "nlohmann/json.hpp"
+#include <circle/sched/mutex.h>
+#include <set>
+#include <queue>
 
 namespace
 {
+    constexpr int GPIO_BUTTON_4 = 4; // connect a button between this GPIO and GND
+    constexpr int GPIO_BUTTON_14 = 14; // connect a button between this GPIO and GND
+
+    class MutexHolder
+    {
+    public:
+        MutexHolder(CMutex &mutex) : mutex_ref(mutex)
+        {
+            mutex_ref.Acquire();
+        }
+
+        ~MutexHolder()
+        {
+            mutex_ref.Release();
+        }
+
+    private:
+        CMutex &mutex_ref;
+    };
+
+    using connection_set = std::set<struct mg_connection *>;
+    using message_queue = std::queue<unsigned int>;
+
+    // Set of active WebSocket connections
+    connection_set ws_connections;
+
+    // Queue of messages to be sent to WebSocket clients
+    message_queue msg_queue;
+    CMutex message_queue_mutex;
+
 #define SVELTE_BUILD_DIR "circle-socket-app"
 #define SVELTE_FALLBACK_FILE SVELTE_BUILD_DIR "/200.html"
 
@@ -50,8 +66,8 @@ namespace
 
     void api_status(struct mg_connection *c, struct mg_http_message *hm)
     {
-        CKernelOptions const& options = static_cast<CKernel *>(c->fn_data)->GetOptions();
-        
+        CKernelOptions const &options = static_cast<CKernel *>(c->fn_data)->GetOptions();
+
         nlohmann::json status_json;
         status_json["cpuSpeed"] = static_cast<int>(options.GetCPUSpeed());
         status_json["socMaxTemp"] = options.GetSoCMaxTemp();
@@ -65,13 +81,15 @@ namespace
     {
         if (mg_match(hm->uri, mg_str("/ws"), NULL))
         {
-            // WebSocket request
+            // WebSocket request. Insert into the set of active
+            // WebSocket connections.
             mg_ws_upgrade(c, hm, NULL);
+            ws_connections.insert(c);
             return;
         }
 
         if (mg_match(hm->uri, mg_str("/api/status"), NULL)) // REST API call?
-        {                                                                
+        {
             api_status(c, hm);
             return;
         }
@@ -132,13 +150,17 @@ namespace
             websocket_handler(c, static_cast<struct mg_ws_message *>(ev_data));
             break;
         case MG_EV_CLOSE:
+            // Remove from ws_connections if present. If the pointer is not
+            // present, in the set this was not a WebSocket connection.
+            ws_connections.erase(c);
             break;
         }
     }
 }
 
 CKernel::CKernel(void)
-    : CStdlibAppStdio("06-socket")
+    : CStdlibAppStdio("06-socket"),
+      m_GPIOManager(CInterruptSystem::Get())
 {
     mActLED.Blink(5); // show we are alive
 }
@@ -178,15 +200,24 @@ CKernel::Run(void)
     mLogger.Initialize(&m_LogFile);
 #endif
     m_Net.Initialize();
+    m_GPIOManager.Initialize ();
 
     CGlueNetworkInit(m_Net);
 
     mLogger.Write(GetKernelName(), LogNotice,
                   "Compile time: " __DATE__ " " __TIME__);
 
+    // Start the button monitoring tasks.
+    // They will never terminate in this example.
+    new CButtonTask(GPIO_BUTTON_4, &m_GPIOManager,
+                    ButtonPressedHandler, this);
+    new CButtonTask(GPIO_BUTTON_14, &m_GPIOManager,
+                    ButtonPressedHandler, this);
+
     MongooseLogger moongoose_logger(mLogger);
     mg_log_set_fn(mongoose_log_fn, &moongoose_logger);
 
+    // Uncomment for verbose Mongoose logging:
     // mg_log_set(MG_LL_VERBOSE);
 
     struct mg_mgr mgr; // Mongoose event manager. Holds all connections
@@ -195,9 +226,30 @@ CKernel::Run(void)
     for (;;)
     {
         mg_mgr_poll(&mgr, 1000);
+
+        // Send button press messages to all connected WebSocket clients.
+        MutexHolder const mutex_holder(message_queue_mutex);
+        while (!msg_queue.empty())
+        {
+            unsigned int const gpio_pin = msg_queue.front();
+            msg_queue.pop();
+
+            std::string const message = "Button pressed on GPIO pin " + std::to_string(gpio_pin);
+
+            for (auto const conn : ws_connections)
+            {
+                mg_ws_send(conn, message.c_str(), message.length(), WEBSOCKET_OP_TEXT);
+            }
+        }
     }
 
     mLogger.Write(GetKernelName(), LogNotice, "Shutting down...");
 
     return ShutdownHalt;
+}
+
+void CKernel::ButtonPressedHandler(unsigned nGPIOPin, void * /* pParam */)
+{
+    MutexHolder const mutex_holder(message_queue_mutex);
+    msg_queue.push(nGPIOPin);
 }
