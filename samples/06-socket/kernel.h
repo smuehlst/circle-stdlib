@@ -22,6 +22,7 @@
 
 #include <circle_stdlib_app.h>
 #include <string>
+#include <circle/cputhrottle.h>
 #include <circle/gpiomanager.h>
 #include "buttontask.h"
 
@@ -36,11 +37,13 @@ public:
 
     TShutdownMode Run(void);
     CKernelOptions const& GetOptions() const { return mOptions; }
+    CCPUThrottle const& GetCPUThrottle() const { return m_CPUThrottle; }
 
 private:
 #ifdef CIRCLE_QEMU
     CQEMUHostFile m_LogFile;
 #endif
+    CCPUThrottle m_CPUThrottle;
     CScheduler m_Scheduler;
     CNetSubSystem m_Net;
     CGPIOManager m_GPIOManager;

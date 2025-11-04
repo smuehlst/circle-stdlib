@@ -20,7 +20,7 @@
 
 <h1>System Status Fetched Via REST API</h1>
 <ul>
-    <li>CPU Speed: {cpuSpeed}</li>
+    <li>CPU Speed: {cpuSpeed / 1000000} MHz</li>
     <li>GPIO Fan Pin: {gpioFanPin}</li>
     <li>SoC Max Temperature: {socMaxTemp} °C</li>
 </ul>

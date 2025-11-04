@@ -68,9 +68,10 @@ namespace
     void api_status(struct mg_connection *c, struct mg_http_message *hm)
     {
         CKernelOptions const &options = static_cast<CKernel *>(c->fn_data)->GetOptions();
+        CCPUThrottle const &cpu = static_cast<CKernel *>(c->fn_data)->GetCPUThrottle();
 
         nlohmann::json status_json;
-        status_json["cpuSpeed"] = static_cast<int>(options.GetCPUSpeed());
+        status_json["cpuSpeed"] = static_cast<int>(cpu.GetClockRate());
         status_json["socMaxTemp"] = options.GetSoCMaxTemp();
         status_json["gpioFanPin"] = options.GetGPIOFanPin();
 
@@ -161,6 +162,7 @@ namespace
 
 CKernel::CKernel(void)
     : CStdlibAppStdio("06-socket"),
+      m_CPUThrottle (CPUSpeedMaximum),
       m_GPIOManager(CInterruptSystem::Get())
 {
     mActLED.Blink(5); // show we are alive
@@ -242,6 +244,8 @@ CKernel::Run(void)
                 mg_ws_send(conn, message.c_str(), message.length(), WEBSOCKET_OP_TEXT);
             }
         }
+
+        m_CPUThrottle.Update ();
     }
 
     mLogger.Write(GetKernelName(), LogNotice, "Shutting down...");
