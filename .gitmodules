@@ -14,3 +14,6 @@
 [submodule "libs/json"]
 	path = libs/json
 	url = https://github.com/nlohmann/json.git
+[submodule "libs/mongoose"]
+	path = libs/mongoose
+	url = https://github.com/cesanta/mongoose.git

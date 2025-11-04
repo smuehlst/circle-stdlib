@@ -8,14 +8,19 @@ include $(TOPDIR)/Config.mk
 
 CIRCLEHOME = $(TOPDIR)/libs/circle
 NEWLIBDIR = $(TOPDIR)/install/$(NEWLIB_ARCH)
+MONGOOSE_DIR = $(TOPDIR)/libs/mongoose
 
 OBJS	= main.o kernel.o mongoose.o buttontask.o
 
 include $(CIRCLEHOME)/Rules.mk
 
-INCLUDE += -I "$(NEWLIBDIR)/include" -I $(STDDEF_INCPATH) -I $(TOPDIR)/include -I $(TOPDIR)/libs/json/single_include
+INCLUDE += -I "$(NEWLIBDIR)/include" -I $(STDDEF_INCPATH) -I $(TOPDIR)/include -I $(TOPDIR)/libs/json/single_include \
+			-I $(MONGOOSE_DIR) -I.
 
 CFLAGS += -D_POSIX_C_SOURCE=200112L -DMG_ARCH=0
+
+mongoose.o: $(MONGOOSE_DIR)/mongoose.c $(MONGOOSE_DIR)/mongoose.h
+	$(CC) $(CFLAGS) $(INCLUDE) -c -o $@ $<
 
 LIBS := "$(NEWLIBDIR)/lib/libm.a" "$(NEWLIBDIR)/lib/libc.a" "$(NEWLIBDIR)/lib/libcirclenewlib.a" \
  	$(CIRCLEHOME)/addon/SDCard/libsdcard.a \
