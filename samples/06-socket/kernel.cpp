@@ -73,6 +73,7 @@ namespace
         nlohmann::json status_json;
         status_json["cpuSpeed"] = static_cast<int>(cpu.GetClockRate());
         status_json["socMaxTemp"] = options.GetSoCMaxTemp();
+        status_json["socCurrentTemp"] = cpu.GetTemperature();
         status_json["gpioFanPin"] = options.GetGPIOFanPin();
 
         std::string const s = status_json.dump();

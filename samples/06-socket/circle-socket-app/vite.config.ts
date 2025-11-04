@@ -20,7 +20,7 @@ export default defineConfig({
         server.middlewares.use('/api/status', (req, res, next) => {
           if ((req as any).method === 'GET') {
             res.setHeader('Content-Type', 'application/json');
-            res.end(JSON.stringify({"cpuSpeed":1400000000,"gpioFanPin":0,"socMaxTemp":60}));
+            res.end(JSON.stringify({"cpuSpeed":1400000000,"gpioFanPin":0,"socMaxTemp":60,"socCurrentTemp":45}));
           } else {
             next();
           }
