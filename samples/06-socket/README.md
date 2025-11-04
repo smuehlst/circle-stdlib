@@ -17,7 +17,7 @@ containing some status infos, and displays the information.
 
 On the "WebSockets" page a chat window is shown. Any message typed
 into the text field at the bottom is echoed back from the server.
-In addition to that the server monitors GPIO pins 4 and 14. Anytime
+In addition to that the server monitors GPIO pins 17 and 18. Anytime
 one of these pins is connected to ground via a button, a message is
 sent to all active chats. It is possible to open multiple chat
 windows in the browser, and the GPIO pin events will be broadcasted

@@ -29,8 +29,9 @@
 
 namespace
 {
-    constexpr int GPIO_BUTTON_4 = 4; // connect a button between this GPIO and GND
-    constexpr int GPIO_BUTTON_14 = 14; // connect a button between this GPIO and GND
+    // Connect buttons between these GPIOs and GND
+    constexpr int GPIO_BUTTON_17 = 17;
+    constexpr int GPIO_BUTTON_18 = 18;
 
     class MutexHolder
     {
@@ -200,7 +201,7 @@ CKernel::Run(void)
     mLogger.Initialize(&m_LogFile);
 #endif
     m_Net.Initialize();
-    m_GPIOManager.Initialize ();
+    m_GPIOManager.Initialize();
 
     CGlueNetworkInit(m_Net);
 
@@ -209,9 +210,9 @@ CKernel::Run(void)
 
     // Start the button monitoring tasks.
     // They will never terminate in this example.
-    new CButtonTask(GPIO_BUTTON_4, &m_GPIOManager,
+    new CButtonTask(GPIO_BUTTON_17, &m_GPIOManager,
                     ButtonPressedHandler, this);
-    new CButtonTask(GPIO_BUTTON_14, &m_GPIOManager,
+    new CButtonTask(GPIO_BUTTON_18, &m_GPIOManager,
                     ButtonPressedHandler, this);
 
     MongooseLogger moongoose_logger(mLogger);
