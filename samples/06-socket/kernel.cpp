@@ -26,6 +26,7 @@
 #include <circle/sched/mutex.h>
 #include <set>
 #include <queue>
+#include <circle/logger.h>
 
 namespace
 {
@@ -156,6 +157,9 @@ namespace
             // Remove from ws_connections if present. If the pointer is not
             // present, in the set this was not a WebSocket connection.
             ws_connections.erase(c);
+            CLogger::Get()->Write("circle-stdlib", LogNotice, 
+                "Connection closed, %d active WebSocket connections remain",
+                ws_connections.size());
             break;
         }
     }
@@ -222,7 +226,7 @@ CKernel::Run(void)
     mg_log_set_fn(mongoose_log_fn, &moongoose_logger);
 
     // Uncomment for verbose Mongoose logging:
-    // mg_log_set(MG_LL_VERBOSE);
+    // mg_log_set(MG_LL_INFO);
 
     struct mg_mgr mgr; // Mongoose event manager. Holds all connections
     mg_mgr_init(&mgr); // Initialise event manager
