@@ -52,7 +52,7 @@ namespace
     };
 
     using connection_set = std::set<struct mg_connection *>;
-    using message_queue = std::queue<unsigned int>;
+    using message_queue = std::queue<std::string>;
 
     // Set of active WebSocket connections
     connection_set ws_connections;
@@ -136,8 +136,11 @@ namespace
 
     void websocket_handler(struct mg_connection *c, struct mg_ws_message *wm)
     {
-        // Echo message back
-        mg_ws_send(c, wm->data.buf, wm->data.len, WEBSOCKET_OP_TEXT);
+        // Send message to all connected WebSocket clients.
+        MutexHolder const mutex_holder(message_queue_mutex);
+        std::string const message = "From client "+ std::to_string(reinterpret_cast<uintptr_t>(c))
+                    + ": " + std::string(wm->data.buf, wm->data.len);
+        msg_queue.push(message);
     }
 
     // Connection event handler function
@@ -239,10 +242,8 @@ CKernel::Run(void)
         MutexHolder const mutex_holder(message_queue_mutex);
         while (!msg_queue.empty())
         {
-            unsigned int const gpio_pin = msg_queue.front();
+            std::string const message = msg_queue.front();
             msg_queue.pop();
-
-            std::string const message = "Button pressed on GPIO pin " + std::to_string(gpio_pin);
 
             for (auto const conn : ws_connections)
             {
@@ -261,5 +262,5 @@ CKernel::Run(void)
 void CKernel::ButtonPressedHandler(unsigned nGPIOPin, void * /* pParam */)
 {
     MutexHolder const mutex_holder(message_queue_mutex);
-    msg_queue.push(nGPIOPin);
+    msg_queue.push("Button pressed on GPIO pin " + std::to_string(nGPIOPin));
 }
