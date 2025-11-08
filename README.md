@@ -89,6 +89,10 @@ instructions apply.
 For running the programs under QEMU see Circle's corresponding
 [notes on QEMU](https://github.com/rsta2/circle/blob/master/doc/qemu.txt).
 
+## Posix Socket Support
+
+There is experimental support for the Posix socket interface. More details are available in [SOCKETS.md](doc/SOCKETS.md).
+
 ## Release History
 
 See [CHANGELOG.md](CHANGELOG.md).
