@@ -152,3 +152,20 @@ TEST_CASE("Basic socket lifecycle test")
 
     MESSAGE("Read from client connection successful");
 }
+
+TEST_CASE("recvfrom() MSG_OOB flag test")
+{
+    int const fd = socket(AF_INET, SOCK_DGRAM, 0);
+
+    REQUIRE(fd != -1);
+
+    char buffer[100];
+    constexpr size_t bufsiz = sizeof(buffer);
+    ssize_t const recv_result = recvfrom(fd, buffer, bufsiz, MSG_OOB, nullptr, nullptr);
+    REQUIRE(recv_result == -1);
+    REQUIRE(errno == EINVAL);
+
+    MESSAGE("recvfrom() with MSG_OOB correctly returned EINVAL");
+
+    REQUIRE(close(fd) >= 0);
+}
