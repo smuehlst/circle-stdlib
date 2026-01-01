@@ -7,6 +7,8 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <array>
+#include <regex>
+#include <string>
 
 #include "testkernel.h"
 
@@ -131,10 +133,10 @@ TEST_CASE("Basic sendto()/recvfrom() read/write test")
 
     // Test sendto() and recvfrom() in TCP mode (should ignore address parameters)
     constexpr char test_msg[] = "Test message via sendto/recvfrom\n";
+    constexpr char test_reply[] = "ACK from port"; // beginning of expected reply
+
     for (auto const sock : sockets.sockets)
     {
-        // TODO: This returns -1 because of port 0, while the port should be ignored in TCP mode.
-        // Potential bug in Circle's socket implementation?
         ssize_t const sent = sendto(sock, test_msg, sizeof(test_msg) - 1, 0, nullptr, 0);
         REQUIRE(sent == sizeof(test_msg) - 1);
     }
@@ -145,7 +147,33 @@ TEST_CASE("Basic sendto()/recvfrom() read/write test")
         ssize_t const recvd = recvfrom(sock, recv_buf, sizeof(recv_buf) - 1, 0, nullptr, nullptr);
         REQUIRE(recvd == sizeof(test_msg) - 1);
         recv_buf[recvd] = '\0';
-        REQUIRE(strcmp(recv_buf, test_msg) == 0);
+
+        // Verify that received message begins with expected reply.
+        REQUIRE(std::string(recv_buf).find(test_reply) == 0);
+
+#if 0
+        // This would be a more thorough check, but the default kernel size
+        // is exceeded when std::regex is used.
+        // Match the reply against the
+        // reply generated in the testserver.py script with a
+        // regular expression.
+        // Extract the socket number and the size of the received message
+        // and check them against the expected socket number and the test_msg size.
+
+        unsigned int const i = &sock - sockets.sockets.data();
+        int const expected_port = START_PORT + i;
+        size_t const expected_size = sizeof(test_msg) - 1;
+
+        std::string const reply(recv_buf);
+        std::regex const pattern("ACK from port (\\d+): got (\\d+) bytes\\n");
+        std::smatch matches;
+        REQUIRE(std::regex_match(reply, matches, pattern));
+
+        int const port = std::stoi(matches[1].str());
+        int const size = std::stoi(matches[2].str());
+        REQUIRE(port == expected_port);
+        REQUIRE(size == expected_size);
+#endif
     }
 
     for (auto const sock : sockets.sockets)
