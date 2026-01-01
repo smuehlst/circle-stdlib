@@ -45,20 +45,28 @@ public:
         return static_cast<CStdlibApp::TShutdownMode>(res);
     }
 
-    static int RunTests(void)
+    static int RunTests(const char *testname)
     {
-        CTestKernel Kernel("01-basic-socket");
+        CTestKernel Kernel(testname);
         if (!Kernel.Initialize())
         {
             halt();
             return EXIT_HALT;
         }
 
-        CStdlibApp::TShutdownMode ShutdownMode = Kernel.Run();
+        CStdlibApp::TShutdownMode const ShutdownMode = Kernel.Run();
 
         // This program is intended for QEMU only, and the exit
         // status is provided from Kernel.Run() via ShutdownMode.
+        // The CTestKernel destructor must no be executed, so exit here
+        // instead of returning to main.
+        if (ShutdownMode != CStdlibApp::ShutdownNone)
+        {
+            exit(1);
+        }
+
         halt();
+
         return static_cast<int>(ShutdownMode);
     }
 

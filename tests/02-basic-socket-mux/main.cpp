@@ -13,7 +13,8 @@
 int
 main (void)
 {
-    return CTestKernel::RunTests();
+    // CTestKernel::RunTests() does not actually return, but exits or halts the system.
+    return CTestKernel::RunTests("02-basic-socket-mux");
 }
 
 constexpr int START_PORT = 5000;

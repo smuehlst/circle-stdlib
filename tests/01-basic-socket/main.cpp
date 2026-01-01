@@ -11,7 +11,7 @@
 int
 main (void)
 {
-    return CTestKernel::RunTests();
+    return CTestKernel::RunTests("01-basic-socket");
 }
 
 TEST_CASE("Basic socket creation tests")
