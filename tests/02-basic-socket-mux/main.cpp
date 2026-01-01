@@ -6,6 +6,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <array>
 
 #include "testkernel.h"
 
@@ -15,49 +16,67 @@ main (void)
     return CTestKernel::RunTests();
 }
 
-TEST_CASE("Basic select read/write test")
+constexpr int START_PORT = 5000;
+constexpr size_t NUM_PORTS = 3;
+using SocketArray = std::array<int, NUM_PORTS>;
+struct Sockets
 {
-    constexpr int START_PORT = 5000;
-    constexpr size_t NUM_PORTS = 3;
-    int socks[NUM_PORTS];
-    int maxfd = 0;
+    SocketArray sockets;
+    int maxfd;
 
-    for (auto &sock : socks)
+    Sockets(): sockets{}, maxfd(0) {}
+};
+
+namespace {
+    Sockets setup_sockets()
     {
-        sock = socket(AF_INET, SOCK_STREAM, 0);
-        REQUIRE(sock >= 0);
+        Sockets sockets;
 
         // QEMU connects via guestfwd to a simulated server on IP address 10.0.2.2 port 5000
-        uint32_t const simulated_server_ip = (10U << 24) | (0U << 16) | (2U << 8) | 2U;
+        constexpr uint32_t simulated_server_ip = (10U << 24) | (0U << 16) | (2U << 8) | 2U;
 
-        /* The sin_port and sin_addr members shall be in network byte order. */
-        struct sockaddr_in server_address;
-        server_address.sin_family = AF_INET;
-        server_address.sin_addr.s_addr = htonl(simulated_server_ip);
-        server_address.sin_port = htons(START_PORT + (&sock - socks));
+        for (auto &sock : sockets.sockets)
+        {
+            sock = socket(AF_INET, SOCK_STREAM, 0);
+            REQUIRE(sock >= 0);
 
-        REQUIRE(connect(sock, (struct sockaddr *)&server_address, sizeof(server_address)) >= 0);
+            /* The sin_port and sin_addr members shall be in network byte order. */
+            struct sockaddr_in server_address;
+            server_address.sin_family = AF_INET;
+            server_address.sin_addr.s_addr = htonl(simulated_server_ip);
+            server_address.sin_port = htons(START_PORT + (&sock - sockets.sockets.data()));
 
-        maxfd = std::max(maxfd, sock);
+            int const server_socket = connect(sock, (struct sockaddr *)&server_address, sizeof(server_address));
+            REQUIRE(server_socket >= 0);
+
+            sockets.maxfd = std::max(sockets.maxfd, sock);
+        }
+
+        return sockets;
     }
+}
+
+TEST_CASE("Basic select read/write test")
+{
+    Sockets sockets = setup_sockets();
 
     // Monitor all sockets for writability
     fd_set writefds;
     FD_ZERO(&writefds);
-    for (auto const sock : socks)
+    for (auto const sock : sockets.sockets)
     {
         FD_SET(sock, &writefds);
     }
 
     struct timeval timeout = {5, 0}; // 5 second timeout
-    int ready = select(maxfd + 1, NULL, &writefds, NULL, &timeout);
+    int ready = select(sockets.maxfd + 1, NULL, &writefds, NULL, &timeout);
     REQUIRE(ready > 0);
 
-    for (auto const &sock : socks)
+    for (auto const &sock : sockets.sockets)
     {
         if (FD_ISSET(sock, &writefds))
         {
-            unsigned int const i = &sock - socks;
+            unsigned int const i = &sock - sockets.sockets.data();
             char msg[64];
             snprintf(msg, sizeof(msg), "Hello from client on port %d\n", START_PORT + i);
             ssize_t const sent = write(sock, msg, strlen(msg));
@@ -70,21 +89,21 @@ TEST_CASE("Basic select read/write test")
     // --- Now: Wait for readability and read replies ---
     fd_set readfds;
     FD_ZERO(&readfds);
-    for (auto const sock : socks)
+    for (auto const sock : sockets.sockets)
     {
         FD_SET(sock, &readfds);
     }
 
     timeout.tv_sec = 5;
     timeout.tv_usec = 0;
-    ready = select(maxfd + 1, &readfds, NULL, NULL, &timeout);
+    ready = select(sockets.maxfd + 1, &readfds, NULL, NULL, &timeout);
     REQUIRE(ready > 0);
     char buf[128];
-    for (auto const sock : socks)
+    for (auto const sock : sockets.sockets)
     {
         if (FD_ISSET(sock, &readfds))
         {
-            unsigned int const i = &sock - socks;
+            unsigned int const i = &sock - sockets.sockets.data();
             ssize_t const n = read(sock, buf, sizeof(buf) - 1);
             REQUIRE(n >= 0);
             if (n > 0)
@@ -99,7 +118,36 @@ TEST_CASE("Basic select read/write test")
         }
     }
 
-    for (auto const &sock : socks)
+    for (auto const sock : sockets.sockets)
+    {
+        REQUIRE(close(sock) >= 0);
+    }
+}
+
+TEST_CASE("Basic sendto()/recvfrom() read/write test")
+{
+    Sockets sockets = setup_sockets();
+
+    // Test sendto() and recvfrom() in TCP mode (should ignore address parameters)
+    constexpr char test_msg[] = "Test message via sendto/recvfrom\n";
+    for (auto const sock : sockets.sockets)
+    {
+        // TODO: This returns -1 because of port 0, while the port should be ignored in TCP mode.
+        // Potential bug in Circle's socket implementation?
+        ssize_t const sent = sendto(sock, test_msg, sizeof(test_msg) - 1, 0, nullptr, 0);
+        REQUIRE(sent == sizeof(test_msg) - 1);
+    }
+
+    for (auto const sock : sockets.sockets)
+    {
+        char recv_buf[128];
+        ssize_t const recvd = recvfrom(sock, recv_buf, sizeof(recv_buf) - 1, 0, nullptr, nullptr);
+        REQUIRE(recvd == sizeof(test_msg) - 1);
+        recv_buf[recvd] = '\0';
+        REQUIRE(strcmp(recv_buf, test_msg) == 0);
+    }
+
+    for (auto const sock : sockets.sockets)
     {
         REQUIRE(close(sock) >= 0);
     }
@@ -107,30 +155,13 @@ TEST_CASE("Basic select read/write test")
 
 TEST_CASE("Basic poll read/write test")
 {
-    constexpr int START_PORT = 5000;
-    constexpr size_t NUM_PORTS = 3;
-    int socks[NUM_PORTS];
-
-    for (auto &sock : socks)
-    {
-        sock = socket(AF_INET, SOCK_STREAM, 0);
-        REQUIRE(sock >= 0);
-
-        uint32_t const simulated_server_ip = (10U << 24) | (0U << 16) | (2U << 8) | 2U;
-
-        struct sockaddr_in server_address;
-        server_address.sin_family = AF_INET;
-        server_address.sin_addr.s_addr = htonl(simulated_server_ip);
-        server_address.sin_port = htons(START_PORT + (&sock - socks));
-
-        REQUIRE(connect(sock, (struct sockaddr *)&server_address, sizeof(server_address)) >= 0);
-    }
+    Sockets sockets = setup_sockets();
 
     // Monitor all sockets for writability using poll()
     struct pollfd fds[NUM_PORTS];
     for (size_t i = 0; i < NUM_PORTS; ++i)
     {
-        fds[i].fd = socks[i];
+        fds[i].fd = sockets.sockets[i];
         fds[i].events = POLLOUT;
         fds[i].revents = 0;
     }
@@ -153,7 +184,7 @@ TEST_CASE("Basic poll read/write test")
     // --- Now: Wait for readability and read replies using poll() ---
     for (size_t i = 0; i < NUM_PORTS; ++i)
     {
-        fds[i].fd = socks[i];
+        fds[i].fd = sockets.sockets[i];
         fds[i].events = POLLIN;
         fds[i].revents = 0;
     }
@@ -180,7 +211,7 @@ TEST_CASE("Basic poll read/write test")
         }
     }
 
-    for (auto const &sock : socks)
+    for (auto const sock : sockets.sockets)
     {
         REQUIRE(close(sock) >= 0);
     }
