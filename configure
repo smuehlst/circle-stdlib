@@ -21,13 +21,14 @@ function usage() {
     echo "  -s <path>, --stddefpath <path>"
     echo "                                 path where stddef.h header is located (only necessary"
     echo "                                 if script cannot determine it automatically)"
+    echo "  -k, --kasan                    build with Kernel Address Sanitizer support"
 }
 
 # From the bash FAQ: How to use pathnames relative to the script
 cd "${BASH_SOURCE%/*}" || exit 1
 TOPDIR="$PWD"
 
-TEMP=$(getopt -o dhno:p:r:s: --long debug,help,no-circle-build,no-cpp,option:,opt-tls,qemu,prefix:,raspberrypi:,script-debug,softfp,stddefpath: \
+TEMP=$(getopt -o dhno:p:r:s:k --long debug,help,no-circle-build,no-cpp,option:,opt-tls,qemu,prefix:,raspberrypi:,script-debug,softfp,stddefpath:,kasan \
      -n 'build.bash' -- "$@")
 
 if [ $? != 0 ] ; then echo usage; exit 1 ; fi
@@ -52,6 +53,7 @@ NEWLIB_ARCH="arm-none-circle"
 NEWLIB_INSTALL_DIR="$TOPDIR/install"
 NEWLIB_BUILD_DIR="$TOPDIR/build/circle-newlib"
 CIRCLEHOME="$TOPDIR/libs/circle"
+KASAN=0
 
 while true ; do
     case "$1" in
@@ -66,6 +68,7 @@ while true ; do
 	--script-debug) set -x ; shift;;
 	--softfp) FLOAT_ABI=softfp ; shift;;
 	-s|--stddefpath) STDDEF_INCPATH="$2" ; shift 2;;
+	-k|--kasan) KASAN=1 ; shift;;
 	--) shift ; break ;;
 	*) echo "Internal error!" ; exit 1;;
     esac
@@ -83,6 +86,7 @@ echo "OPTIONS=$OPTIONS"
 echo "NEWLIB_INSTALL_DIR=$NEWLIB_INSTALL_DIR"
 echo "NEWLIB_BUILD_DIR=$NEWLIB_BUILD_DIR"
 echo "DEBUG=$DEBUG"
+echo "KASAN=$KASAN"
 
 echo "Remaining arguments:"
 for arg do echo '--> '"\`$arg'" ; done
@@ -177,6 +181,10 @@ fi
     then
         echo "AARCH = 64"
         echo "PREFIX64 = $TOOLPREFIX"
+    fi
+    if [ $KASAN -eq 1 ]
+    then
+        echo "KASAN_ENABLED = 1"
     fi
 ) > libs/circle/Config.mk
 
