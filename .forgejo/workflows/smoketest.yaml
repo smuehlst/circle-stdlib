@@ -1,0 +1,37 @@
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - forgejo-migration
+
+jobs:
+  test:
+    runs-on: docker
+
+    container:
+      image: codeberg.org/larchcone/ci/node:20-circle-stdlib-v1
+
+    strategy:
+      fail-fast: true
+      matrix:
+        config:
+          - { prefix:   "arm-none-eabi-",
+            circle-machine: "1",
+            qemu-machine: "raspi0"}
+          - { prefix:   "aarch64-none-elf-",
+            circle-machine: "3",
+            qemu-machine: "raspi3b"}
+
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Check env
+        run: |
+          ls -l
+          env
+      - name: Configure circle-stdlib
+        run: |
+           ./configure -p ${{ matrix.config.prefix }} -r ${{ matrix.config.circle-machine }} --qemu
