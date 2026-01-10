@@ -9,7 +9,7 @@ jobs:
     runs-on: docker
 
     container:
-      image: codeberg.org/larchcone/ci/node-circle-stdlib:20-custom-v1
+      image: codeberg.org/larchcone/ci/node-circle-stdlib:20-custom-v2
 
     strategy:
       fail-fast: true
