@@ -9,18 +9,22 @@ jobs:
     runs-on: docker
 
     container:
-      image: codeberg.org/larchcone/ci/node:20-circle-stdlib-v1
+      image: codeberg.org/larchcone/ci/node-circle-stdlib:20-custom-v1
 
     strategy:
       fail-fast: true
       matrix:
         config:
-          - { prefix:   "arm-none-eabi-",
-            circle-machine: "1",
-            qemu-machine: "raspi0"}
-          - { prefix:   "aarch64-none-elf-",
-            circle-machine: "3",
-            qemu-machine: "raspi3b"}
+          - {
+              prefix: "arm-none-eabi-",
+              circle-machine: "1",
+              qemu-cmd: "qemu-system-arm -M raspi0 -bios kernel.img -display none -nographic -semihosting -sd sdcard.img",
+            }
+          - {
+              prefix: "aarch64-none-elf-",
+              circle-machine: "3",
+              qemu-cmd: "qemu-system-aarch64 -M raspi3b -kernel kernel8.img -display none -nographic -semihosting -sd sdcard.img",
+            }
 
     steps:
       - name: checkout code
@@ -28,10 +32,22 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Check env
+      - name: Configure circle-stdlib with QEMU support
         run: |
-          ls -l
-          env
-      - name: Configure circle-stdlib
+          ./configure -p ${{ matrix.config.prefix }} -r ${{ matrix.config.circle-machine }} --qemu
+
+      - name: Build libraries
+        run: make -j$(nproc)
+
+      - name: Build samples
+        run: make build-samples
+
+      - name: Run smoke test with QEMU
         run: |
-           ./configure -p ${{ matrix.config.prefix }} -r ${{ matrix.config.circle-machine }} --qemu
+          cd samples/05-smoketest
+          # Extract blank SD card image
+          rm -f sdcard.img
+          unzip sdcard.img.zip
+          # Guard against endless loop in QEMU run (120 CPU secs)
+          ulimit -t 120
+          ${{ matrix.config.qemu-cmd }}
