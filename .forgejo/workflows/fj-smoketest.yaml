@@ -6,21 +6,32 @@ on:
 
 jobs:
   test:
-    runs-on: docker
+    runs-on: ${{ matrix.config.runs-on }}
 
     container:
-      image: codeberg.org/larchcone/ci/node-circle-stdlib:20-custom-v2
+      image: ${{ matrix.config.container }}
 
     strategy:
       fail-fast: true
       matrix:
         config:
           - {
+              runs-on: docker,
+              container: "codeberg.org/larchcone/ci/node-circle-stdlib:20-custom-v2",
               prefix: "arm-none-eabi-",
               circle-machine: "1",
               qemu-cmd: "qemu-system-arm -M raspi0 -bios kernel.img -display none -nographic -semihosting -sd sdcard.img",
             }
           - {
+              runs-on: docker,
+              container: "codeberg.org/larchcone/ci/node-circle-stdlib:20-custom-v2",
+              prefix: "aarch64-none-elf-",
+              circle-machine: "3",
+              qemu-cmd: "qemu-system-aarch64 -M raspi3b -kernel kernel8.img -display none -nographic -semihosting -sd sdcard.img",
+            }
+          - {
+              runs-on: ubuntu-arm-22.04,
+              container: "codeberg.org/larchcone/ci/node-circle-stdlib-arm:20-custom-v1",
               prefix: "aarch64-none-elf-",
               circle-machine: "3",
               qemu-cmd: "qemu-system-aarch64 -M raspi3b -kernel kernel8.img -display none -nographic -semihosting -sd sdcard.img",
