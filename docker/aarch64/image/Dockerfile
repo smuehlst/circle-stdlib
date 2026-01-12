@@ -2,7 +2,7 @@ FROM data.forgejo.org/oci/node:20-bullseye
 
 RUN apt-get update && \
     apt-get install -y \
-        build-essential gcc-multilib wget ninja-build libglib2.0-dev libslirp-dev python3 python3-pip python3-venv git texinfo && \
+        build-essential wget ninja-build libglib2.0-dev libslirp-dev python3 python3-pip python3-venv git texinfo && \
     apt-get clean && \
     pip3 install tomli
 
