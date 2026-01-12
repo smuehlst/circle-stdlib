@@ -4,13 +4,35 @@
 [![Open issues](https://codeberg.org/larchcone/circle-stdlib/badges/issues/open.svg)](https://codeberg.org/larchcone/circle-stdlib/issues?state=open)
 [![Closed issues](https://codeberg.org/larchcone/circle-stdlib/badges/issues/closed.svg)](https://codeberg.org/larchcone/circle-stdlib/issues?state=closed)
 
+## Project Home
+
+This project moved from GitHub to **Codeberg**. 
+
+**Canonical repository:** https://codeberg.org/larchcone/circle-stdlib.git
+
+Issues and pull requests need to be submitted on Codeberg.
+
+The GitHub repository https://github.com/smuehlst/circle-stdlib.git is a read-only
+mirror. Pull requests on GitHub will be closed with a
+corresponding remark without further action.
+
+For transitioning from GitHub to Codeberg the remote must be switched for
+the [circle-stdlib](https://codeberg.org/larchcone/circle-stdlib)
+and [circle-newlib](https://codeberg.org/larchcone/circle-newlib) repositories:
+
+```bash
+git remote set-url origin https://codeberg.org/larchcone/circle-stdlib.git
+cd libs/circle-newlib
+it remote set-url origin https://codeberg.org/larchcone/circle-newlib.git
+```
+
 ## Overview
 
 The goal of this project is to provide C and C++ standard library support for the
-Raspberry Pi bare metal environment [Circle](https://github.com/rsta2/circle).
+Raspberry Pi bare-metal environment [Circle](https://github.com/rsta2/circle).
 
 [Newlib](https://sourceware.org/newlib/) is used as the standard C library. The fork
-[circle-newlib](https://github.com/smuehlst/circle-newlib) contains the changes for
+[circle-newlib](https://codeberg.org/larchcone/circle-newlib) contains the changes for
 building Newlib in combination with Circle.
 
 [mbed TLS](https://tls.mbed.org/) can optionally be used for TLS connections in
@@ -35,7 +57,7 @@ A toolchain from [Arm GNU Toolchain Downloads](https://developer.arm.com/downloa
 Add the toolchain to the path, then:
 
 ```bash
-git clone --recursive https://github.com/smuehlst/circle-stdlib.git
+git clone --recursive https://codeberg.org/larchcone/circle-stdlib.git
 cd circle-stdlib
 ./configure
 make
