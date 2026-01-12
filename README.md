@@ -1,7 +1,8 @@
 # circle-stdlib
 
-![Status badge for master branch](https://github.com/smuehlst/circle-stdlib/actions/workflows/master.yaml/badge.svg?branch=master)
-![Status badge for develop branch](https://github.com/smuehlst/circle-stdlib/actions/workflows/develop.yaml/badge.svg?branch=develop)
+[![Test status badge for main-next branch](https://codeberg.org/larchcone/circle-stdlib/actions/workflows/fj-smoketest.yaml/badge.svg?branch=forgejo-migration)](https://codeberg.org/larchcone/circle-stdlib/actions?workflow=fj-smoketest.yaml)
+[![Open issues](https://codeberg.org/larchcone/circle-stdlib/badges/issues/open.svg)](https://codeberg.org/larchcone/circle-stdlib/issues?state=open)
+[![Closed issues](https://codeberg.org/larchcone/circle-stdlib/badges/issues/closed.svg)](https://codeberg.org/larchcone/circle-stdlib/issues?state=closed)
 
 ## Overview
 
