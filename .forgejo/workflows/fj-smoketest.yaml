@@ -6,11 +6,6 @@ on:
 
 jobs:
   test:
-    runs-on: ${{ matrix.config.runs-on }}
-
-    container:
-      image: ${{ matrix.config.container }}
-
     strategy:
       fail-fast: true
       matrix:
@@ -32,10 +27,22 @@ jobs:
           - {
               runs-on: ubuntu-arm-22.04,
               container: "codeberg.org/larchcone/ci/node-circle-stdlib-arm:20-custom-v1",
+              prefix: "arm-none-eabi-",
+              circle-machine: "1",
+              qemu-cmd: "qemu-system-arm -M raspi0 -bios kernel.img -display none -nographic -semihosting -sd sdcard.img",
+            }
+          - {
+              runs-on: ubuntu-arm-22.04,
+              container: "codeberg.org/larchcone/ci/node-circle-stdlib-arm:20-custom-v1",
               prefix: "aarch64-none-elf-",
               circle-machine: "3",
               qemu-cmd: "qemu-system-aarch64 -M raspi3b -kernel kernel8.img -display none -nographic -semihosting -sd sdcard.img",
             }
+
+    runs-on: ${{ matrix.config.runs-on }}
+
+    container:
+      image: ${{ matrix.config.container }}
 
     steps:
       - name: checkout code
