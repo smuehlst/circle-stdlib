@@ -23,7 +23,7 @@ and [circle-newlib](https://codeberg.org/larchcone/circle-newlib) repositories:
 ```bash
 git remote set-url origin https://codeberg.org/larchcone/circle-stdlib.git
 cd libs/circle-newlib
-it remote set-url origin https://codeberg.org/larchcone/circle-newlib.git
+git remote set-url origin https://codeberg.org/larchcone/circle-newlib.git
 ```
 
 ## Overview
