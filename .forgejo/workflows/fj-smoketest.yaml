@@ -11,6 +11,7 @@ jobs:
       matrix:
         config:
           - {
+              name: "host-x64-target-arm",
               runs-on: docker,
               container: "codeberg.org/larchcone/ci/node-circle-stdlib:20-custom-v2",
               prefix: "arm-none-eabi-",
@@ -18,6 +19,7 @@ jobs:
               qemu-cmd: "qemu-system-arm -M raspi0 -bios kernel.img -display none -nographic -semihosting -sd sdcard.img",
             }
           - {
+              name: "host-x64-target-aarch64",
               runs-on: docker,
               container: "codeberg.org/larchcone/ci/node-circle-stdlib:20-custom-v2",
               prefix: "aarch64-none-elf-",
@@ -25,6 +27,7 @@ jobs:
               qemu-cmd: "qemu-system-aarch64 -M raspi3b -kernel kernel8.img -display none -nographic -semihosting -sd sdcard.img",
             }
           - {
+              name: "host-aarch64-target-arm",
               runs-on: ubuntu-arm-22.04,
               container: "codeberg.org/larchcone/ci/node-circle-stdlib-arm:20-custom-v1",
               prefix: "arm-none-eabi-",
@@ -32,12 +35,15 @@ jobs:
               qemu-cmd: "qemu-system-arm -M raspi0 -bios kernel.img -display none -nographic -semihosting -sd sdcard.img",
             }
           - {
+              name: "host-aarch64-target-aarch64",
               runs-on: ubuntu-arm-22.04,
               container: "codeberg.org/larchcone/ci/node-circle-stdlib-arm:20-custom-v1",
               prefix: "aarch64-none-elf-",
               circle-machine: "3",
               qemu-cmd: "qemu-system-aarch64 -M raspi3b -kernel kernel8.img -display none -nographic -semihosting -sd sdcard.img",
             }
+
+    name: ${{ matrix.config.name }}
 
     runs-on: ${{ matrix.config.runs-on }}
 
