@@ -1,8 +1,12 @@
+name: Smoke Test
+
 on:
   workflow_dispatch:
   push:
     branches:
-      - forgejo-migration
+      - master
+      - develop
+      - circle-socket-2
 
 jobs:
   test:
