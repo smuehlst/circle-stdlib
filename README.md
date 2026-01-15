@@ -1,6 +1,7 @@
 # circle-stdlib
 
-[![Test status badge for main-next branch](https://codeberg.org/larchcone/circle-stdlib/actions/workflows/smoketest.yaml/badge.svg?branch=forgejo-migration)](https://codeberg.org/larchcone/circle-stdlib/actions?workflow=smoketest.yaml)
+[![Status badge for master branch](https://codeberg.org/larchcone/circle-stdlib/actions/workflows/smoketest.yaml/badge.svg?branch=master)](https://codeberg.org/larchcone/circle-stdlib/actions?workflow=smoketest.yaml)
+[![Status badge for develop branch](https://codeberg.org/larchcone/circle-stdlib/actions/workflows/smoketest.yaml/badge.svg?branch=develop)](https://codeberg.org/larchcone/circle-stdlib/actions?workflow=smoketest.yaml)
 [![Open issues](https://codeberg.org/larchcone/circle-stdlib/badges/issues/open.svg)](https://codeberg.org/larchcone/circle-stdlib/issues?state=open)
 [![Closed issues](https://codeberg.org/larchcone/circle-stdlib/badges/issues/closed.svg)](https://codeberg.org/larchcone/circle-stdlib/issues?state=closed)
 
