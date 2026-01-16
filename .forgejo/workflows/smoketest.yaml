@@ -17,7 +17,7 @@ jobs:
           - {
               name: "host-x64-target-arm",
               runs-on: docker,
-              container: "codeberg.org/larchcone/ci/node-circle-stdlib:20-custom-v2",
+              container: "codeberg.org/larchcone/ci/node-circle-stdlib:20-custom-v3",
               prefix: "arm-none-eabi-",
               circle-machine: "1",
               qemu-bin: "qemu-system-arm",
@@ -28,7 +28,7 @@ jobs:
           - {
               name: "host-x64-target-aarch64",
               runs-on: docker,
-              container: "codeberg.org/larchcone/ci/node-circle-stdlib:20-custom-v2",
+              container: "codeberg.org/larchcone/ci/node-circle-stdlib:20-custom-v3",
               prefix: "aarch64-none-elf-",
               circle-machine: "3",
               qemu-bin: "qemu-system-aarch64",
@@ -39,7 +39,7 @@ jobs:
           - {
               name: "host-aarch64-target-arm",
               runs-on: ubuntu-arm-22.04,
-              container: "codeberg.org/larchcone/ci/node-circle-stdlib-arm:20-custom-v1",
+              container: "codeberg.org/larchcone/ci/node-circle-stdlib-arm:20-custom-v2",
               prefix: "arm-none-eabi-",
               circle-machine: "1",
               qemu-bin: "qemu-system-arm",
@@ -50,7 +50,7 @@ jobs:
           - {
               name: "host-aarch64-target-aarch64",
               runs-on: ubuntu-arm-22.04,
-              container: "codeberg.org/larchcone/ci/node-circle-stdlib-arm:20-custom-v1",
+              container: "codeberg.org/larchcone/ci/node-circle-stdlib-arm:20-custom-v2",
               prefix: "aarch64-none-elf-",
               circle-machine: "3",
               qemu-bin: "qemu-system-aarch64",
@@ -71,6 +71,13 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
+
+      - name: Setup environment variables from matrix
+        run: |
+          echo "CFG_QEMU_BIN=${{ matrix.config.qemu-bin }}" >> $GITHUB_ENV
+          echo "CFG_QEMU_MACHINE=${{ matrix.config.qemu-machine }}" >> $GITHUB_ENV
+          echo "CFG_QEMU_OPT=${{ matrix.config.qemu-kernel-opt }}" >> $GITHUB_ENV
+          echo "CFG_QEMU_IMG=${{ matrix.config.qemu-img }}" >> $GITHUB_ENV
 
       - name: Configure circle-stdlib with QEMU support
         run: |
@@ -98,8 +105,9 @@ jobs:
       - name: Run basic socket test
         run: |
           cd tests/01-basic-socket
-          CFG_QEMU_BIN=${{ matrix.config.qemu-bin }} \
-          CFG_QEMU_MACHINE=${{ matrix.config.qemu-machine }} \
-          CFG_QEMU_OPT=${{ matrix.config.qemu-kernel-opt }} \
-          CFG_QEMU_IMG=${{ matrix.config.qemu-img }} \
+          bash -x ./run_test.sh
+
+      - name: Run basic select/poll socket test
+        run: |
+          cd tests/02-basic-socket-mux
           bash -x ./run_test.sh
