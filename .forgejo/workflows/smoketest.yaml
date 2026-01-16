@@ -23,7 +23,7 @@ jobs:
               qemu-bin: "qemu-system-arm",
               qemu-machine: "raspi0",
               qemu-kernel-opt: "-bios",
-              qemu-img: "kernel.img"
+              qemu-img: "kernel.img",
             }
           - {
               name: "host-x64-target-aarch64",
@@ -34,7 +34,7 @@ jobs:
               qemu-bin: "qemu-system-aarch64",
               qemu-machine: "raspi3b",
               qemu-kernel-opt: "-kernel",
-              qemu-img: "kernel8.img"
+              qemu-img: "kernel8.img",
             }
           - {
               name: "host-aarch64-target-arm",
@@ -45,7 +45,7 @@ jobs:
               qemu-bin: "qemu-system-arm",
               qemu-machine: "raspi0",
               qemu-kernel-opt: "-bios",
-              qemu-img: "kernel.img"
+              qemu-img: "kernel.img",
             }
           - {
               name: "host-aarch64-target-aarch64",
@@ -56,7 +56,7 @@ jobs:
               qemu-bin: "qemu-system-aarch64",
               qemu-machine: "raspi3b",
               qemu-kernel-opt: "-kernel",
-              qemu-img: "kernel8.img"
+              qemu-img: "kernel8.img",
             }
 
     name: ${{ matrix.config.name }}
@@ -90,6 +90,10 @@ jobs:
           # Guard against endless loop in QEMU run (120 CPU secs)
           ulimit -t 120
           ${{ matrix.config.qemu-bin }} -M ${{ matrix.config.qemu-machine }} ${{ matrix.config.qemu-kernel-opt }} ${{ matrix.config.qemu-img }} -display none -nographic -semihosting -sd sdcard.img
+
+      - name: Build test library
+        run: |
+          make -C tests/lib
 
       - name: Run basic socket test
         run: |
