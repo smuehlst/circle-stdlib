@@ -30,8 +30,8 @@ TEST_CASE("Basic socket creation tests")
 
     basic_socket_test const basic_socket_tests[] =
         {
-            {AF_INET, SOCK_DGRAM, IPPROTO_UDP, true},
-            {AF_INET, SOCK_DGRAM, 0, true},
+            {AF_INET, SOCK_DGRAM, IPPROTO_UDP, false},
+            {AF_INET, SOCK_DGRAM, 0, false},
             {AF_INET, SOCK_STREAM, IPPROTO_TCP, true},
             {AF_INET, SOCK_STREAM, 0, true},
             {AF_INET, SOCK_DGRAM, IPPROTO_IP, false},
@@ -153,6 +153,8 @@ TEST_CASE("Basic socket lifecycle test")
     MESSAGE("Read from client connection successful");
 }
 
+#if 0
+// UDP is currently not supported.
 TEST_CASE("recvfrom() MSG_OOB flag test")
 {
     int const fd = socket(AF_INET, SOCK_DGRAM, 0);
@@ -169,3 +171,4 @@ TEST_CASE("recvfrom() MSG_OOB flag test")
 
     REQUIRE(close(fd) >= 0);
 }
+#endif
