@@ -6,7 +6,6 @@ on:
     branches:
       - master
       - develop
-      - circle-socket-2
 
 jobs:
   test:
@@ -105,9 +104,9 @@ jobs:
       - name: Run basic socket test
         run: |
           cd tests/01-basic-socket
-          bash -x ./run_test.sh
+          ./run_test.sh
 
       - name: Run basic select/poll socket test
         run: |
           cd tests/02-basic-socket-mux
-          bash -x ./run_test.sh
+          ./run_test.sh
