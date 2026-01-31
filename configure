@@ -9,6 +9,7 @@ function usage() {
     echo "Options:"
     echo "  -d, --debug                    build with debug information, without optimizer"
     echo "  -h, --help                     show usage message"
+    echo "  -k, --kasan                    build with Kernel Address Sanitizer support"
     echo "  -n, --no-cpp                   do not support C++ standard library"
     echo "  -o, --option <name>[=<value>]  additional preprocessor define (optionally with value)"
     echo "                                 can be repeated"
@@ -27,8 +28,8 @@ function usage() {
 cd "${BASH_SOURCE%/*}" || exit 1
 TOPDIR="$PWD"
 
-TEMP=$(getopt -o dhno:p:r:s: --long debug,help,no-circle-build,no-cpp,option:,opt-tls,qemu,prefix:,raspberrypi:,script-debug,softfp,stddefpath: \
-     -n 'build.bash' -- "$@")
+TEMP=$(getopt -o dhkno:p:r:s: --long debug,help,kasan,no-circle-build,no-cpp,option:,opt-tls,qemu,prefix:,raspberrypi:,script-debug,softfp,stddefpath: \
+     -n 'configure' -- "$@")
 
 if [ $? != 0 ] ; then echo usage; exit 1 ; fi
 
@@ -40,6 +41,7 @@ RASPBERRYPI=1
 CIRCLE_BUILD=1
 CIRCLE_QEMU=0
 CIRCLE_CFLAGS=""
+KASAN_ENABLED=0
 TOOLPREFIX=arm-none-eabi-
 STDDEF_INCPATH=""
 STDLIB_SUPPORT=3
@@ -56,6 +58,7 @@ while true ; do
     case "$1" in
 	-d|--debug) DEBUG=1 ; shift;;
 	-h|--help) usage ; exit 0;;
+	-k|--kasan) KASAN_ENABLED=1 ; shift;;
 	-n|--no-cpp) STDLIB_SUPPORT=2 ; shift;;
 	-o|--option) OPTIONS="$OPTIONS -D$2" ; shift 2;;
 	--opt-tls) OPTTLS=1 ; shift;;
@@ -81,6 +84,7 @@ echo "OPTIONS=$OPTIONS"
 echo "NEWLIB_INSTALL_DIR=$NEWLIB_INSTALL_DIR"
 echo "NEWLIB_BUILD_DIR=$NEWLIB_BUILD_DIR"
 echo "DEBUG=$DEBUG"
+echo "KASAN_ENABLED=$KASAN_ENABLED"
 
 echo "Remaining arguments:"
 for arg do echo '--> '"\`$arg'" ; done
@@ -160,6 +164,7 @@ fi
     echo "RASPPI = $RASPBERRYPI"
     echo "PREFIX = $TOOLPREFIX"
     echo "FLOAT_ABI = $FLOAT_ABI"
+    echo "KASAN_ENABLED = $KASAN_ENABLED"
     echo "STDLIB_SUPPORT = $STDLIB_SUPPORT"
     echo "STDDEF_INCPATH = \"$STDDEF_INCPATH\""
     echo "CFLAGS = -Wno-parentheses $CIRCLE_CFLAGS"
@@ -184,8 +189,35 @@ ARCHCPU=$(make -n -p -f libs/circle/Rules.mk CIRCLEHOME=libs/circle | grep '^ARC
 ARCH=$(make -n -p -f libs/circle/Rules.mk CIRCLEHOME=libs/circle | grep '^ARCH ='| \
     sed -e "s/\$(ARCHCPU)/$ARCHCPU/" -e 's/ARCH = //')
 
+if [ $KASAN_ENABLED -eq 1 ]
+then
+    KASAN_SHADOW_MAPPING_OFFSET=$(make -n -p -f libs/circle/Rules.mk CIRCLEHOME=libs/circle | \
+        grep '^KASAN_SHADOW_MAPPING_OFFSET =' | sed -e 's/KASAN_SHADOW_MAPPING_OFFSET = //')
+    KASAN_SANITIZE_STACK=$(make -n -p -f libs/circle/Rules.mk CIRCLEHOME=libs/circle | \
+        grep '^KASAN_SANITIZE_STACK =' | sed -e 's/KASAN_SANITIZE_STACK = //')
+    KASAN_SANITIZE_GLOBALS=$(make -n -p -f libs/circle/Rules.mk CIRCLEHOME=libs/circle | \
+        grep '^KASAN_SANITIZE_GLOBALS =' | sed -e 's/KASAN_SANITIZE_GLOBALS = //')
+fi
+
+KASAN_CFLAGS=""
+KASAN_CPPFLAGS=""
+if [ $KASAN_ENABLED -eq 1 ]
+then
+    KASAN_CFLAGS="-fsanitize=kernel-address -fno-builtin \
+        -fasan-shadow-offset=$KASAN_SHADOW_MAPPING_OFFSET \
+        --param asan-globals=$KASAN_SANITIZE_GLOBALS \
+        --param asan-stack=$KASAN_SANITIZE_STACK \
+        --param asan-instrumentation-with-call-threshold=0 \
+        -fno-omit-frame-pointer -DKASAN_ENABLED"
+    # This define is needed to prevent newlib from performing
+    # optimized memory access, e.g. access with whole integers,
+    # that are out-of-bounds when strictly checked by the
+    # address sanitizer.
+    KASAN_CPPFLAGS="-DPREFER_SIZE_OVER_SPEED"
+fi
+
 export \
-    CPPFLAGS_FOR_TARGET="-isystem \"$CIRCLEHOME/include\" -isystem \"$CIRCLEHOME/addon\" -isystem \"$TOPDIR/include\"" \
+    CPPFLAGS_FOR_TARGET="-isystem \"$CIRCLEHOME/include\" -isystem \"$CIRCLEHOME/addon\" -isystem \"$TOPDIR/include\" $KASAN_CPPFLAGS" \
     CC_FOR_TARGET=${TOOLPREFIX}gcc \
     CXX_FOR_TARGET=${TOOLPREFIX}g++ \
     GCC_FOR_TARGET=${TOOLPREFIX}gcc \
@@ -198,9 +230,9 @@ export \
 
 if [ $DEBUG -eq 1 ]
 then
-    CFLAGS_FOR_TARGET="$ARCH -DRASPPI=$RASPBERRYPI $OPTIONS -O0 -g -Wno-parentheses"
+    CFLAGS_FOR_TARGET="$ARCH -DRASPPI=$RASPBERRYPI $OPTIONS -O0 -g -Wno-parentheses $KASAN_CFLAGS"
 else
-    CFLAGS_FOR_TARGET="$ARCH -DRASPPI=$RASPBERRYPI $OPTIONS -Wno-parentheses"
+    CFLAGS_FOR_TARGET="$ARCH -DRASPPI=$RASPBERRYPI $OPTIONS -Wno-parentheses $KASAN_CFLAGS"
 fi
 export CFLAGS_FOR_TARGET CXXFLAGS_FOR_TARGET="$CFLAGS_FOR_TARGET"
 
