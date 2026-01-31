@@ -13,6 +13,16 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
+        kasan:
+          - {
+              name: "Without Address Sanitizer",
+              kasan_opt: ""
+            }
+          - {
+              name: "With Address Sanitizer",
+              kasan_opt: "--kasan"
+            }
+
         config:
           - {
               name: "host-x64-target-arm",
@@ -59,7 +69,7 @@ jobs:
               qemu-img: "kernel8.img",
             }
 
-    name: ${{ matrix.config.name }}
+    name: ${{ matrix.config.name }} - ${{ matrix.kasan.name }}
 
     runs-on: ${{ matrix.config.runs-on }}
 
@@ -81,7 +91,7 @@ jobs:
 
       - name: Configure circle-stdlib with QEMU support
         run: |
-          ./configure -p ${{ matrix.config.prefix }} -r ${{ matrix.config.circle-machine }} --qemu
+          ./configure -p ${{ matrix.config.prefix }} -r ${{ matrix.config.circle-machine }} --qemu ${{ matrix.kasan.kasan_opt }}
 
       - name: Build libraries
         run: make -j$(nproc)
