@@ -159,6 +159,11 @@ then
     fi
 fi
 
+if [ $KASAN_ENABLED -eq 1 ]
+then
+    CIRCLE_CFLAGS="$CIRCLE_CFLAGS -DKERNEL_MAX_SIZE=0x300000"
+fi
+
 # Create Circle's Config.mk file
 (
     echo "RASPPI = $RASPBERRYPI"
@@ -180,6 +185,13 @@ fi
     then
         echo "AARCH = 64"
         echo "PREFIX64 = $TOOLPREFIX"
+    fi
+
+    if [ $KASAN_ENABLED -eq 1 ]
+    then
+        # Must be kept in sync with KERNEL_MAX_SIZE below!
+        # See Circle's doc/kasan.txt for details.
+        echo "KASAN_SHADOW_MAPPING_OFFSET = 0xA00000"
     fi
 ) > libs/circle/Config.mk
 
@@ -208,7 +220,8 @@ then
         --param asan-globals=$KASAN_SANITIZE_GLOBALS \
         --param asan-stack=$KASAN_SANITIZE_STACK \
         --param asan-instrumentation-with-call-threshold=0 \
-        -fno-omit-frame-pointer -DKASAN_ENABLED"
+        -fno-omit-frame-pointer"
+
     # This define is needed to prevent newlib from performing
     # optimized memory access, e.g. access with whole integers,
     # that are out-of-bounds when strictly checked by the
