@@ -1,4 +1,4 @@
-name: Smoke Test
+name: Smoke Tests
 
 on:
   workflow_dispatch:
@@ -6,7 +6,6 @@ on:
     branches:
       - master
       - develop
-      - kasan
 
 jobs:
   test:
@@ -68,6 +67,21 @@ jobs:
               qemu-kernel-opt: "-kernel",
               qemu-img: "kernel8.img",
             }
+
+        # Exclude configurations that fail for unknown reasons with KASAN enabled.
+        # These do not report an actual Address Sanitizer errr, but do not
+        # actually start because of QEMU error messages:
+        # localhost [127.0.0.1] 5000 (?) open
+        # qemu-system-aarch64: Slirp: Failed to send packet, ret: -1
+        exclude:
+          - config:
+              name: "host-x64-target-arm"
+            kasan:
+              name: "With Address Sanitizer"
+          - config:
+              name: "host-aarch64-target-arm"
+            kasan:
+              name: "With Address Sanitizer"
 
     name: ${{ matrix.config.name }} - ${{ matrix.kasan.name }}
 
