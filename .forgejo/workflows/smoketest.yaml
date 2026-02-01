@@ -75,7 +75,7 @@ jobs:
     # actually start because of QEMU error messages:
     # localhost [127.0.0.1] 5000 (?) open
     # qemu-system-aarch64: Slirp: Failed to send packet, ret: -
-    if: ${{ matrix.kasan.name == 'Without Address Sanitizer' }}
+    # if: ${{ matrix.kasan.name == 'Without Address Sanitizer' }}
 
     runs-on: ${{ matrix.config.runs-on }}
 
