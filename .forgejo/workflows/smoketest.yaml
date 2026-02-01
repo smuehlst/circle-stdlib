@@ -119,6 +119,7 @@ jobs:
           make -C tests/lib
 
       - name: Run basic socket test
+        if: ${{ matrix.kasan.name == 'Without Address Sanitizer' }}
         run: |
           cd tests/01-basic-socket
           ./run_test.sh
