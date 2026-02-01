@@ -68,24 +68,17 @@ jobs:
               qemu-img: "kernel8.img",
             }
 
-        # Exclude configurations that fail for unknown reasons with KASAN enabled.
-        # These do not report an actual Address Sanitizer errr, but do not
-        # actually start because of QEMU error messages:
-        # localhost [127.0.0.1] 5000 (?) open
-        # qemu-system-aarch64: Slirp: Failed to send packet, ret: -1
-        exclude:
-          - config:
-              name: "host-x64-target-arm"
-            kasan:
-              name: "With Address Sanitizer"
-          - config:
-              name: "host-aarch64-target-arm"
-            kasan:
-              name: "With Address Sanitizer"
-
+  
     name: ${{ matrix.config.name }} - ${{ matrix.kasan.name }}
 
-    runs-on: ${{ matrix.config.runs-on }}
+    # Exclude configurations that fail for unknown reasons with KASAN enabled.
+    # These do not report an actual Address Sanitizer errr, but do not
+    # actually start because of QEMU error messages:
+    # localhost [127.0.0.1] 5000 (?) open
+    # qemu-system-aarch64: Slirp: Failed to send packet, ret: -
+    if: !(matrix.kasan.name == 'With Address Sanitizer' && 
+          (matrix.config.name == 'host-aarch64-target-aarch64' ||
+          matrix.config.name == 'host-x64-target-aarch64'))
 
     container:
       image: ${{ matrix.config.container }}
