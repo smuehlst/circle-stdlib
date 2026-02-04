@@ -76,6 +76,7 @@ Configure Circle with newlib standard C library and mbed TLS library.
 Options:
   -d, --debug                    build with debug information, without optimizer
   -h, --help                     show usage message
+  -k, --kasan                    build with Kernel Address Sanitizer support
   -n, --no-cpp                   do not support C++ standard library
   -o, --option <name>[=<value>]  additional preprocessor define (optionally with value)
                                  can be repeated
@@ -132,3 +133,6 @@ Version 3 - see the [LICENSE](LICENSE) file for details
 * Rene Stange for [Circle](https://github.com/rsta2/circle).
 * The Newlib team for [Newlib](https://sourceware.org/newlib/).
 * The mbed TLS team for [mbed TLS](https://tls.mbed.org/).
+* The [Mongoose web server library](https://mongoose.ws/).
+* The [nlohmann/json](https://github.com/nlohmann/json) library.
+* The [doctest](https://github.com/doctest/doctest) C++ testing framework.
