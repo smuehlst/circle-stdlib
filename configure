@@ -41,11 +41,11 @@ RASPBERRYPI=1
 CIRCLE_BUILD=1
 CIRCLE_QEMU=0
 CIRCLE_CFLAGS=""
+CIRCLE_DEFINES=""
 KASAN_ENABLED=0
 TOOLPREFIX=arm-none-eabi-
 STDDEF_INCPATH=""
 STDLIB_SUPPORT=3
-OPTIONS=""
 FLOAT_ABI=hard
 OPTTLS=0
 SIXTY_FOUR_BIT=0
@@ -60,7 +60,7 @@ while true ; do
 	-h|--help) usage ; exit 0;;
 	-k|--kasan) KASAN_ENABLED=1 ; shift;;
 	-n|--no-cpp) STDLIB_SUPPORT=2 ; shift;;
-	-o|--option) OPTIONS="$OPTIONS -D$2" ; shift 2;;
+	-o|--option) CIRCLE_DEFINES="$CIRCLE_DEFINES -D$2" ; shift 2;;
 	--opt-tls) OPTTLS=1 ; shift;;
 	--qemu) CIRCLE_QEMU=1 ; shift;;
 	-p|--prefix) TOOLPREFIX="$2" ; shift 2;;
@@ -80,7 +80,7 @@ echo "CIRCLE_QEMU=$CIRCLE_QEMU"
 echo "FLOAT_ABI=$FLOAT_ABI"
 echo "RASPBERRYPI=$RASPBERRYPI"
 echo "STDLIB_SUPPORT=$STDLIB_SUPPORT"
-echo "OPTIONS=$OPTIONS"
+echo "CIRCLE_DEFINES=$CIRCLE_DEFINES"
 echo "NEWLIB_INSTALL_DIR=$NEWLIB_INSTALL_DIR"
 echo "NEWLIB_BUILD_DIR=$NEWLIB_BUILD_DIR"
 echo "DEBUG=$DEBUG"
@@ -151,11 +151,11 @@ fi
 # Special compiler flags for running under QEMU
 if [ $CIRCLE_QEMU -eq 1 ]
 then
-    CIRCLE_CFLAGS="$CIRCLE_CFLAGS -DLEAVE_QEMU_ON_HALT -DNO_SDHOST -DCIRCLE_QEMU"
+    CIRCLE_DEFINES="$CIRCLE_DEFINES -DLEAVE_QEMU_ON_HALT -DNO_SDHOST -DCIRCLE_QEMU"
 
     if [ $SIXTY_FOUR_BIT -eq 0 ]
     then
-        CIRCLE_CFLAGS="$CIRCLE_CFLAGS -DNO_PHYSICAL_COUNTER -DUSE_QEMU_USB_FIX"
+        CIRCLE_DEFINES="$CIRCLE_DEFINES -DNO_PHYSICAL_COUNTER -DUSE_QEMU_USB_FIX"
     fi
 fi
 
@@ -165,7 +165,7 @@ then
     # Keep in sync with KASAN_SHADOW_MAPPING_OFFSET below!
     # See Circle's doc/kasan.txt for details.
     KERNEL_MAX_SIZE="0x300000"
-    CIRCLE_CFLAGS="$CIRCLE_CFLAGS -DKERNEL_MAX_SIZE=${KERNEL_MAX_SIZE}"
+    CIRCLE_DEFINES="$CIRCLE_DEFINES -DKERNEL_MAX_SIZE=${KERNEL_MAX_SIZE}"
 fi
 
 # Create Circle's Config.mk file
@@ -177,9 +177,9 @@ fi
     echo "STDLIB_SUPPORT = $STDLIB_SUPPORT"
     echo "STDDEF_INCPATH = \"$STDDEF_INCPATH\""
     echo "CFLAGS = -Wno-parentheses $CIRCLE_CFLAGS"
-    if [ "$OPTIONS" != "" ]
+    if [ "$CIRCLE_DEFINES" != "" ]
     then
-        echo "DEFINE += $OPTIONS"
+        echo "DEFINE += $CIRCLE_DEFINES"
     fi
     if [ $DEBUG -eq 1 ]
     then
@@ -228,7 +228,7 @@ then
         --param asan-stack=$KASAN_SANITIZE_STACK \
         --param asan-instrumentation-with-call-threshold=0 \
         -fno-omit-frame-pointer\
-        -DPREFER_SIZE_OVER_SPEED -DKERNEL_MAX_SIZE=${KERNEL_MAX_SIZE}"
+        -DPREFER_SIZE_OVER_SPEED"
 fi
 
 export \
@@ -245,9 +245,9 @@ export \
 
 if [ $DEBUG -eq 1 ]
 then
-    CFLAGS_FOR_TARGET="$ARCH -DRASPPI=$RASPBERRYPI $OPTIONS -O0 -g -Wno-parentheses $KASAN_CFLAGS"
+    CFLAGS_FOR_TARGET="$ARCH -DRASPPI=$RASPBERRYPI $CIRCLE_DEFINES -O0 -g -Wno-parentheses $KASAN_CFLAGS"
 else
-    CFLAGS_FOR_TARGET="$ARCH -DRASPPI=$RASPBERRYPI $OPTIONS -g -Wno-parentheses $KASAN_CFLAGS"
+    CFLAGS_FOR_TARGET="$ARCH -DRASPPI=$RASPBERRYPI $CIRCLE_DEFINES -g -Wno-parentheses $KASAN_CFLAGS"
 fi
 export CFLAGS_FOR_TARGET CXXFLAGS_FOR_TARGET="$CFLAGS_FOR_TARGET"
 
