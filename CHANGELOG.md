@@ -1,5 +1,15 @@
 # Release History
 
+## [v19](hhttps://codeberg.org/larchcone/circle-stdlib/releases/tag/v19)
+
+* Synced with [Circle Step 50.1](https://github.com/rsta2/circle/releases/tag/Step50.1).
+* Experimental partial support for Posix TCP sockets (see [SOCKETS.md](doc/SOCKETS.md)). The implemented features are sufficient to run the Mongoose webserver. There's a new sample application [06-socket](samples/06-socket/) that demonstrates this.
+* Support for building with Kernel Address Sanitizer, based on Circle's corresponding support. See Circle's documentation [kasan.txt](https://github.com/rsta2/circle/blob/master/doc/kasan.txt) for details.
+
+## [v18](hhttps://codeberg.org/larchcone/circle-stdlib/releases/tag/v18)
+
+* This release marks the completion of the migration of `circle-stdlib's` project home from GitHub to Codeberg. There are no functional changes in this release.
+
 ## [v17.2](https://github.com/smuehlst/circle-stdlib/releases/tag/v17.2)
 
 * Synced with [Circle Step 50.0.1](https://github.com/rsta2/circle/releases/tag/Step50.0.1).
