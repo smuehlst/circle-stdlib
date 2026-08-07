@@ -1,0 +1,211 @@
+name: Smoke Tests
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+      - develop
+      - return-to-github
+    paths-ignore:
+      - '**.md'
+
+env:
+  ARM_TOOLCHAIN_VERSION: 15.2.rel1
+  QEMU_VERSION: 9.1.1
+  QEMU_REPO: https://github.com/smuehlst/qemu.git
+  QEMU_BRANCH: circle-hcd-dwc2-9.1.1
+
+jobs:
+  test:
+    defaults:
+      run:
+        shell: bash -x {0} # applies set -x to every run: step
+
+    strategy:
+      fail-fast: true
+      matrix:
+        kasan:
+          - { name: "Without Address Sanitizer", kasan_opt: "" }
+          - { name: "With Address Sanitizer", kasan_opt: "--kasan" }
+
+        config:
+          - {
+              name: "host-x64-target-arm",
+              runs-on: ubuntu-latest,
+              host-arch: "x86_64",
+              prefix: "arm-none-eabi-",
+              circle-machine: "1",
+              qemu-bin: "qemu-system-arm",
+              qemu-machine: "raspi0",
+              qemu-kernel-opt: "-bios",
+              qemu-img: "kernel.img",
+            }
+          - {
+              name: "host-x64-target-aarch64",
+              runs-on: ubuntu-latest,
+              host-arch: "x86_64",
+              prefix: "aarch64-none-elf-",
+              circle-machine: "3",
+              qemu-bin: "qemu-system-aarch64",
+              qemu-machine: "raspi3b",
+              qemu-kernel-opt: "-kernel",
+              qemu-img: "kernel8.img",
+            }
+          - {
+              name: "host-aarch64-target-arm",
+              runs-on: ubuntu-24.04-arm,
+              host-arch: "aarch64",
+              prefix: "arm-none-eabi-",
+              circle-machine: "1",
+              qemu-bin: "qemu-system-arm",
+              qemu-machine: "raspi0",
+              qemu-kernel-opt: "-bios",
+              qemu-img: "kernel.img",
+            }
+          - {
+              name: "host-aarch64-target-aarch64",
+              runs-on: ubuntu-24.04-arm,
+              host-arch: "aarch64",
+              prefix: "aarch64-none-elf-",
+              circle-machine: "3",
+              qemu-bin: "qemu-system-aarch64",
+              qemu-machine: "raspi3b",
+              qemu-kernel-opt: "-kernel",
+              qemu-img: "kernel8.img",
+            }
+
+    name: ${{ matrix.config.name }} - ${{ matrix.kasan.name }}
+
+    runs-on: ${{ matrix.config.runs-on }}
+
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+              build-essential ninja-build libglib2.0-dev libslirp-dev \
+              python3 python3-pip python3-venv python3-tomli \
+              git texinfo netcat-traditional unzip wget
+
+      - name: Cache ARM GNU toolchains
+        id: toolchain-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/local/toolchains
+          key: ${{ runner.os }}-${{ runner.arch }}-arm-gnu-toolchain-${{ env.ARM_TOOLCHAIN_VERSION }}
+
+      - name: Install ARM GNU toolchains
+        if: steps.toolchain-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/local/toolchains
+          base_url="https://developer.arm.com/-/media/Files/downloads/gnu/${ARM_TOOLCHAIN_VERSION}/binrel"
+          for target in arm-none-eabi aarch64-none-elf ; do
+              tarname="arm-gnu-toolchain-${ARM_TOOLCHAIN_VERSION}-${{ matrix.config.host-arch }}-${target}.tar.xz"
+              wget -nv -O "$tarname" "${base_url}/${tarname}"
+              tar -x -f "$tarname" -C ~/local/toolchains
+              rm "$tarname"
+          done
+
+      - name: Set toolchain path
+        run: |
+          for target in arm-none-eabi aarch64-none-elf ; do
+              echo "$HOME/local/toolchains/arm-gnu-toolchain-${ARM_TOOLCHAIN_VERSION}-${{ matrix.config.host-arch }}-${target}/bin" >> $GITHUB_PATH
+          done
+
+      - name: Cache QEMU
+        id: qemu-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/local/qemu-${{ env.QEMU_VERSION }}
+          key: ${{ runner.os }}-${{ runner.arch }}-qemu-${{ env.QEMU_VERSION }}-${{ env.QEMU_BRANCH }}
+
+      - name: Build QEMU
+        if: steps.qemu-cache.outputs.cache-hit != 'true'
+        run: |
+          git clone --depth 1 -b "$QEMU_BRANCH" "$QEMU_REPO" "$RUNNER_TEMP/qemu"
+          mkdir -p "$RUNNER_TEMP/qemu-build"
+          cd "$RUNNER_TEMP/qemu-build"
+          "$RUNNER_TEMP/qemu/configure" \
+              --without-default-features \
+              --enable-slirp \
+              --prefix="$HOME/local/qemu-${QEMU_VERSION}" \
+              --target-list=arm-softmmu,aarch64-softmmu
+          make -j$(nproc)
+          make install
+
+      - name: Set QEMU path
+        run: echo "$HOME/local/qemu-${QEMU_VERSION}/bin" >> $GITHUB_PATH
+
+      - name: Setup environment variables from matrix
+        run: |
+          echo "CFG_QEMU_BIN=${{ matrix.config.qemu-bin }}" >> $GITHUB_ENV
+          echo "CFG_QEMU_MACHINE=${{ matrix.config.qemu-machine }}" >> $GITHUB_ENV
+          echo "CFG_QEMU_OPT=${{ matrix.config.qemu-kernel-opt }}" >> $GITHUB_ENV
+          echo "CFG_QEMU_IMG=${{ matrix.config.qemu-img }}" >> $GITHUB_ENV
+
+      - name: Configure circle-stdlib with QEMU support
+        run: |
+          set -x ; ./configure -p ${{ matrix.config.prefix }} -r ${{ matrix.config.circle-machine }} --qemu ${{ matrix.kasan.kasan_opt }} --
+
+      - name: Build libraries
+        run: make -j$(nproc)
+
+      - name: Build samples
+        run: make build-samples
+
+      - name: Run smoke test with QEMU
+        run: |
+          cd samples/05-smoketest
+          # Extract blank SD card image
+          ../../testdata/setup-sd.sh
+          # Guard against endless loop in QEMU run (300 CPU secs)
+          ulimit -t 300
+          ${{ matrix.config.qemu-bin }} -M ${{ matrix.config.qemu-machine }} ${{ matrix.config.qemu-kernel-opt }} ${{ matrix.config.qemu-img }} -display none -nographic -semihosting -sd sdcard.img
+
+      - name: Build test library
+        run: |
+          make -C tests/lib
+
+      - name: Run basic socket test
+        run: |
+          cd tests/01-basic-socket
+          ./run_test.sh
+
+      - name: Run basic select/poll socket test
+        run: |
+          cd tests/02-basic-socket-mux
+          ./run_test.sh
+
+      - name: Run pipe test
+        run: |
+          cd tests/03-pipe
+          ./run_test.sh
+
+      - name: Run netdb test
+        run: |
+          cd tests/04-netdb
+          ./run_test.sh
+
+      - name: Run Circle standalone build with STDLIB_SUPPORT=0
+        run: |
+          cd libs/circle
+          sed -i 's/STDLIB_SUPPORT.*=.*$/STDLIB_SUPPORT = 0/' Config.mk
+          cat Config.mk
+          ./makeall clean
+          ./makeall
+          make -C sample/01-gpiosimple
+
+      - name: Run Circle standalone build with STDLIB_SUPPORT=1
+        run: |
+          cd libs/circle
+          sed -i 's/STDLIB_SUPPORT.*=.*$/STDLIB_SUPPORT = 1/' Config.mk
+          cat Config.mk
+          ./makeall clean
+          ./makeall
+          make -C sample/01-gpiosimple

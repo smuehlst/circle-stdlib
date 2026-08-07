@@ -50,7 +50,7 @@ from the [LLVM project](https://llvm.org/). The platform-dependent parts of
 libc++ are built on top of Circle's corresponding classes.
 
 There is a fork of the [GitHub llvm-project repository](https://github.com/llvm/llvm-project)
-on Codeberg at [llvm-project](https://codeberg.org/larchcone/llvm-project). This contains minor
+at [llvm-project](https://github.com/smuehlst/llvm-project). This contains minor
 changes for building the `libc++` library in the context of circle-stdlib.
 
 With libc++ comes support in the C++ standard library for:
