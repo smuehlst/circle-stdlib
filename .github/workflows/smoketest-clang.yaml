@@ -91,7 +91,7 @@ jobs:
 
     steps:
       - name: checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           submodules: recursive
 
@@ -105,7 +105,7 @@ jobs:
 
       - name: Cache ARM GNU toolchains
         id: toolchain-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/local/toolchains
           key: ${{ runner.os }}-${{ runner.arch }}-arm-gnu-toolchain-${{ env.ARM_TOOLCHAIN_VERSION }}
@@ -130,7 +130,7 @@ jobs:
 
       - name: Cache LLVM
         id: llvm-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/local/LLVM-${{ env.LLVM_VERSION }}-Linux-${{ matrix.config.llvm-arch }}
           key: ${{ runner.os }}-${{ runner.arch }}-llvm-${{ env.LLVM_VERSION }}
@@ -152,7 +152,7 @@ jobs:
 
       - name: Cache QEMU
         id: qemu-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/local/qemu-${{ env.QEMU_VERSION }}
           key: ${{ runner.os }}-${{ runner.arch }}-qemu-${{ env.QEMU_VERSION }}-${{ env.QEMU_BRANCH }}
