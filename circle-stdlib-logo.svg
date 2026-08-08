@@ -8,7 +8,7 @@
 
   <text x="200" y="200" dominant-baseline="central" font-family="monospace, Courier" font-size="70" font-weight="bold" fill="#2F363D" text-anchor="middle">std</text>
   
-  <a href="https://codeberg.org/larchcone/circle-stdlib">
+  <a href="https://github.com/smuehlst/circle-stdlib">
     <text x="200" y="330" font-family="sans-serif" font-size="24" font-weight="600" fill="#2F363D" text-anchor="middle" letter-spacing="2">circle-stdlib</text>
   </a>
 </svg>

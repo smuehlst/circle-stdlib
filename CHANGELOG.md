@@ -1,6 +1,6 @@
 # Release History
 
-## [v20](https://codeberg.org/larchcone/circle-stdlib/releases/tag/v20)
+## [v20](https://github.com/smuehlst/circle-stdlib/releases/tag/v20)
 
 * Synced with Circle Step [Circle Step 51](https://github.com/rsta2/circle/releases/tag/Step51)
 * Optional build with LLVM's libc++ for more complete support of C++ standard library features (new options `--libcxx` and `--libcxx-repo` for `configure`).
@@ -11,18 +11,18 @@
 * `pause()` implemented.
 * `pipe()`/`pipe2()` support based on Circle's new `CPipe` class.
 
-## [v19.1](https://codeberg.org/larchcone/circle-stdlib/releases/tag/v19.1)
+## [v19.1](https://github.com/smuehlst/circle-stdlib/releases/tag/v19.1)
 
 * Fixed unguarded call to CScheduler::Yield() from close() where scheduler may not be active in Circle.
 * Increased timeout for running the 05-smoketest sample with Address Sanitizer, as the previous timeout could cause the test to be killed prematurely.
 
-## [v19](https://codeberg.org/larchcone/circle-stdlib/releases/tag/v19)
+## [v19](https://github.com/smuehlst/circle-stdlib/releases/tag/v19)
 
 * Synced with [Circle Step 50.1](https://github.com/rsta2/circle/releases/tag/Step50.1).
 * Experimental partial support for Posix TCP sockets (see [SOCKETS.md](doc/SOCKETS.md)). The implemented features are sufficient to run the Mongoose webserver. There's a new sample application [06-socket](samples/06-socket/) that demonstrates this.
 * Support for building with Kernel Address Sanitizer, based on Circle's corresponding support. See Circle's documentation [kasan.txt](https://github.com/rsta2/circle/blob/master/doc/kasan.txt) for details.
 
-## [v18](https://codeberg.org/larchcone/circle-stdlib/releases/tag/v18)
+## [v18](https://github.com/smuehlst/circle-stdlib/releases/tag/v18)
 
 * This release marks the completion of the migration of `circle-stdlib's` project home from GitHub to Codeberg. There are no functional changes in this release.
 

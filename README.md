@@ -1,33 +1,17 @@
 # circle-stdlib
 
-[![Status badge for master branch](https://codeberg.org/larchcone/circle-stdlib/actions/workflows/smoketest.yaml/badge.svg?branch=master&label=smoke%20test%20master%20branch)](https://codeberg.org/larchcone/circle-stdlib/actions?workflow=smoketest.yaml)
-[![Status badge for develop branch](https://codeberg.org/larchcone/circle-stdlib/actions/workflows/smoketest.yaml/badge.svg?branch=develop&label=smoke%20test%20develop%20branch)](https://codeberg.org/larchcone/circle-stdlib/actions?workflow=smoketest.yaml)
-[![Open issues](https://codeberg.org/larchcone/circle-stdlib/badges/issues/open.svg)](https://codeberg.org/larchcone/circle-stdlib/issues?state=open)
-[![Closed issues](https://codeberg.org/larchcone/circle-stdlib/badges/issues/closed.svg)](https://codeberg.org/larchcone/circle-stdlib/issues?state=closed)
+[![Smoke Tests (libc++)](https://github.com/smuehlst/circle-stdlib/actions/workflows/smoketest-libcxx.yaml/badge.svg)](https://github.com/smuehlst/circle-stdlib/actions/workflows/smoketest-libcxx.yaml)
+[![Smoke Tests (clang and libc++)](https://github.com/smuehlst/circle-stdlib/actions/workflows/smoketest-clang.yaml/badge.svg?)](https://github.com/smuehlst/circle-stdlib/actions/workflows/smoketest-clang.yaml)
+[![Open Issues](https://img.shields.io/github/issues/smuehlst/circle-stdlib)](https://github.com/smuehlst/circle-stdlib/issues)
+[![Open PRs](https://img.shields.io/github/issues-pr/smuehlst/circle-stdlib)](https://github.com/smuehlst/circle-stdlib/pulls)
 
 ![logo](circle-stdlib-logo.svg)
 
 ## Project Home
 
-This project moved from GitHub to **Codeberg**. 
+This project is hosted on GitHub:
 
-**Canonical repository:** https://codeberg.org/larchcone/circle-stdlib.git
-
-Issues and pull requests need to be submitted on Codeberg.
-
-The GitHub repository https://github.com/smuehlst/circle-stdlib.git is a read-only
-mirror. Pull requests on GitHub will be closed with a
-corresponding remark without further action.
-
-For transitioning from GitHub to Codeberg the remote must be switched for
-the [circle-stdlib](https://codeberg.org/larchcone/circle-stdlib)
-and [circle-newlib](https://codeberg.org/larchcone/circle-newlib) repositories:
-
-```bash
-git remote set-url origin https://codeberg.org/larchcone/circle-stdlib.git
-cd libs/circle-newlib
-git remote set-url origin https://codeberg.org/larchcone/circle-newlib.git
-```
+https://github.com/smuehlst/circle-stdlib
 
 ## Overview
 
@@ -35,7 +19,7 @@ This project provides C and C++ standard library support for the
 Raspberry Pi bare-metal environment [Circle](https://github.com/rsta2/circle).
 
 [Newlib](https://sourceware.org/newlib/) is used as the standard C library. The fork
-[circle-newlib](https://codeberg.org/larchcone/circle-newlib) contains the changes for
+[circle-newlib](https://github.com/smuehlst/circle-newlib) contains the changes for
 building Newlib in combination with Circle.
 
 Historically C++ standard library support in circle-stdlib was provided by using
@@ -100,7 +84,7 @@ Alternatively an [LLVM 22.1.4](https://github.com/llvm/llvm-project/releases/tag
 Add the toolchain to the path, then:
 
 ```bash
-git clone --recursive https://codeberg.org/larchcone/circle-stdlib.git
+git clone --recursive https://github.com/smuehlst/circle-stdlib.git
 cd circle-stdlib
 ./configure
 make
