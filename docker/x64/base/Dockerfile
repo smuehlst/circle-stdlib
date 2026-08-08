@@ -10,7 +10,7 @@ RUN apt-get update && \
 ENV QEMU_BASEDIR=/opt/qemu
 WORKDIR $QEMU_BASEDIR
 
-RUN git clone -b circle-hcd-dwc2-9.1.1 https://codeberg.org/larchcone/qemu.git && \
+RUN git clone -b circle-hcd-dwc2-9.1.1 https://github.com/smuehlst/qemu.git && \
     mkdir qemu/build && \
     cd qemu/build && \
     ../configure --without-default-features --enable-slirp --prefix=$QEMU_BASEDIR/qemu-9.1.1 --target-list=arm-softmmu,aarch64-softmmu && \
