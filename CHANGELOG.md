@@ -1,5 +1,15 @@
 # Release History
 
+## [v21](https://github.com/smuehlst/circle-stdlib/releases/tag/v21)
+
+* Migrated the project back from Codeberg to GitHub. The reason is Codeberg's
+  policy to no longer allow projects that use AI-generated code (see
+  [Protecting our FLOSS commons from LLMs](https://blog.codeberg.org/protecting-our-floss-commons-from-llms.html)
+  in the Codeberg Blog). circle-stdlib uses AI-assisted coding to a certain
+  degree and will continue to do so in the future. Although the project would
+  probably have been tolerated under the new policy, its direction no longer
+  matches Codeberg's.
+
 ## [v20](https://github.com/smuehlst/circle-stdlib/releases/tag/v20)
 
 * Synced with Circle Step [Circle Step 51](https://github.com/rsta2/circle/releases/tag/Step51)
