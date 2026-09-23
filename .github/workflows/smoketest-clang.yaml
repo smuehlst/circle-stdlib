@@ -93,15 +93,24 @@ jobs:
       - name: checkout code
         uses: actions/checkout@v7
         with:
-          submodules: recursive
+          submodules: false
 
       - name: Install build dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
+              ca-certificates \
               build-essential ninja-build libglib2.0-dev libslirp-dev \
               python3 python3-pip python3-venv python3-tomli \
               git texinfo netcat-traditional unzip wget
+          sudo update-ca-certificates
+
+      - name: Initialize submodules
+        env:
+          GIT_SSL_CAINFO: /etc/ssl/certs/ca-certificates.crt
+        run: |
+          git submodule sync --recursive
+          git -c http.sslVerify=true submodule update --init --recursive
 
       - name: Cache ARM GNU toolchains
         id: toolchain-cache
