@@ -2,7 +2,7 @@
 
 ## [v21](https://github.com/smuehlst/circle-stdlib/releases/tag/v21)
 
-* Synced with [Circle Step 51.1](https://github.com/rsta2/circle/releases/tag/Step51.1)
+* Synced with [Circle Step 51.1.1](https://github.com/rsta2/circle/releases/tag/Step51.1.1)
 * Migrated the project back from Codeberg to GitHub. The reason is Codeberg's
   policy to no longer allow projects that use AI-generated code (see
   [Protecting our FLOSS commons from LLMs](https://blog.codeberg.org/protecting-our-floss-commons-from-llms.html)
