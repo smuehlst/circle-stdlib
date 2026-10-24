@@ -1,0 +1,161 @@
+name: Build (mbed TLS)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+      - develop
+      - mbed-tls-4.2.0
+    paths-ignore:
+      - '**.md'
+
+env:
+  ARM_TOOLCHAIN_VERSION: 15.2.rel1
+  LLVM_VERSION: 22.1.4
+
+jobs:
+  build-mbedtls:
+    defaults:
+      run:
+        shell: bash -x {0} # applies set -x to every run: step
+
+    strategy:
+      fail-fast: false
+      matrix:
+        toolchain:
+          - { name: "GCC", clang: false, configure-opt: "" }
+          - { name: "clang/libc++", clang: true, configure-opt: "--clang --libcxx --kernel-max-size 8" }
+
+        config:
+          - {
+              name: "host-aarch64-target-arm",
+              runs-on: ubuntu-24.04-arm,
+              host-arch: "aarch64",
+              llvm-arch: "ARM64",
+              aarch64-opt: "",
+              circle-machine: "1",
+              prefix: "arm-none-eabi-",
+              kernel-img: "kernel.img",
+            }
+          - {
+              name: "host-aarch64-target-aarch64",
+              runs-on: ubuntu-24.04-arm,
+              host-arch: "aarch64",
+              llvm-arch: "ARM64",
+              aarch64-opt: "--aarch64",
+              circle-machine: "3",
+              prefix: "aarch64-none-elf-",
+              kernel-img: "kernel8.img",
+            }
+
+    name: ${{ matrix.config.name }} - mbed TLS - ${{ matrix.toolchain.name }}
+
+    runs-on: ${{ matrix.config.runs-on }}
+
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v7
+        with:
+          submodules: false
+
+      # python3-jinja2 and python3-jsonschema are required by the Mbed TLS
+      # CMake build for generating source files (GEN_FILES).
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+              ca-certificates \
+              build-essential ninja-build \
+              python3 python3-pip python3-venv python3-tomli \
+              python3-jinja2 python3-jsonschema \
+              git texinfo unzip wget
+          sudo update-ca-certificates
+
+      - name: Initialize submodules
+        env:
+          GIT_SSL_CAINFO: /etc/ssl/certs/ca-certificates.crt
+        run: |
+          git submodule sync --recursive
+          git -c http.sslVerify=true submodule update --init --recursive
+
+      - name: Cache ARM GNU toolchains
+        id: toolchain-cache
+        uses: actions/cache@v6
+        with:
+          path: ~/local/toolchains
+          key: ${{ runner.os }}-${{ runner.arch }}-arm-gnu-toolchain-${{ env.ARM_TOOLCHAIN_VERSION }}
+
+      - name: Install ARM GNU toolchains
+        if: steps.toolchain-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/local/toolchains
+          base_url="https://developer.arm.com/-/media/Files/downloads/gnu/${ARM_TOOLCHAIN_VERSION}/binrel"
+          for target in arm-none-eabi aarch64-none-elf ; do
+              tarname="arm-gnu-toolchain-${ARM_TOOLCHAIN_VERSION}-${{ matrix.config.host-arch }}-${target}.tar.xz"
+              wget -nv -O "$tarname" "${base_url}/${tarname}"
+              tar -x -f "$tarname" -C ~/local/toolchains
+              rm "$tarname"
+          done
+
+      - name: Set toolchain path
+        run: |
+          for target in arm-none-eabi aarch64-none-elf ; do
+              echo "$HOME/local/toolchains/arm-gnu-toolchain-${ARM_TOOLCHAIN_VERSION}-${{ matrix.config.host-arch }}-${target}/bin" >> $GITHUB_PATH
+          done
+
+      - name: Cache LLVM
+        if: matrix.toolchain.clang
+        id: llvm-cache
+        uses: actions/cache@v6
+        with:
+          path: ~/local/LLVM-${{ env.LLVM_VERSION }}-Linux-${{ matrix.config.llvm-arch }}
+          key: ${{ runner.os }}-${{ runner.arch }}-llvm-${{ env.LLVM_VERSION }}
+
+      - name: Install LLVM
+        if: matrix.toolchain.clang && steps.llvm-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/local
+          tarname="LLVM-${LLVM_VERSION}-Linux-${{ matrix.config.llvm-arch }}.tar.xz"
+          wget -nv -O "$tarname" "https://github.com/llvm/llvm-project/releases/download/llvmorg-${LLVM_VERSION}/${tarname}"
+          tar -x -f "$tarname" -C ~/local
+          rm "$tarname"
+
+      # Must precede the distribution clang on PATH: ./configure resolves the
+      # resource include directory with "clang -print-file-name=include", and
+      # libc++ must be built with the same clang that compiles the application.
+      - name: Set LLVM path
+        if: matrix.toolchain.clang
+        run: echo "$HOME/local/LLVM-${LLVM_VERSION}-Linux-${{ matrix.config.llvm-arch }}/bin" >> $GITHUB_PATH
+
+      - name: Configure circle-stdlib with mbed TLS support
+        run: |
+          ./configure ${{ matrix.toolchain.configure-opt }} ${{ matrix.config.aarch64-opt }} -p ${{ matrix.config.prefix }} -r ${{ matrix.config.circle-machine }} --opt-tls
+
+      - name: Build libraries
+        run: make -j$(nproc)
+
+      - name: Check mbed TLS libraries
+        run: |
+          for lib in \
+              build/mbedtls/library/libmbedtls.a \
+              build/mbedtls/library/libmbedx509.a \
+              build/mbedtls/library/libmbedcrypto.a \
+              src/circle-mbedtls/libcircle-mbedtls.a ; do
+              test -f "$lib" || { echo "missing: $lib" ; exit 1 ; }
+          done
+
+      - name: Build samples
+        run: make build-samples
+
+      - name: Check mbed TLS sample kernels
+        run: |
+          for sample in \
+              01-https-client1 \
+              03-https-server1 \
+              05-https-client3 \
+              06-webclient \
+              07-mqttclient ; do
+              img="samples/mbedtls/${sample}/${{ matrix.config.kernel-img }}"
+              test -f "$img" || { echo "missing: $img" ; exit 1 ; }
+          done
