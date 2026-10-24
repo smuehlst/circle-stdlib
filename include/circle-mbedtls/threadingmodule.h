@@ -30,11 +30,19 @@ public:
 	~CThreadingModule (void);
 
 private:
-	static void mutex_init (mbedtls_threading_mutex_t *mutex);
-	static void mutex_free (mbedtls_threading_mutex_t *mutex);
+	static int mutex_init (mbedtls_platform_mutex_t *mutex);
+	static void mutex_destroy (mbedtls_platform_mutex_t *mutex);
 
-	static int mutex_lock (mbedtls_threading_mutex_t *mutex);
-	static int mutex_unlock (mbedtls_threading_mutex_t *mutex);
+	static int mutex_lock (mbedtls_platform_mutex_t *mutex);
+	static int mutex_unlock (mbedtls_platform_mutex_t *mutex);
+
+	static int cond_init (mbedtls_platform_condition_variable_t *cond);
+	static void cond_destroy (mbedtls_platform_condition_variable_t *cond);
+
+	static int cond_signal (mbedtls_platform_condition_variable_t *cond);
+	static int cond_broadcast (mbedtls_platform_condition_variable_t *cond);
+	static int cond_wait (mbedtls_platform_condition_variable_t *cond,
+			      mbedtls_platform_mutex_t *mutex);
 
 private:
 	static int m_nUseCount;

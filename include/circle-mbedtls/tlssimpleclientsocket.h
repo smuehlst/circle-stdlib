@@ -20,8 +20,6 @@
 #define _circle_mbedtls_tlssimpleclientsocket_h
 
 #include <circle-mbedtls/tlssocket.h>
-#include <circle-mbedtls/entropycontext.h>
-#include <circle-mbedtls/ctr_drbg.h>
 #include <circle-mbedtls/tlsconfig.h>
 #include <circle-mbedtls/x509certchain.h>
 #include <circle-mbedtls/tlssimplesupport.h>
@@ -53,7 +51,7 @@ public:
 
 	/// \brief Setup SSL/TLS configuration prior to Connect()
 	/// \param pServername The hostname of the server to be connected
-	/// \param pPersonalizationString Optional string for seeding the random bit generator
+	/// \param pPersonalizationString Ignored since Mbed TLS 4.0 (PSA random generator is used)
 	int Setup (const char *pServername, const char *pPersonalizationString = 0);
 
 private:
@@ -63,8 +61,6 @@ private:
 private:
 	CTLSSimpleSupport *m_pTLSSupport;
 
-	CEntropyContext		m_Entropy;
-	CCTR_DRBG		m_CTR_DRBG;
 	CX509CertificateChain	m_CertChain;
 	CTLSConfig		m_TLSConfig;
 

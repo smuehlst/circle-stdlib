@@ -14,12 +14,28 @@ required sub-modules needed to build a circle-mbedtls application.
 
 ### Prerequisites
 
-Same as for the circle-stdlib project.
+Same as for the circle-stdlib project. In addition:
+
+* The *libs/mbedtls* submodule contains the nested submodules *framework* and
+  *tf-psa-crypto*. Clone with `--recursive` or run
+  `git submodule update --init --recursive`.
+* Mbed TLS is built with CMake (3.20.2 or later) and Ninja. The build generates
+  source files, which requires `python3` with the modules listed in
+  *libs/mbedtls/scripts/driver.requirements.txt* (`jinja2`, `jsonschema`) and
+  `perl`.
 
 ### Building the Libraries
 
 circle-mbedtls uses the circle-stdlib build system. You have to specify the
-`--opt-tls` option to enable the SSL/TLS support.
+`--opt-tls` option to enable the SSL/TLS support. The Mbed TLS libraries are
+built in *build/mbedtls*.
+
+The Circle-specific configuration is applied on top of the Mbed TLS default
+configuration by the files *include/circle-mbedtls/mbedtls-user-config.h*
+(TLS and X.509) and *include/circle-mbedtls/crypto-user-config.h*
+(TF-PSA-Crypto). Applications must be compiled with `$(MBEDTLS_INCLUDES)` and
+`$(MBEDTLS_DEFINES)` from *Config.mk* and linked with `$(MBEDTLS_LIBS)` (see
+*samples/mbedtls/Rules.mk*).
 
 ### Building a Sample Program
 
@@ -28,13 +44,41 @@ subdirectory. Go to the subdirectory of the sample of your choice and do `make`.
 
 ## Current State
 
+V2.0:
+
+* Uses Mbed TLS 4.2.0 (with TF-PSA-Crypto 1.2.0). Please read the
+  [Mbed TLS 4.0 migration guide](libs/mbedtls/docs/4.0-migration-guide.md) and the
+  [TF-PSA-Crypto 1.0 migration guide](libs/mbedtls/tf-psa-crypto/docs/1.0-migration-guide.md)
+  before porting applications, which use the Mbed TLS C API directly.
+* Mbed TLS is built with its CMake build system.
+* Only TLS 1.2 and TLS 1.3 are supported. The removed protocol versions and
+  cipher suites (TLS 1.0/1.1, RC4, 3DES, static RSA/ECDH key exchange) are no
+  longer available.
+* The PSA crypto subsystem must be initialized with `psa_crypto_init()` before
+  using any TLS or X.509 function. `CTLSSimpleSupport` does this via the new
+  class `CCryptoModule`. Applications, which use the C API without
+  `CTLSSimpleSupport`, must instantiate `CThreadingModule` and `CEntropyModule`
+  (in this order) and then call `psa_crypto_init()` themselves.
+* The random number generator is internal to PSA now. `CEntropyContext`,
+  `CCTR_DRBG` and `CTLSConfig::SetRNG()` are deprecated no-ops, which are kept
+  for source compatibility only. The `pPersonalizationString` parameter of
+  `CTLSSimpleClientSocket::Setup()` is ignored.
+* The PK and elliptic curve identifiers are private in Mbed TLS 4.x. The
+  `CX509CertificateProfile` methods, which take such an identifier, are
+  deprecated. The bit mask methods are still supported.
+* The validity dates of certificates are not checked (`MBEDTLS_HAVE_TIME_DATE`
+  is disabled), as before.
+* The samples 01-https-client1 and 03-https-server1 have been re-ported from the
+  Mbed TLS 4.2.0 sources. The samples 02-https-client2 and 04-https-server2 have
+  not been ported yet and are not built.
+
+## Previous Releases
+
 V1.15:
 
 * Uses Mbed TLS 2.28.10
 * Enable threading support
 * CThreadingModule must be instantiated early in the app, if CTLSSimpleSupport is not.
-
-## Previous Releases
 
 V1.14:
 

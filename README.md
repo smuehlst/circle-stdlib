@@ -79,6 +79,8 @@ Alternatively an [LLVM 22.1.4](https://github.com/llvm/llvm-project/releases/tag
 * Hosted on Intel Linux: [Linux x86_64](https://github.com/llvm/llvm-project/releases/download/llvmorg-22.1.4/LLVM-22.1.4-Linux-X64.tar.xz)
 * Hosted on AArch64 Linux: [Linux Arm64](https://github.com/llvm/llvm-project/releases/download/llvmorg-22.1.4/LLVM-22.1.4-Linux-ARM64.tar.xz)
 
+For building with libc++ and for building with mbed TLS cmake 3.20.2 or later is required.
+
 ### Building the Libraries
 
 Add the toolchain to the path, then:

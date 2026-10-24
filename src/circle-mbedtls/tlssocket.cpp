@@ -23,6 +23,7 @@
 #include <circle/logger.h>
 #include <mbedtls/net_sockets.h>
 #include <assert.h>
+#include <stdlib.h>
 
 using namespace CircleMbedTLS;
 
@@ -132,10 +133,34 @@ int CTLSSocket::Connect (const char *pHost, const char *pPort)
 int CTLSSocket::Receive (void *pBuffer, unsigned nLength, int nFlags)
 {
 	assert (m_pSocket != 0);
-	m_pSocket->SetOptionBlocking (nFlags != MSG_DONTWAIT ? TRUE : FALSE);
+	boolean const bBlocking = nFlags != MSG_DONTWAIT ? TRUE : FALSE;
+	m_pSocket->SetOptionBlocking (bBlocking);
 
 	assert (m_bConnected);
-	int nResult = mbedtls_ssl_read (&m_Context, reinterpret_cast<u8 *> (pBuffer), nLength);
+	int nResult;
+	for (;;)
+	{
+		nResult = mbedtls_ssl_read (&m_Context, reinterpret_cast<u8 *> (pBuffer), nLength);
+
+		// TLS 1.3 servers may send session tickets at any time after the
+		// handshake. Mbed TLS reports the reception of a ticket with
+		// MBEDTLS_ERR_SSL_WANT_READ and MBEDTLS_ERR_SSL_RECEIVED_NEW_SESSION_TICKET,
+		// even if the underlying socket is blocking.
+		if (nResult == MBEDTLS_ERR_SSL_RECEIVED_NEW_SESSION_TICKET)
+		{
+			continue;
+		}
+
+		if (   bBlocking
+		    && (   nResult == MBEDTLS_ERR_SSL_WANT_READ
+			|| nResult == MBEDTLS_ERR_SSL_WANT_WRITE))
+		{
+			continue;
+		}
+
+		break;
+	}
+
 	switch (nResult)
 	{
 	case MBEDTLS_ERR_SSL_WANT_READ:

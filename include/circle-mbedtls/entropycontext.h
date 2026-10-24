@@ -19,30 +19,27 @@
 #ifndef _circle_mbedtls_entropycontext_h
 #define _circle_mbedtls_entropycontext_h
 
-#include <mbedtls/entropy.h>
-
 namespace CircleMbedTLS {
 
+#define CIRCLE_MBEDTLS_RNG_DEPRECATED \
+	[[deprecated ("Since Mbed TLS 4.0 the PSA random generator is used implicitly")]]
+
+/// \deprecated Since Mbed TLS 4.0 the entropy context is internal to the PSA
+///	crypto subsystem, which is initialized by CCryptoModule. This class is a
+///	no-op, which is kept for source compatibility only.
 class CEntropyContext
 {
 public:
+	CIRCLE_MBEDTLS_RNG_DEPRECATED
 	CEntropyContext (void)
 	{
-		mbedtls_entropy_init (&m_Context);
 	}
 
-	~CEntropyContext (void)
+	CIRCLE_MBEDTLS_RNG_DEPRECATED
+	void *Get (void)
 	{
-		mbedtls_entropy_free (&m_Context);
+		return nullptr;
 	}
-
-	mbedtls_entropy_context *Get (void)
-	{
-		return &m_Context;
-	}
-
-private:
-	mbedtls_entropy_context m_Context;
 };
 
 }

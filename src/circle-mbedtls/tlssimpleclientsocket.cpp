@@ -25,7 +25,6 @@ using namespace CircleMbedTLS;
 CTLSSimpleClientSocket::CTLSSimpleClientSocket (CTLSSimpleSupport *pTLSSupport, int nProtocol)
 :	CTLSSocket (pTLSSupport->GetNet (), nProtocol),
 	m_pTLSSupport (pTLSSupport),
-	m_CTR_DRBG (&m_Entropy),
 	m_bCertAdded (FALSE)
 {
 }
@@ -73,15 +72,17 @@ int CTLSSimpleClientSocket::AddCertificatePath (const char *pPath)
 	return nResult;
 }
 
-int CTLSSimpleClientSocket::Setup (const char *pServername, const char *pPersonalizationString)
+int CTLSSimpleClientSocket::Setup (char const *pServername, char const * /* pPersonalizationString */)
 {
-	int nResult = m_CTR_DRBG.Seed (pPersonalizationString);
-	if (nResult != 0)
+	// Since Mbed TLS 4.0 PSA and Mbed TLS error codes share one error space
+	assert (m_pTLSSupport != nullptr);
+	psa_status_t const Status = m_pTLSSupport->GetCryptoStatus ();
+	if (Status != PSA_SUCCESS)
 	{
-		return nResult;
+		return Status;
 	}
 
-	nResult = m_TLSConfig.SetDefaults (MBEDTLS_SSL_IS_CLIENT, MBEDTLS_SSL_TRANSPORT_STREAM,
+	int nResult = m_TLSConfig.SetDefaults (MBEDTLS_SSL_IS_CLIENT, MBEDTLS_SSL_TRANSPORT_STREAM,
 					   MBEDTLS_SSL_PRESET_DEFAULT);
 	if (nResult != 0)
 	{
@@ -102,7 +103,6 @@ int CTLSSimpleClientSocket::Setup (const char *pServername, const char *pPersona
 		m_TLSConfig.SetAuthMode (MBEDTLS_SSL_VERIFY_NONE);
 	}
 
-	m_TLSConfig.SetRNG (&m_CTR_DRBG);
 	m_TLSConfig.SetDebugCallback (DebugCallback, stdout);
 
         nResult = CTLSSocket::Setup (m_TLSConfig);

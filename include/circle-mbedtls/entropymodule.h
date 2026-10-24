@@ -32,8 +32,10 @@ class CEntropyModule
 public:
 	CEntropyModule (void);
 
-	static int EntropyPoll (void *pData, unsigned char *pOutput,
-				size_t nLength, size_t *pResultLength);
+	/// \brief Fill the whole buffer with random data
+	/// \return 0 on success
+	/// \note Called by mbedtls_platform_get_entropy() (MBEDTLS_PSA_DRIVER_GET_ENTROPY)
+	static int GetEntropy (unsigned char *pOutput, size_t nLength);
 
 private:
 #ifndef USE_QEMU_FOR_TEST

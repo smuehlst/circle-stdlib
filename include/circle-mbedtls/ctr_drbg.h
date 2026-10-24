@@ -19,48 +19,42 @@
 #ifndef _circle_mbedtls_ctr_drbg_h
 #define _circle_mbedtls_ctr_drbg_h
 
-#include <mbedtls/ctr_drbg.h>
+#include <mbedtls/psa_util.h>
 #include <circle-mbedtls/entropycontext.h>
-#include <circle/util.h>
 #include <circle/types.h>
 
 namespace CircleMbedTLS {
 
+/// \deprecated Since Mbed TLS 4.0 the Deterministic Random Bit Generator is
+///	internal to the PSA crypto subsystem, which is initialized by
+///	CCryptoModule. This class is a no-op, which is kept for source
+///	compatibility only.
 class CCTR_DRBG		/// Deterministic Random Bit Generator
 {
 public:
-	CCTR_DRBG (CEntropyContext *pEntropy)
-	:	m_pEntropy (pEntropy)
+	CIRCLE_MBEDTLS_RNG_DEPRECATED
+	CCTR_DRBG (CEntropyContext * /* pEntropy */)
 	{
-		mbedtls_ctr_drbg_init (&m_Context);
 	}
 
-	~CCTR_DRBG (void)
+	/// \return Context for mbedtls_psa_get_random()
+	CIRCLE_MBEDTLS_RNG_DEPRECATED
+	void *Get (void)
 	{
-		mbedtls_ctr_drbg_free (&m_Context);
+		return MBEDTLS_PSA_RANDOM_STATE;
 	}
 
-	mbedtls_ctr_drbg_context *Get (void)
+	CIRCLE_MBEDTLS_RNG_DEPRECATED
+	int Seed (u8 const * /* pPersonalizationData */, size_t /* nLength */)
 	{
-		return &m_Context;
+		return 0;
 	}
 
-	int Seed (const u8 *pPersonalizationData, size_t nLength)
+	CIRCLE_MBEDTLS_RNG_DEPRECATED
+	int Seed (char const * /* pPersonalizationString */)
 	{
-		return mbedtls_ctr_drbg_seed (&m_Context, mbedtls_entropy_func, m_pEntropy->Get (),
-					      pPersonalizationData, nLength);
+		return 0;
 	}
-
-	int Seed (const char *pPersonalizationString)
-	{
-		return Seed (reinterpret_cast<const u8 *> (pPersonalizationString),
-			     strlen (pPersonalizationString));
-	}
-
-private:
-	CEntropyContext *m_pEntropy;
-
-	mbedtls_ctr_drbg_context m_Context;
 };
 
 }

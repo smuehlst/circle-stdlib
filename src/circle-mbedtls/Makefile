@@ -12,7 +12,7 @@ CIRCLEHOME  ?= $(CIRCLE_STDLIB_DIR)/libs/circle
 
 OBJS	= httpclient.o mqttclient.o mqttreceivepacket.o mqttsendpacket.o \
 	  tlssocket.o tlssimpleclientsocket.o adaptedsocket.o net_sockets.o \
-	  x509certchain.o entropymodule.o threadingmodule.o
+	  x509certchain.o entropymodule.o threadingmodule.o cryptomodule.o
 
 libcircle-mbedtls.a: $(OBJS)
 	rm -f $@
@@ -23,6 +23,6 @@ include $(CIRCLEHOME)/Rules.mk
 INCLUDE += \
 	   -I $(CIRCLE_STDLIB_DIR)/include \
 	   -I $(NEWLIBDIR)/include \
-	   -I $(MBEDTLS_DIR)/include
+	   $(MBEDTLS_INCLUDES)
 
-CFLAGS += -DMBEDTLS_CONFIG_FILE='<circle-mbedtls/config-circle-mbedtls.h>'
+CFLAGS += $(MBEDTLS_DEFINES)

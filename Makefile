@@ -152,29 +152,58 @@ clean-stdlib-samples:
 	-$(MAKE) -C samples/06-socket clean
 	-$(MAKE) -C samples/07-libc++-kasan clean
 	
-MBEDTLS_INCLUDE = -I../../../include -I../../circle/include
-MBED_DEFINE = -DMBEDTLS_CONFIG_FILE='<circle-mbedtls/config-circle-mbedtls.h>'
+# Mbed TLS and TF-PSA-Crypto are built with their CMake build system. The
+# Circle-specific configuration is applied on top of the default configuration
+# via the *_USER_CONFIG_FILE options. The C library headers are taken from the
+# installed circle-newlib, like for applications. Its <dirent.h> requires the
+# FatFs headers from Circle's addon directory.
+# The flags are passed in CMAKE_C_FLAGS_RELWITHDEBINFO, because CMAKE_C_FLAGS
+# holds the CPU and target flags set by the toolchain file.
+MBEDTLS_C_FLAGS = -O2 -g -DNDEBUG -fsigned-char -nostdinc \
+	-isystem $(NEWLIB_INSTALL_DIR)/$(NEWLIB_ARCH)/include \
+	-isystem $(STDDEF_INCPATH) \
+	-isystem $(CIRCLEHOME)/addon -isystem $(CIRCLEHOME)/include \
+	-I$(CURDIR)/include
 
 mbedtls:
-	CC=$(CC) \
-	CFLAGS="$(ARCH) -fsigned-char -ffreestanding -O2 -Wno-parentheses -g $(MBEDTLS_INCLUDE) $(MBED_DEFINE)" \
-	$(MAKE) -C libs/mbedtls/library && \
+	@echo "Configuring Mbed TLS..."
+	cmake \
+		-S libs/mbedtls \
+		-B $(MBEDTLS_BUILD_DIR) \
+		-G Ninja \
+		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+		-DCMAKE_TOOLCHAIN_FILE=$(CURDIR)/cmake/toolchains/toolchain-$(NEWLIB_ARCH)$(TOOLCHAIN_SUFFIX).cmake \
+		$(CMAKE_COMPILER_OVERRIDE) \
+		-DCIRCLE_ARCHCPU="$(ARCHCPU)" \
+		-DCMAKE_C_FLAGS_RELWITHDEBINFO="$(MBEDTLS_C_FLAGS)" \
+		-DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+		-DMBEDTLS_USER_CONFIG_FILE=$(CURDIR)/include/circle-mbedtls/mbedtls-user-config.h \
+		-DTF_PSA_CRYPTO_USER_CONFIG_FILE=$(CURDIR)/include/circle-mbedtls/crypto-user-config.h \
+		-DENABLE_PROGRAMS=OFF \
+		-DENABLE_TESTING=OFF \
+		-DUSE_STATIC_MBEDTLS_LIBRARY=ON \
+		-DUSE_SHARED_MBEDTLS_LIBRARY=OFF \
+		-DUSE_STATIC_TF_PSA_CRYPTO_LIBRARY=ON \
+		-DUSE_SHARED_TF_PSA_CRYPTO_LIBRARY=OFF \
+		-DMBEDTLS_FATAL_WARNINGS=OFF \
+		-DTF_PSA_CRYPTO_FATAL_WARNINGS=OFF \
+		-DDISABLE_PACKAGE_CONFIG_AND_INSTALL=ON
+	@echo "Building Mbed TLS..."
+	cmake --build $(MBEDTLS_BUILD_DIR) --target mbedtls
 	$(MAKE) -C src/circle-mbedtls
 
+# 02-https-client2 and 04-https-server2 have not been ported to Mbed TLS 4.x
+# yet. It is still to be decided what happens to them.
 build-mbedtls-samples:
 	$(MAKE) -C samples/mbedtls/01-https-client1
-	$(MAKE) -C samples/mbedtls/02-https-client2
 	$(MAKE) -C samples/mbedtls/03-https-server1
-	$(MAKE) -C samples/mbedtls/04-https-server2
 	$(MAKE) -C samples/mbedtls/05-https-client3
 	$(MAKE) -C samples/mbedtls/06-webclient
 	$(MAKE) -C samples/mbedtls/07-mqttclient
 
 clean-mbedtls-samples:
 	$(MAKE) -C samples/mbedtls/01-https-client1 clean
-	$(MAKE) -C samples/mbedtls/02-https-client2 clean
 	$(MAKE) -C samples/mbedtls/03-https-server1 clean
-	$(MAKE) -C samples/mbedtls/04-https-server2 clean
 	$(MAKE) -C samples/mbedtls/05-https-client3 clean
 	$(MAKE) -C samples/mbedtls/06-webclient clean
 	$(MAKE) -C samples/mbedtls/07-mqttclient clean
@@ -190,7 +219,7 @@ clean: clean-stdlib-samples clean-mbedtls-samples clean-tests
 	-cd libs/circle/addon/wlan && ./makeall --nosample PREFIX=$(TOOLPREFIX) clean
 	-$(MAKE) -C $(NEWLIB_BUILD_DIR) clean
 	-test -n "$(NEWLIB_INSTALL_DIR)" && rm -rf "$(NEWLIB_INSTALL_DIR)"/*
-	-$(MAKE) -C libs/mbedtls/library clean
+	-test -n "$(MBEDTLS_BUILD_DIR)" && cmake --build $(MBEDTLS_BUILD_DIR) --target clean
 	-$(MAKE) -C src/circle-mbedtls clean
 	-cmake --build build/libc++ --target clean
 	-cmake --build build/libcxx-threading --target clean
@@ -202,3 +231,4 @@ mrproper: clean
 	-rm -rf build/libc++ build/libcxx-fetch install/$(NEWLIB_ARCH)-libc++ install/$(NEWLIB_ARCH)-libc++-threading
 	-rm -rf build/libcxx-threading install/$(NEWLIB_ARCH)-libc++ install/$(NEWLIB_ARCH)-libc++-threading
 	-rm -rf build/libcxx-support
+	-rm -rf build/mbedtls

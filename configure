@@ -487,5 +487,18 @@ echo "CFLAGS_ISYSTEM='$CFLAGS_ISYSTEM'"
     then
         echo "MBEDTLS = mbedtls"
         echo "MBEDTLS_SAMPLES = build-mbedtls-samples"
+        echo "MBEDTLS_DIR = ${TOPDIR}/libs/mbedtls"
+        echo "MBEDTLS_BUILD_DIR = ${TOPDIR}/build/mbedtls"
+        echo 'MBEDTLS_INCLUDES = \'
+        echo '    -I $(MBEDTLS_DIR)/include \'
+        echo '    -I $(MBEDTLS_DIR)/tf-psa-crypto/include \'
+        echo '    -I $(MBEDTLS_DIR)/tf-psa-crypto/drivers/builtin/include'
+        echo "MBEDTLS_DEFINES = \\"
+        echo "    -DMBEDTLS_USER_CONFIG_FILE='<circle-mbedtls/mbedtls-user-config.h>' \\"
+        echo "    -DTF_PSA_CRYPTO_USER_CONFIG_FILE='<circle-mbedtls/crypto-user-config.h>'"
+        echo 'MBEDTLS_LIBS = \'
+        echo '    $(MBEDTLS_BUILD_DIR)/library/libmbedtls.a \'
+        echo '    $(MBEDTLS_BUILD_DIR)/library/libmbedx509.a \'
+        echo '    $(MBEDTLS_BUILD_DIR)/library/libmbedcrypto.a'
     fi
 ) >Config.mk

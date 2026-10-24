@@ -22,6 +22,7 @@
 #include <circle/net/netsubsystem.h>
 #include <circle-mbedtls/threadingmodule.h>
 #include <circle-mbedtls/entropymodule.h>
+#include <circle-mbedtls/cryptomodule.h>
 #include <circle-mbedtls/x509certprofile.h>
 #include <mbedtls/debug.h>
 
@@ -48,6 +49,12 @@ public:
 		return &m_CertProfile;
 	}
 
+	/// \return Result of the PSA crypto initialization (PSA_SUCCESS on success)
+	psa_status_t GetCryptoStatus (void) const
+	{
+		return m_CryptoModule.GetStatus ();
+	}
+
 	/// \param nThreshold Threshold for debug messages (0..5)
 	void SetDebugThreshold (int nThreshold)
 	{
@@ -59,6 +66,7 @@ public:
 
 	CThreadingModule	m_ThreadingModule;
 	CEntropyModule		m_EntropyModule;
+	CCryptoModule		m_CryptoModule;		// must follow m_ThreadingModule and m_EntropyModule
 	CX509CertificateProfile	m_CertProfile;
 };
 

@@ -17,16 +17,17 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 #include <circle-mbedtls/entropymodule.h>
-#include <mbedtls/entropy.h>
-#include <mbedtls/entropy_poll.h>
+#include <mbedtls/platform.h>
+#include <psa/crypto.h>
 #include <circle/timer.h>
+#include <circle/util.h>
 #include <assert.h>
 
 ASSERT_STATIC (RAND_MAX == 0x7FFFFFFF);
 
 using namespace CircleMbedTLS;
 
-CEntropyModule *CEntropyModule::s_pThis = 0;
+CEntropyModule *CEntropyModule::s_pThis = nullptr;
 
 CEntropyModule::CEntropyModule (void)
 #ifdef USE_QEMU_FOR_TEST
@@ -36,44 +37,54 @@ CEntropyModule::CEntropyModule (void)
 	s_pThis = this;
 }
 
-int CEntropyModule::EntropyPoll (void *pData, unsigned char *pOutput,
-				 size_t nLength, size_t *pResultLength)
+int CEntropyModule::GetEntropy (unsigned char *pOutput, size_t nLength)
 {
+	assert (s_pThis != nullptr);
+	assert (pOutput != nullptr);
+
 #ifdef USE_QEMU_FOR_TEST
 	if (!s_pThis->m_bInitialized)
 	{
-		srand ((int) CTimer::Get ()->GetClockTicks ());
+		srand (static_cast<int> (CTimer::Get ()->GetClockTicks ()));
 
 		s_pThis->m_bInitialized = TRUE;
 	}
 #endif
 
-	assert (pData == 0);	// not used here
-
-	assert (nLength >= 4);	// TODO: allow smaller lengths
-	if (nLength < 4)
-	{
-		return MBEDTLS_ERR_ENTROPY_SOURCE_FAILED;
-	}
-
-	size_t nResultLength = 0;
-	for (; nLength >= 4; nLength -= 4, nResultLength += 4, pOutput += 4)
+	while (nLength > 0)
 	{
 #ifndef USE_QEMU_FOR_TEST
-		*(u32 *) pOutput = s_pThis->m_RNG.GetNumber ();
+		u32 const nRandom = s_pThis->m_RNG.GetNumber ();
 #else
-		*(u32 *) pOutput = (u32) rand ();
+		u32 const nRandom = static_cast<u32> (rand ());
 #endif
-	}
 
-	*pResultLength = nResultLength;
+		size_t const nChunk = nLength < sizeof nRandom ? nLength : sizeof nRandom;
+		memcpy (pOutput, &nRandom, nChunk);
+
+		pOutput += nChunk;
+		nLength -= nChunk;
+	}
 
 	return 0;
 }
 
-// implements the MBEDTLS_ENTROPY_HARDWARE_ALT config option
-int mbedtls_hardware_poll (void *pData, unsigned char *pOutput,
-			   size_t nLength, size_t *pResultLength)
+// implements the MBEDTLS_PSA_DRIVER_GET_ENTROPY config option
+int mbedtls_platform_get_entropy (psa_driver_get_entropy_flags_t flags, size_t *estimate_bits,
+				  unsigned char *output, size_t output_size)
 {
-	return CEntropyModule::EntropyPoll (pData, pOutput, nLength, pResultLength);
+	if (flags != 0)
+	{
+		return PSA_ERROR_NOT_SUPPORTED;
+	}
+
+	if (CEntropyModule::GetEntropy (output, output_size) != 0)
+	{
+		return PSA_ERROR_INSUFFICIENT_ENTROPY;
+	}
+
+	assert (estimate_bits != nullptr);
+	*estimate_bits = 8 * output_size;
+
+	return 0;
 }

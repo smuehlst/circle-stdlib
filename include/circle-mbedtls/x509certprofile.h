@@ -19,8 +19,6 @@
 
 #include <mbedtls/x509_crt.h>
 #include <mbedtls/md.h>
-#include <mbedtls/pk.h>
-#include <mbedtls/ecp.h>
 #include <circle/types.h>
 #include <string.h>
 
@@ -72,7 +70,10 @@ public:
 		return m_Profile.allowed_mds & MBEDTLS_X509_ID_FLAG (Type) ? TRUE : FALSE;
 	}
 
-	// Public key algorithms (see: mbedtls/pk.h)
+	// Public key algorithms
+	//
+	// Since Mbed TLS 4.0 the PK algorithm identifiers (mbedtls_pk_type_t) are
+	// private. Only the bit mask functions are fully supported.
 
 	void SetAllowedPublicKeys (u32 nFlags)
 	{
@@ -84,22 +85,28 @@ public:
 		return m_Profile.allowed_pks;
 	}
 
-	void EnablePublicKey (mbedtls_pk_type_t Type)
+	[[deprecated ("PK type identifiers are private since Mbed TLS 4.0")]]
+	void EnablePublicKey (int Type)
 	{
 		m_Profile.allowed_pks |= MBEDTLS_X509_ID_FLAG (Type);
 	}
 
-	void DisablePublicKey (mbedtls_pk_type_t Type)
+	[[deprecated ("PK type identifiers are private since Mbed TLS 4.0")]]
+	void DisablePublicKey (int Type)
 	{
 		m_Profile.allowed_pks &= ~MBEDTLS_X509_ID_FLAG (Type);
 	}
 
-	boolean IsPublicKeyAllowed (mbedtls_pk_type_t Type) const
+	[[deprecated ("PK type identifiers are private since Mbed TLS 4.0")]]
+	boolean IsPublicKeyAllowed (int Type) const
 	{
 		return m_Profile.allowed_pks & MBEDTLS_X509_ID_FLAG (Type) ? TRUE : FALSE;
 	}
 
-	// Elliptic Curves (see: mbedtls/ecp.h)
+	// Elliptic Curves
+	//
+	// Since Mbed TLS 4.0 the curve identifiers (mbedtls_ecp_group_id) are
+	// private. Only the bit mask functions are fully supported.
 
 	void SetAllowedEllipticCurves (u32 nFlags)
 	{
@@ -111,17 +118,20 @@ public:
 		return m_Profile.allowed_curves;
 	}
 
-	void EnableEllipticCurve (mbedtls_ecp_group_id Type)
+	[[deprecated ("Curve identifiers are private since Mbed TLS 4.0")]]
+	void EnableEllipticCurve (int Type)
 	{
 		m_Profile.allowed_curves |= MBEDTLS_X509_ID_FLAG (Type);
 	}
 
-	void DisableEllipticCurve (mbedtls_ecp_group_id Type)
+	[[deprecated ("Curve identifiers are private since Mbed TLS 4.0")]]
+	void DisableEllipticCurve (int Type)
 	{
 		m_Profile.allowed_curves &= ~MBEDTLS_X509_ID_FLAG (Type);
 	}
 
-	boolean IsEllipticCurveAllowed (mbedtls_ecp_group_id Type) const
+	[[deprecated ("Curve identifiers are private since Mbed TLS 4.0")]]
+	boolean IsEllipticCurveAllowed (int Type) const
 	{
 		return m_Profile.allowed_curves & MBEDTLS_X509_ID_FLAG (Type) ? TRUE : FALSE;
 	}

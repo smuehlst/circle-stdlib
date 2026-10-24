@@ -67,9 +67,10 @@ public:
 		mbedtls_ssl_conf_ca_chain (&m_Config, pCA_Chain->Get (), 0);	// TODO: add CRLs
 	}
 
-	void SetRNG (CCTR_DRBG *pCTR_DRBG)
+	/// \deprecated Since Mbed TLS 4.0 the PSA random generator is used implicitly
+	CIRCLE_MBEDTLS_RNG_DEPRECATED
+	void SetRNG (CCTR_DRBG * /* pCTR_DRBG */)
 	{
-		mbedtls_ssl_conf_rng (&m_Config, mbedtls_ctr_drbg_random, pCTR_DRBG->Get ());
 	}
 
 	void SetDebugCallback (TSSLDebugCallback *pCallback, void  *pParam)
