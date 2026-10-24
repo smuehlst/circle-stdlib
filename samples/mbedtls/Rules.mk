@@ -19,21 +19,13 @@ INCLUDE += \
 
 CFLAGS += $(MBEDTLS_DEFINES)
 
+# CIRCLE_STDLIB_LIBS contains the libc++ and compiler-rt libraries when
+# configured with --libcxx, which clang links with -nostdlib.
 LIBS += \
 	$(CIRCLE_STDLIB_DIR)/src/circle-mbedtls/libcircle-mbedtls.a \
 	$(MBEDTLS_LIBS) \
-  	$(NEWLIBDIR)/lib/libm.a \
-	$(NEWLIBDIR)/lib/libc.a \
-	$(NEWLIBDIR)/lib/libcirclenewlib.a \
-	$(CIRCLEHOME)/addon/SDCard/libsdcard.a \
-  	$(CIRCLEHOME)/lib/usb/libusb.a \
- 	$(CIRCLEHOME)/lib/input/libinput.a \
- 	$(CIRCLEHOME)/addon/fatfs/libfatfs.a \
- 	$(CIRCLEHOME)/lib/fs/libfs.a \
 	$(CIRCLEHOME)/addon/wlan/hostap/wpa_supplicant/libwpa_supplicant.a \
 	$(CIRCLEHOME)/addon/wlan/libwlan.a \
-  	$(CIRCLEHOME)/lib/net/libnet.a \
-  	$(CIRCLEHOME)/lib/sched/libsched.a \
-	$(CIRCLEHOME)/lib/libcircle.a
+	$(CIRCLE_STDLIB_LIBS)
 
 -include $(DEPS)
