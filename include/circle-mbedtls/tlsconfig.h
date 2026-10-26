@@ -22,7 +22,6 @@
 #include <mbedtls/ssl.h>
 #include <circle-mbedtls/x509certprofile.h>
 #include <circle-mbedtls/x509certchain.h>
-#include <circle-mbedtls/ctr_drbg.h>
 
 namespace CircleMbedTLS {
 
@@ -65,12 +64,6 @@ public:
 	void SetCA_Chain (CX509CertificateChain *pCA_Chain)
 	{
 		mbedtls_ssl_conf_ca_chain (&m_Config, pCA_Chain->Get (), 0);	// TODO: add CRLs
-	}
-
-	/// \deprecated Since Mbed TLS 4.0 the PSA random generator is used implicitly
-	CIRCLE_MBEDTLS_RNG_DEPRECATED
-	void SetRNG (CCTR_DRBG * /* pCTR_DRBG */)
-	{
 	}
 
 	void SetDebugCallback (TSSLDebugCallback *pCallback, void  *pParam)

@@ -60,17 +60,16 @@ V2.0:
   `CTLSSimpleSupport`, must instantiate `CThreadingModule` and `CEntropyModule`
   (in this order) and then call `psa_crypto_init()` themselves.
 * The random number generator is internal to PSA now. `CEntropyContext`,
-  `CCTR_DRBG` and `CTLSConfig::SetRNG()` are deprecated no-ops, which are kept
-  for source compatibility only. The `pPersonalizationString` parameter of
-  `CTLSSimpleClientSocket::Setup()` is ignored.
+  `CCTR_DRBG` and `CTLSConfig::SetRNG()` have been removed, as well as the
+  `pPersonalizationString` parameter of `CTLSSimpleClientSocket::Setup()`.
 * The PK and elliptic curve identifiers are private in Mbed TLS 4.x. The
-  `CX509CertificateProfile` methods, which take such an identifier, are
-  deprecated. The bit mask methods are still supported.
+  `CX509CertificateProfile` methods, which take such an identifier, have been
+  removed. The bit mask methods are still supported.
 * The validity dates of certificates are not checked (`MBEDTLS_HAVE_TIME_DATE`
   is disabled), as before.
 * The samples 01-https-client1 and 03-https-server1 have been re-ported from the
   Mbed TLS 4.2.0 sources. The samples 02-https-client2 and 04-https-server2 have
-  not been ported yet and are not built.
+  been removed.
 
 ## Previous Releases
 

@@ -72,7 +72,7 @@ int CTLSSimpleClientSocket::AddCertificatePath (const char *pPath)
 	return nResult;
 }
 
-int CTLSSimpleClientSocket::Setup (char const *pServername, char const * /* pPersonalizationString */)
+int CTLSSimpleClientSocket::Setup (char const *pServername)
 {
 	// Since Mbed TLS 4.0 PSA and Mbed TLS error codes share one error space
 	assert (m_pTLSSupport != nullptr);

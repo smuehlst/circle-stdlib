@@ -192,8 +192,6 @@ mbedtls:
 	cmake --build $(MBEDTLS_BUILD_DIR) --target mbedtls
 	$(MAKE) -C src/circle-mbedtls
 
-# 02-https-client2 and 04-https-server2 have not been ported to Mbed TLS 4.x
-# yet. It is still to be decided what happens to them.
 build-mbedtls-samples:
 	$(MAKE) -C samples/mbedtls/01-https-client1
 	$(MAKE) -C samples/mbedtls/03-https-server1

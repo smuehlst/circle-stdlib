@@ -73,7 +73,7 @@ public:
 	// Public key algorithms
 	//
 	// Since Mbed TLS 4.0 the PK algorithm identifiers (mbedtls_pk_type_t) are
-	// private. Only the bit mask functions are fully supported.
+	// private. Only the bit mask functions are supported.
 
 	void SetAllowedPublicKeys (u32 nFlags)
 	{
@@ -85,28 +85,10 @@ public:
 		return m_Profile.allowed_pks;
 	}
 
-	[[deprecated ("PK type identifiers are private since Mbed TLS 4.0")]]
-	void EnablePublicKey (int Type)
-	{
-		m_Profile.allowed_pks |= MBEDTLS_X509_ID_FLAG (Type);
-	}
-
-	[[deprecated ("PK type identifiers are private since Mbed TLS 4.0")]]
-	void DisablePublicKey (int Type)
-	{
-		m_Profile.allowed_pks &= ~MBEDTLS_X509_ID_FLAG (Type);
-	}
-
-	[[deprecated ("PK type identifiers are private since Mbed TLS 4.0")]]
-	boolean IsPublicKeyAllowed (int Type) const
-	{
-		return m_Profile.allowed_pks & MBEDTLS_X509_ID_FLAG (Type) ? TRUE : FALSE;
-	}
-
 	// Elliptic Curves
 	//
 	// Since Mbed TLS 4.0 the curve identifiers (mbedtls_ecp_group_id) are
-	// private. Only the bit mask functions are fully supported.
+	// private. Only the bit mask functions are supported.
 
 	void SetAllowedEllipticCurves (u32 nFlags)
 	{
@@ -116,24 +98,6 @@ public:
 	u32 GetAllowedEllipticCurves (void) const
 	{
 		return m_Profile.allowed_curves;
-	}
-
-	[[deprecated ("Curve identifiers are private since Mbed TLS 4.0")]]
-	void EnableEllipticCurve (int Type)
-	{
-		m_Profile.allowed_curves |= MBEDTLS_X509_ID_FLAG (Type);
-	}
-
-	[[deprecated ("Curve identifiers are private since Mbed TLS 4.0")]]
-	void DisableEllipticCurve (int Type)
-	{
-		m_Profile.allowed_curves &= ~MBEDTLS_X509_ID_FLAG (Type);
-	}
-
-	[[deprecated ("Curve identifiers are private since Mbed TLS 4.0")]]
-	boolean IsEllipticCurveAllowed (int Type) const
-	{
-		return m_Profile.allowed_curves & MBEDTLS_X509_ID_FLAG (Type) ? TRUE : FALSE;
 	}
 
 	/// \brief Set specific minimum size for RSA keys

@@ -51,8 +51,7 @@ public:
 
 	/// \brief Setup SSL/TLS configuration prior to Connect()
 	/// \param pServername The hostname of the server to be connected
-	/// \param pPersonalizationString Ignored since Mbed TLS 4.0 (PSA random generator is used)
-	int Setup (const char *pServername, const char *pPersonalizationString = 0);
+	int Setup (char const *pServername);
 
 private:
 	static void DebugCallback (void *pContext, int nLevel,
