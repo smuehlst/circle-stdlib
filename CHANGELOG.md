@@ -1,5 +1,36 @@
 # Release History
 
+## [v22](https://github.com/smuehlst/circle-stdlib/releases/tag/v22)
+
+* Update to [mbed TLS v4.2.0](https://github.com/Mbed-TLS/mbedtls/releases/tag/mbedtls-4.2.0)
+  (with TF-PSA-Crypto 1.2.0). This is a major update with breaking changes, see
+  [circle-mbedtls.md](circle-mbedtls.md) and the upstream migration guides:
+  * Mbed TLS is built with CMake (3.20.2 or later) and Ninja; `python3`
+    (`jinja2`, `jsonschema`) and `perl` are required. The *libs/mbedtls*
+    submodule has nested submodules and a new URL; existing clones need
+    `git submodule sync --recursive && git submodule update --init --recursive`.
+  * Application Makefiles must use `$(MBEDTLS_INCLUDES)`, `$(MBEDTLS_DEFINES)`
+    and `$(MBEDTLS_LIBS)` from *Config.mk*. `config-circle-mbedtls.h` and
+    `MBEDTLS_CONFIG_FILE` are gone, and the libraries are now built in
+    *build/mbedtls/library*.
+  * Custom configuration changes must be ported as deltas to
+    *include/circle-mbedtls/mbedtls-user-config.h* (TLS, X.509) and
+    *include/circle-mbedtls/crypto-user-config.h* (crypto, platform).
+  * Only TLS 1.2 and TLS 1.3 are supported. TLS 1.3 is enabled by default.
+  * `psa_crypto_init()` must be called before any TLS or X.509 function.
+    `CTLSSimpleSupport` does this via the new class `CCryptoModule`.
+    Applications using the C API without it must instantiate `CThreadingModule`
+    and `CEntropyModule` (in this order), then call `psa_crypto_init()`.
+  * Removed `CEntropyContext`, `CCTR_DRBG`, `CTLSConfig::SetRNG()` and the
+    `pPersonalizationString` parameter of `CTLSSimpleClientSocket::Setup()`.
+    `Setup()` may now return PSA error codes.
+  * Removed the `CX509CertificateProfile` methods that take PK or elliptic
+    curve identifiers; the bit mask methods remain.
+  * `CEntropyModule::EntropyPoll()` replaced by `CEntropyModule::GetEntropy()`.
+    The types in *threading_alt.h* changed to `mbedtls_platform_mutex_t` and
+    `mbedtls_platform_condition_variable_t`.
+  * Removed the obsolete samples *02-https-client2* and *04-https-server2*.
+
 ## [v21](https://github.com/smuehlst/circle-stdlib/releases/tag/v21)
 
 * Synced with [Circle Step 51.1.1](https://github.com/rsta2/circle/releases/tag/Step51.1.1)
