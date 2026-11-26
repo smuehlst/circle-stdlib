@@ -156,6 +156,13 @@ For running the programs under QEMU see Circle's corresponding
 There is experimental support for the Posix socket interface. More details
 are available in [SOCKETS.md](doc/SOCKETS.md).
 
+## Building on Windows (MSYS2)
+
+Building on Windows has been reported to work using an MSYS2 MINGW64 shell and
+the Arm GNU Toolchain for AArch64. This configuration is not officially
+supported. See the [Windows MSYS2 build instructions](doc/WindowsMSYS2.md) for
+details.
+
 ## Release History
 
 See [CHANGELOG.md](CHANGELOG.md).

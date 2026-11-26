@@ -169,7 +169,7 @@ echo "STDDEF_INCPATH=$STDDEF_INCPATH"
 
 if [ ${#CXX_INCPATHS[@]} -eq 0 ]
 then
-    mapfile -t CXX_INCPATHS < <(echo | "$CXX" -v -E -x c++ - 2>&1 | grep "^ /.*include/c++" | sed -e "s/^ //")
+    mapfile -t CXX_INCPATHS < <(echo | "$CXX" -v -E -x c++ - 2>&1 | grep -E "^ ([A-Za-z]:)?/.*include/c\+\+" | sed -e "s/^ //")
 fi
 
 if [ ${#CXX_INCPATHS[@]} -eq 0 ] && [ $CLANG -eq 0 ]
