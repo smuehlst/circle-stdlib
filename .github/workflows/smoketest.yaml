@@ -32,7 +32,7 @@ jobs:
         config:
           - {
               name: "host-x64-target-arm",
-              runs-on: ubuntu-latest,
+              runs-on: ubuntu-24.04,
               host-arch: "x86_64",
               prefix: "arm-none-eabi-",
               circle-machine: "1",
@@ -43,7 +43,7 @@ jobs:
             }
           - {
               name: "host-x64-target-aarch64",
-              runs-on: ubuntu-latest,
+              runs-on: ubuntu-24.04,
               host-arch: "x86_64",
               prefix: "aarch64-none-elf-",
               circle-machine: "3",
